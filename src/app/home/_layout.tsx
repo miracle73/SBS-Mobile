@@ -1,8 +1,11 @@
 import { Tabs } from "expo-router"
 import { BookIcon, ClassIcon, HomeIcon, UserIcon, VideoIcon } from "../../../assets/svg"
 import { StatusBar } from 'expo-status-bar';
+import { MaterialIcons } from '@expo/vector-icons';
+import { useRouter } from "expo-router";
 
 const TabsLayout = () => {
+    const router = useRouter();
     return (
     
         
@@ -37,8 +40,18 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="classes"
                 options={{
-                    title: "Classes",
-                    headerShown: false,
+                    title: "Notifications", 
+                    headerTitleAlign: "center", 
+                    headerShown: true,
+                    headerLeft: () => (
+                        <MaterialIcons
+                          name="arrow-back-ios"
+                          size={24}
+                          color="black"
+                          style={{ marginLeft: 10 }}
+                          onPress={() => router.back()} 
+                        />
+                      ),
                     tabBarIcon: ({ size, color }) => (
                         <ClassIcon />
                     )

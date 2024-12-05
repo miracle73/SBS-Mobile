@@ -1,12 +1,23 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
+import React, {useState, useEffect} from 'react'
 import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon } from "../../../assets/svg";
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
+import SubscriptionModal from "../../components/modals/SubscriptionModal";
 
 export default function Page() {
     const router = useRouter();
+    const [modalVisible, setModalVisible] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setModalVisible(true);
+    }, 3000); // Show modal after 3 seconds
+
+    return () => clearTimeout(timer); // Cleanup the timer on component unmount
+  }, []);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
             <View style={styles.container}>
@@ -82,6 +93,7 @@ export default function Page() {
                     </View>
                 </View>
             </View>
+            <SubscriptionModal modal={modalVisible} setModal={setModalVisible} />
         </SafeAreaView>
     );
 }

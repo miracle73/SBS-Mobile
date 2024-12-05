@@ -13,7 +13,7 @@ const OtherLayout = () => {
                 screenOptions={{
                     headerStyle: { backgroundColor: '#FFFFFF' },
                     headerTintColor: '#000000',
-                    headerTitleStyle: { fontWeight: 'bold',}, // Centers the header title
+                    headerTitleStyle: { fontWeight: 'bold', }, // Centers the header title
                     headerLeft: () => (
                         <MaterialIcons
                             name="arrow-back-ios"
@@ -25,17 +25,30 @@ const OtherLayout = () => {
                     ),
                 }}
             >
-                <Stack.Screen 
-                    name="search" 
+                <Stack.Screen
+                    name="search"
                     options={{
-                        title: "Search result", 
-                    }} 
+                        title: "Search result",
+                    }}
                 />
-                  <Stack.Screen 
-                    name="topics" 
+                <Stack.Screen
+                    name="topics"
                     options={{
-                        title: "Bio 101 Topics", 
-                    }} 
+                        title: "Bio 101 Topics",
+                    }}
+                />
+                <Stack.Screen
+                    name="note"
+                    options={{
+                        title: "",
+                    }}
+
+                />
+                <Stack.Screen
+                    name="pastQuestions"
+                    options={{
+                        title: "Past Questions",
+                    }}
                 />
             </Stack>
         </>

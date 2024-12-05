@@ -1,17 +1,26 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React from 'react'
 import { MaterialIcons } from '@expo/vector-icons';
 import { SecondPadlockIcon } from '../../assets/svg';
+import { useRouter } from 'expo-router';
 
 interface TopicComponentProps {
-    title: string;             
-    topics: number;            
+    title: string;
+    topics: number;
 }
 
 
 const TopicComponent: React.FC<TopicComponentProps> = ({ title, topics }) => {
+    const router = useRouter();
+
+
+    const handlePress = () => {
+
+        router.push(`/other/note`);
+    };
     return (
-        <View
+        <TouchableOpacity
+            onPress={handlePress}
             style={[
                 styles.Container,
                 { backgroundColor: '#F8F8F8', borderRadius: 10, paddingHorizontal: 10, paddingVertical: 20, marginBottom: 10 },
@@ -26,7 +35,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({ title, topics }) => {
             </View>
             <SecondPadlockIcon />
 
-        </View>
+        </TouchableOpacity>
     )
 }
 

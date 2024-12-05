@@ -16,7 +16,7 @@ const search = () => {
             <ScrollView style={{ paddingHorizontal: 20 }} showsHorizontalScrollIndicator={false}>
                 {searchResults.length > 0 ? (
                     <>
-                        <Text style={styles.firstText}>{searchResults.length}   50 search results </Text>
+                        <Text style={styles.firstText}>60 search results </Text>
                         {searchResults.map((result, index) => (
                             <SearchComponent
                                 key={index}

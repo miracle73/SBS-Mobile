@@ -50,6 +50,20 @@ const OtherLayout = () => {
                         title: "Past Questions",
                     }}
                 />
+
+                <Stack.Screen
+                    name="birthdayCelebration"
+                    options={{
+                        title: "",
+                    }}
+                />
+                <Stack.Screen
+                    name="calculator"
+                    options={{
+                        title: "",
+                    }}
+                />
+
             </Stack>
         </>
     );

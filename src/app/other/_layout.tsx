@@ -1,3 +1,4 @@
+import React from "react";
 import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from "@expo/vector-icons";
@@ -63,7 +64,12 @@ const OtherLayout = () => {
                         title: "",
                     }}
                 />
-
+                <Stack.Screen
+                    name="level"
+                    options={{
+                        title: "",
+                    }}
+                />
             </Stack>
         </>
     );

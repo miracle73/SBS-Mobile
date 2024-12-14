@@ -1,9 +1,5 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
 import React, { useState } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
-import BirthdayCard from '../../components/BirthdayCard';
 import CalculatorModal from '../../components/modals/CalculatorModal';
 
 const calculator = () => {
@@ -29,6 +25,28 @@ const calculator = () => {
                 <TouchableOpacity style={styles.button} onPress={() => setModal(true)}>
                     <Text style={styles.buttonText}>Calculate CGPA</Text>
                 </TouchableOpacity>
+
+
+                <Text style={styles.fifthText}>Previous CGPA</Text>
+                <Text style={styles.sixthText}>View all your past CGPAs here</Text>
+                <View style={styles.secondContainer}>
+                    <View style={{ justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-start" }}>
+                        <Text style={styles.seventhText}>100L</Text>
+                        <View style={{
+                            flexDirection: "row",
+                            justifyContent: "flex-start",
+                            alignItems: "center",
+                            gap: 4
+                        }}>
+                            <Text style={styles.eighthText}>View</Text>
+                            <Text style={styles.eighthText}>Delete</Text>
+                        </View>
+
+                    </View>
+                    <View style={{ justifyContent: "center", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-end" }}>
+                        <Text style={styles.seventhText}>4.98</Text>
+                    </View>
+                </View>
             </View>
             {modal && <CalculatorModal modal={modal} setModal={setModal} />}
         </SafeAreaView>
@@ -65,6 +83,33 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 5,
     },
+    fifthText: {
+        fontSize: 16,
+        color: '#000000',
+        fontWeight: '600',
+        marginBottom: 5,
+        marginTop: 50
+
+    },
+    sixthText: {
+        fontSize: 14,
+        color: '#1A1A1A',
+        fontWeight: '400',
+
+    },
+    seventhText: {
+        fontSize: 16,
+        color: '#000000',
+        fontWeight: '600',
+        
+
+    },
+    eighthText: {
+        fontSize: 12,
+        color: '#003F91',
+        fontWeight: '600',
+
+    },
     container: {
         backgroundColor: "#003F9114",
         borderRadius: 8,
@@ -73,6 +118,16 @@ const styles = StyleSheet.create({
         marginHorizontal: 20,
         justifyContent: "center",
         alignItems: "center"
+
+    },
+    secondContainer: {
+        backgroundColor: "#F8F8F8",
+        borderRadius: 8,
+        height: 80,
+        marginTop: 15,
+        justifyContent: "space-between",
+        
+        flexDirection: "row"
 
     },
     button: {

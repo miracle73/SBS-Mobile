@@ -16,7 +16,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({ title, topics }) => {
 
     const handlePress = () => {
 
-        router.push(`/other/calculator`);
+        router.push(`/other/level`);
     };
     return (
         <TouchableOpacity

@@ -5,36 +5,23 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const AdminLayout = () => {
-    const router = useRouter(); 
+    const router = useRouter();
 
     return (
         <>
             <StatusBar style="dark" />
             <Stack
-                screenOptions={{
-                    headerStyle: { backgroundColor: '#FFFFFF' },
-                    headerTintColor: '#000000',
-                    headerTitleStyle: { fontWeight: 'bold', }, // Centers the header title
-                    // headerLeft: () => (
-                    //     <MaterialIcons
-                    //         name="arrow-back-ios"
-                    //         size={24}
-                    //         color="black"
-                    //         style={{ marginLeft: 10 }}
-                    //         onPress={() => router.back()} // Custom back button functionality
-                    //     />
-                    // ),
-                }}
             >
                 <Stack.Screen
                     name="adminhome"
-                
+                    options={{headerShown: false}}
                 />
                 <Stack.Screen
                     name="login"
-              
+                    options={{headerShown: false}}
+
                 />
-                
+
             </Stack>
         </>
     );

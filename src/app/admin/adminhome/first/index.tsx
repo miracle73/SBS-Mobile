@@ -5,7 +5,7 @@ import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon } fro
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../../../components/HomeComponent";
-import ThumbNailImage from "../../../../assets/images/Thumbnail.png"
+import ThumbNailImage from "../../../../../assets/images/Thumbnail.png"
 
 
 export default function Page() {
@@ -23,7 +23,7 @@ export default function Page() {
 
                 <Text style={styles.title}>Welcome Admin</Text>
                 <Text style={styles.subtitle}>Quick access to all your information</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
                         <HomeComponent
                             Icon={KeyIcon}
@@ -92,7 +92,8 @@ const styles = StyleSheet.create({
         height: 90,
         flexDirection: "row",
         justifyContent: "space-between",
-        alignItems: "center"
+        alignItems: "center",
+        marginTop: 10
     },
     container: {
         paddingHorizontal: 20,
@@ -128,13 +129,13 @@ const styles = StyleSheet.create({
         fontSize: 20,
         color: "#1A1A1A",
         fontWeight: "700",
-        marginBottom: 5,
+        marginTop: 20
     },
     secondText: {
         fontSize: 16,
         color: "#1A1A1A",
         fontWeight: "400",
-        marginBottom: 5,
+        marginTop: 10
     },
     thirdText: {
         fontSize: 16,

@@ -1,11 +1,12 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
+import { PlusIcon } from '../../../../../assets/svg';
 
-const payment = () => {
-    const [amount, setAmount] = useState("");
+const mediaUpload = () => {
+    const [date, setDate] = useState("");
     const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
+    const [message, setMessage] = useState("");
     const router = useRouter();
 
 
@@ -13,30 +14,30 @@ const payment = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <View style={{ paddingHorizontal: 20 }}>
                 <Text style={styles.fourthText}>
-                    Make payment
+                Media Upload
                 </Text>
                 <Text style={styles.secondText}>
-                    Secure your access to premium features. Complete your payment below.
+                Add your documents here, and you can upload up to 5 files max
                 </Text>
 
         
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Amount</Text>
+                    <Text style={styles.thirdText}>Date</Text>
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter amount'}
+                        placeholder={'Type a message'}
                         onChangeText={text => {
-                            setAmount(text);
+                            setDate(text);
                         }}
-                        value={amount}
+                        value={date}
 
                     />
                 </View>
 
          
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Your name</Text>
+                    <Text style={styles.thirdText}>Name</Text>
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
@@ -50,22 +51,23 @@ const payment = () => {
                 </View>
 
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Email address</Text>
+                    <Text style={styles.thirdText}>Birthday message</Text>
                     <TextInput
-                        style={styles.secondInnerContainer}
+                        style={[styles.secondInnerContainer, , { height: 100, textAlignVertical: 'top' }]}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter email address'}
+                        placeholder={'Type a message'}
                         onChangeText={text => {
-                            setEmail(text);
+                            setMessage(text);
                         }}
-                        value={email}
-
+                        value={message}
+                        multiline={true}
                     />
                 </View>
 
 
                 <TouchableOpacity style={styles.button}>
-                    <Text style={styles.buttonText}>Pay with flutterwave</Text>
+                    <PlusIcon />
+                    <Text style={styles.buttonText}>Save celebrant</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -109,9 +111,10 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         borderRadius: 8,
+        gap: 8,
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
-        marginTop: 20
+        marginTop: 40
 
     }
     ,
@@ -171,4 +174,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default payment;
+export default mediaUpload;

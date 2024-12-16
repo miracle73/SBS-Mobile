@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
 import React, { useState, useEffect } from 'react'
-import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon } from "../../../../assets/svg";
+import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon, SecondNotificationIcon } from "../../../../assets/svg";
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../../components/HomeComponent";
@@ -12,14 +12,14 @@ export default function Page() {
     const router = useRouter();
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}>
             <View style={styles.container}>
                 <StatusBar style="dark" />
               
 
                 <Text style={styles.title}>Upload </Text>
                 <Text style={styles.subtitle}>Quick access to all your information</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
                         <HomeComponent
                             Icon={KeyIcon}
@@ -36,7 +36,7 @@ export default function Page() {
                             disabled={false}
                         />
                           <HomeComponent
-                            Icon={SnowflakeIcon}
+                            Icon={SecondNotificationIcon}
                             firstText="Notification"
                             secondText="Upload notifications"
                             backgroundColor="#FFAD84"
@@ -57,7 +57,7 @@ export default function Page() {
                             firstText="Lecture Notes"
                             secondText="Add lecture notes"
                             backgroundColor="#E5AD35"
-                            disabled={true}
+                            disabled={false}
                         />
 
                     </View>

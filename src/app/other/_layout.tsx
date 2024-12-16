@@ -73,7 +73,7 @@ const OtherLayout = () => {
                 <Stack.Screen
                     name="activation"
                     options={{
-                        title: "",
+                        headerShown: false
                     }}
                 />
                 <Stack.Screen

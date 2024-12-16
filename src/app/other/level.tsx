@@ -82,7 +82,7 @@ const level = () => {
                         <RNPickerSelect
                             onValueChange={(value) => setCourse(value)}
                             items={gradeItems}
-                            placeholder={{ label: 'A', value: null }}
+                            placeholder={{ label: 'A', value: "A" }}
                             useNativeAndroidPickerStyle={false}
                             style={pickerSelectStyles}
                             value={course}

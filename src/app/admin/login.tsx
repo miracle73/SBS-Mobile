@@ -17,7 +17,7 @@ const login = () => {
                     flexDirection: "row",
                     justifyContent: "center",
                     alignItems: "center",
-                    marginTop: 20
+                    marginTop: 50
                 }}>
                     <Image source={AdminLoginImage} />
                 </View>
@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         color: '#000000',
         fontWeight: '400',
+        marginTop: 20
     },
     thirdText: {
         fontSize: 14,
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
         fontSize: 24,
         color: '#000000',
         fontWeight: '700',
-        marginBottom: 5,
+        marginTop: 20
     },
     pickerContainer: {
         marginTop: 20,
@@ -104,7 +105,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
-        marginTop: 20
+        marginTop: 50
 
     }
     ,

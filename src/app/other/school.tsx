@@ -4,37 +4,39 @@ import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
 
-const activation = () => {
-    const [method, setMethod] = useState("");
+const school = () => {
+    const [school, setSchool] = useState("");
     const router = useRouter();
 
-    const theMethods = [
-        { label: 'Pin', value: 'Pin' },
-        { label: 'QR', value: 'QR' },
-
-    ];
+    const schoolItems = [
+        { label: 'School of Engineering', value: 'engineering' },
+        { label: 'School of Medicine', value: 'medicine' },
+        { label: 'School of Law', value: 'law' },
+        { label: 'School of Business', value: 'business' },
+        { label: 'School of Arts', value: 'arts' },
+      ];
 
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <View style={{ paddingHorizontal: 20 }}>
                 <Text style={styles.fourthText}>
-                    Activation method
+                Select your school
                 </Text>
                 <Text style={styles.secondText}>
-                    Select the method you want to use to activate your student account
+                Move forward with our app by selecting the school you are in.
                 </Text>
 
                 {/* School Picker */}
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Activation method</Text>
+                    <Text style={styles.thirdText}>School</Text>
                     <RNPickerSelect
-                        onValueChange={(value) => setMethod(value)}
-                        items={theMethods}
-                        placeholder={{ label: 'Select method', value: null }}
+                        onValueChange={(value) => setSchool(value)}
+                        items={schoolItems}
+                        placeholder={{ label: 'Choose Your school', value: null }}
                         useNativeAndroidPickerStyle={false}
                         style={pickerSelectStyles}
-                        value={method}
+                        value={school}
                         Icon={() => (
                             <MaterialIcons
                                 name="keyboard-arrow-down"
@@ -47,7 +49,7 @@ const activation = () => {
                 </View>
 
                 <TouchableOpacity style={styles.button} >
-                    <Text style={styles.buttonText}>Proceed</Text>
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -134,4 +136,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default activation;
+export default school;

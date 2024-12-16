@@ -70,6 +70,24 @@ const OtherLayout = () => {
                         title: "",
                     }}
                 />
+                <Stack.Screen
+                    name="activation"
+                    options={{
+                        title: "",
+                    }}
+                />
+                <Stack.Screen
+                    name="payment"
+                    options={{
+                        title: "",
+                    }}
+                />
+                <Stack.Screen
+                    name="activateSubscription"
+                    options={{
+                        title: "",
+                    }}
+                />
             </Stack>
         </>
     );

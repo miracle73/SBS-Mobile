@@ -1,10 +1,10 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
 import React, { useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
-import BirthdayCard from '../../components/BirthdayCard';
-import CalculatorModal from '../../components/modals/CalculatorModal';
+import ConfirmModal from '../../components/modals/ConfirmModal';
+
 
 const level = () => {
     const [modal, setModal] = useState(false)
@@ -12,7 +12,6 @@ const level = () => {
     const [unit, setUnit] = useState("")
 
     const gradeItems = [
-        { label: 'A', value: 'A' },
         { label: 'B', value: 'B' },
         { label: 'C', value: 'C' },
         { label: 'D', value: 'D' },
@@ -20,7 +19,7 @@ const level = () => {
     ];
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <View style={{ paddingHorizontal: 20 }}>
+            <ScrollView style={{ paddingHorizontal: 20 }} showsHorizontalScrollIndicator={false}>
                 <Text style={styles.fourthText}>
                     100 level
                 </Text>
@@ -83,7 +82,7 @@ const level = () => {
                         <RNPickerSelect
                             onValueChange={(value) => setCourse(value)}
                             items={gradeItems}
-                            placeholder={{ label: 'Select Subject', value: null }}
+                            placeholder={{ label: 'A', value: null }}
                             useNativeAndroidPickerStyle={false}
                             style={pickerSelectStyles}
                             value={course}
@@ -107,8 +106,8 @@ const level = () => {
 
 
 
-            </View>
-            {modal && <CalculatorModal modal={modal} setModal={setModal} />}
+            </ScrollView >
+            {modal && <ConfirmModal modal={modal} setModal={setModal} />}
         </SafeAreaView >
     );
 };
@@ -203,13 +202,13 @@ const styles = StyleSheet.create({
     },
 
     secondInnerContainer: {
-        height: 40, // Set the desired height explicitly
+        height: 40, 
         borderWidth: 1,
         borderColor: "#D0D5DD",
-        flexShrink: 0, // Prevent the flex layout from overriding the height
+        flexShrink: 0, 
         flexGrow: 0,
         color: '#000000',
-        width: "100%", // Ensure width is consistent
+        width: "100%", 
         backgroundColor: "#FFFFFF",
     },
 

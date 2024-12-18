@@ -74,7 +74,7 @@ const payment = () => {
 
 const styles = StyleSheet.create({
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 70,
         flex: 1,
         backgroundColor: '#FFFFFF',
     },
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
-        marginTop: 20
+        marginTop: 70
 
     }
     ,

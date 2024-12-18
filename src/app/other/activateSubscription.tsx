@@ -45,7 +45,7 @@ const activateSubscription = () => {
 
 const styles = StyleSheet.create({
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 70,
         flex: 1,
         backgroundColor: '#FFFFFF',
     },

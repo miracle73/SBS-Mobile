@@ -1,21 +1,29 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
+import { useRouter } from 'expo-router';
+// import { useGetSchoolsQuery } from './api';
+
+import { useGetSchoolsQuery } from '../../components/services/userService';
 
 const school = () => {
     const [school, setSchool] = useState("");
+    const [schoolItems, setSchoolItems] = useState<{ label: string; value: string | number }[]>([]);
     const router = useRouter();
+    const { data, isSuccess } = useGetSchoolsQuery();
 
-    const schoolItems = [
-        { label: 'School of Engineering', value: 'engineering' },
-        { label: 'School of Medicine', value: 'medicine' },
-        { label: 'School of Law', value: 'law' },
-        { label: 'School of Business', value: 'business' },
-        { label: 'School of Arts', value: 'arts' },
-      ];
+    console.log(data)
 
+    useEffect(() => {
+        if (isSuccess && data?.result) {
+            const formattedSchools = data.result.map((school: any) => ({
+                label: school.name,
+                value: school.id,
+            }));
+            setSchoolItems(formattedSchools);
+        }
+    }, [data, isSuccess]);
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -48,7 +56,7 @@ const school = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.button} >
+                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) } } >
                     <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </View>

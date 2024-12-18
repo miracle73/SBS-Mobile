@@ -79,13 +79,19 @@ const OtherLayout = () => {
                 <Stack.Screen
                     name="payment"
                     options={{
-                        title: "",
+                        headerShown: false
                     }}
                 />
                 <Stack.Screen
                     name="activateSubscription"
                     options={{
-                        title: "",
+                        headerShown: false
+                    }}
+                />
+                 <Stack.Screen
+                    name="school"
+                    options={{
+                        headerShown: false
                     }}
                 />
             </Stack>

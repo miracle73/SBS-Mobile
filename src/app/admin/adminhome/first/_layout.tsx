@@ -60,6 +60,24 @@ const FirstLayout = () => {
                     }}
 
                 />
+                 <Stack.Screen
+                    name="allPins"
+                    options={{
+                        title: "",
+                        headerTitleStyle: { fontWeight: 'bold' },
+                        headerTintColor: '#000000',
+                        headerLeft: () => (
+                            <MaterialIcons
+                                name="arrow-back-ios"
+                                size={24}
+                                color="black"
+                                style={{ marginLeft: 10 }}
+                                onPress={() => router.back()}
+                            />
+                        ),
+                    }}
+
+                />
             </Stack>
         </>
     );

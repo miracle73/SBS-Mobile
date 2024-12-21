@@ -1,7 +1,8 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
-import { PlusIcon } from '../../../../../assets/svg';
+import { CancelIcon, Line, PlusIcon } from '../../../../../assets/svg';
+import UploadImage from "../../../../../assets/images/upload.png"
 
 const mediaUpload = () => {
     const [date, setDate] = useState("");
@@ -12,15 +13,48 @@ const mediaUpload = () => {
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <View style={{ paddingHorizontal: 20 }}>
+            <ScrollView style={{ paddingHorizontal: 20,  }} showsVerticalScrollIndicator={false}>
                 <Text style={styles.fourthText}>
-                Media Upload
+                    Media Upload
                 </Text>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                    <View style={{ width: "70%" }}>
+                        <Text style={styles.secondText}>
+                            Add your documents here, and you can upload up to 5 files max
+                        </Text>
+                    </View>
+                    <View>
+                        <CancelIcon />
+                    </View>
+
+
+                </View>
+                <View style={styles.thirdContainer}>
+                    <Image source={UploadImage} />
+                    <Text>Drag your file(s) to start uploading</Text>
+                    <View style={{ flexDirection: "row", justifyContent: "center", gap: 4, alignItems: "center" }}>
+                        <Line />
+                        <Text>OR</Text>
+                        <Line />
+                    </View>
+                    <View style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        borderWidth: 1,
+                        borderColor: "#003F91",
+                        borderRadius: 8,
+                        padding: 5,
+                    }}>
+                        <Text style={styles.sixthText}>Browse files</Text>
+                    </View>
+                </View>
+
                 <Text style={styles.secondText}>
-                Add your documents here, and you can upload up to 5 files max
+                    Only support .png, .jpeg files
                 </Text>
 
-        
+
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Date</Text>
                     <TextInput
@@ -35,7 +69,7 @@ const mediaUpload = () => {
                     />
                 </View>
 
-         
+
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Name</Text>
                     <TextInput
@@ -69,16 +103,27 @@ const mediaUpload = () => {
                     <PlusIcon />
                     <Text style={styles.buttonText}>Save celebrant</Text>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
         </SafeAreaView>
     );
 };
 
 const styles = StyleSheet.create({
+    thirdContainer: {
+        height: 150,
+        borderWidth: 1,
+        marginVertical: 10,
+        borderColor: "#003F91",
+        borderStyle: "dashed",
+        alignItems: "center",
+        padding: 10,
+        gap: 6
+    },
     bodyContainer: {
         paddingTop: 20,
         flex: 1,
         backgroundColor: '#FFFFFF',
+        
     },
     firstText: {
         fontSize: 24,
@@ -88,7 +133,7 @@ const styles = StyleSheet.create({
     },
     secondText: {
         fontSize: 14,
-        color: '#000000',
+        color: '#6D6D6D',
         fontWeight: '400',
     },
     thirdText: {
@@ -103,6 +148,17 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 5,
     },
+    fifthText: {
+        fontSize: 14,
+        color: '#0B0B0B',
+        fontWeight: '400',
+        marginVertical: 10,
+    },
+    sixthText: {
+        fontSize: 12,
+        color: '#003F91',
+        fontWeight: '600',
+    },
     pickerContainer: {
         marginTop: 20,
     },
@@ -114,7 +170,8 @@ const styles = StyleSheet.create({
         gap: 8,
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
-        marginTop: 40
+        marginTop: 40,
+        marginBottom: 20
 
     }
     ,
@@ -141,36 +198,6 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
-    },
-});
-
-const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-        fontSize: 16,
-        paddingVertical: 12,
-        paddingHorizontal: 10,
-        borderWidth: 1,
-        borderColor: '#B0BEC5',
-        color: '#000000',
-        paddingRight: 30,
-        alignSelf: 'stretch',
-    },
-    inputAndroid: {
-        fontSize: 16,
-        paddingHorizontal: 10,
-        paddingVertical: 8,
-        borderWidth: 1,
-        borderColor: '#B0BEC5',
-        color: '#000000',
-        paddingRight: 30,
-        alignSelf: 'stretch',
-    },
-    iconContainer: {
-        top: '50%',
-        right: 10,
-        transform: [{ translateY: -12 }],
-        justifyContent: 'center',
-        alignItems: 'center',
     },
 });
 

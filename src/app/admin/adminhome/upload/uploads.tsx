@@ -1,11 +1,9 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
-import React, { useState, useEffect } from 'react'
-import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon, SecondNotificationIcon } from "../../../../assets/svg";
+import React from 'react'
+import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon, SecondNotificationIcon } from "../../../../../assets/svg";
 import { useRouter } from 'expo-router';
-import { Ionicons } from '@expo/vector-icons';
-import HomeComponent from "../../../components/HomeComponent";
-import ThumbNailImage from "../../../../assets/images/Thumbnail.png"
+import HomeComponent from "../../../../components/HomeComponent";
 
 
 export default function Page() {

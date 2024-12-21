@@ -15,8 +15,8 @@ const TopicComponent: React.FC<TopicComponentProps> = ({ title, topics }) => {
 
 
     const handlePress = () => {
-// /admin/adminhome/first/birthdays
-        router.push(`/other/school`);
+        // /admin/adminhome/first/birthdays
+        router.push(`/admin/adminhome/first/allPins`);
     };
     return (
         <TouchableOpacity

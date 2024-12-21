@@ -1,8 +1,9 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import * as Device from 'expo-device';
 // import { useGetSchoolsQuery } from './api';
 
 import { useGetSchoolsQuery } from '../../components/services/userService';
@@ -11,8 +12,8 @@ const school = () => {
     const [school, setSchool] = useState("");
     const [schoolItems, setSchoolItems] = useState<{ label: string; value: string | number }[]>([]);
     const router = useRouter();
-    const { data, isSuccess } = useGetSchoolsQuery();
-
+    const { data, isSuccess, isLoading } = useGetSchoolsQuery();
+    console.log('Device ID:', Device.osBuildId, 44);
     console.log(data)
 
     useEffect(() => {
@@ -25,14 +26,22 @@ const school = () => {
         }
     }, [data, isSuccess]);
 
+    if (isLoading) {
+        return (
+            <SafeAreaView style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FF8C00" />
+            </SafeAreaView>
+        );
+    }
+
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <View style={{ paddingHorizontal: 20 }}>
                 <Text style={styles.fourthText}>
-                Select your school
+                    Select your school
                 </Text>
                 <Text style={styles.secondText}>
-                Move forward with our app by selecting the school you are in.
+                    Move forward with our app by selecting the school you are in.
                 </Text>
 
                 {/* School Picker */}
@@ -56,7 +65,7 @@ const school = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) } } >
+                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) }} >
                     <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </View>
@@ -65,6 +74,12 @@ const school = () => {
 };
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+    },
     bodyContainer: {
         paddingTop: 70,
         flex: 1,

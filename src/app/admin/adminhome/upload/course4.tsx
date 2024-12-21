@@ -15,7 +15,7 @@ const course4 = () => {
                 <Text style={styles.fourthText}>
                     Preview your course
                 </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
                     <Text style={styles.secondText}>
                         Check if this is what you want, click on the upload button if everything is correct.
                     </Text>
@@ -27,8 +27,9 @@ const course4 = () => {
                 <Text style={styles.firstText}>Object Oriented Program</Text>
                 <View style={{
                     flexDirection: "row",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-start",
                     alignItems: "center",
+                    gap: 16,
                     marginTop: 10
                 }}>
                     <View style={{
@@ -53,7 +54,8 @@ const course4 = () => {
                 </View>
                 <View style={{
                     flexDirection: "row",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-start",
+                    gap: 16,
                     alignItems: "center",
                     marginTop: 10
                 }}>
@@ -79,7 +81,8 @@ const course4 = () => {
                 </View>
                 <View style={{
                     flexDirection: "row",
-                    justifyContent: "space-between",
+                    justifyContent: "flex-start",
+                    gap: 16,
                     alignItems: "center",
                     marginTop: 10
                 }}>
@@ -97,7 +100,15 @@ const course4 = () => {
                 </View>
                 <View style={styles.secondContainer}>
                     <Text style={styles.seventhText}>Topic 1</Text>
-                    <Text style={[styles.seventhText, {fontSize: 14}]}>CONCEPT OF ELECTRIC CHARGE</Text>
+                    <Text style={[styles.seventhText, { fontSize: 14 }]}>CONCEPT OF ELECTRIC CHARGE</Text>
+                </View>
+                <View style={styles.secondContainer}>
+                    <Text style={styles.seventhText}>Topic 1</Text>
+                    <Text style={[styles.seventhText, { fontSize: 14 }]}>CONCEPT OF ELECTRIC CHARGE</Text>
+                </View>
+                <View style={styles.secondContainer}>
+                    <Text style={styles.seventhText}>Topic 1</Text>
+                    <Text style={[styles.seventhText, { fontSize: 14 }]}>CONCEPT OF ELECTRIC CHARGE</Text>
                 </View>
                 <TouchableOpacity style={styles.button}>
 
@@ -113,18 +124,17 @@ const styles = StyleSheet.create({
         backgroundColor: "#E6EBF6",
         height: 9,
         borderRadius: 20,
-        marginTop: 20
+        marginVertical: 20
     },
     innerLineContainer: {
         backgroundColor: "#0337A4",
         height: 9,
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
+        borderRadius: 20,
         width: "100%"
     },
 
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 50,
         flex: 1,
         backgroundColor: '#FFFFFF',
 
@@ -134,6 +144,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         fontWeight: '700',
         marginBottom: 5,
+        marginTop: 10
     },
     secondText: {
         fontSize: 14,
@@ -165,10 +176,10 @@ const styles = StyleSheet.create({
     },
     seventhText: {
         fontSize: 16,
-        color: '#1D1B20',
+        color: '#B7B7BC',
         fontWeight: '700',
     },
-  
+
     pickerContainer: {
         marginTop: 20,
     },
@@ -192,9 +203,10 @@ const styles = StyleSheet.create({
     },
     secondContainer: {
         height: 60,
-        marginTop: 15,
+        marginTop: 25,
         padding: 10,
-        backgroundColor: "#FEF7FF"
+        backgroundColor: "#FEF7FF",
+        opacity: 0.5
 
     },
 });

@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
         gap: 6
     },
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 70,
         flex: 1,
         backgroundColor: '#FFFFFF',
 

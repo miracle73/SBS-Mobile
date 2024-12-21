@@ -73,6 +73,8 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     button: {
         flexDirection: "row",
@@ -93,7 +95,6 @@ const styles = StyleSheet.create({
 
     modalContent: {
         position: 'absolute',
-        bottom: height * 0.40,
         backgroundColor: '#FFFFFF',
         elevation: 10,
         borderRadius: 20,

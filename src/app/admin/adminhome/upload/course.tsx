@@ -32,7 +32,7 @@ const course = () => {
                 }}>
                     <Image source={IllustrationsImage} />
                 </View>
-                
+
                 <TouchableOpacity style={styles.button}>
 
                     <Text style={styles.buttonText}>Create lecture Note</Text>
@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         gap: 6
     },
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 70,
         flex: 1,
         backgroundColor: '#FFFFFF',
 

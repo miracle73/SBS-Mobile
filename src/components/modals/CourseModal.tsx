@@ -51,6 +51,8 @@ const styles = StyleSheet.create({
     modalContainer: {
         flex: 1,
         backgroundColor: 'rgba(0,0,0,0.5)',
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     button: {
         flexDirection: "row",
@@ -71,16 +73,16 @@ const styles = StyleSheet.create({
     },
 
     modalContent: {
-        marginHorizontal: 20,
         position: 'absolute',
         bottom: height * 0.30,
         backgroundColor: '#FFFFFF',
         elevation: 10,
         borderRadius: 20,
         alignItems: "center",
-        height: height * 0.40,
+        height: height * 0.25,
         paddingHorizontal: 20,
         paddingTop: 10,
+        marginHorizontal: 20
     },
     firstText: {
         fontSize: 14,

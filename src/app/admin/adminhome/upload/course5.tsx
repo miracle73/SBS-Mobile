@@ -47,13 +47,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#E6EBF6",
         height: 9,
         borderRadius: 20,
-        marginTop: 20
+        marginVertical: 20
     },
     innerLineContainer: {
         backgroundColor: "#0337A4",
         height: 9,
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
+        borderRadius: 20,
         width: "100%"
     },
 

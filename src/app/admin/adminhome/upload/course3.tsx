@@ -139,13 +139,12 @@ const styles = StyleSheet.create({
         backgroundColor: "#E6EBF6",
         height: 9,
         borderRadius: 20,
-        marginTop: 20
+        marginVertical: 20
     },
     innerLineContainer: {
         backgroundColor: "#0337A4",
         height: 9,
-        borderTopRightRadius: 20,
-        borderBottomRightRadius: 20,
+        borderRadius: 20,
         width: "70%"
     },
     smallContainer: {
@@ -163,16 +162,18 @@ const styles = StyleSheet.create({
         height: 50,
         backgroundColor: "#E7E7E9",
         borderBottomWidth: 1,
-        marginTop: 10,
+        marginTop: 20,
         borderColor: "#49454F",
         alignItems: "center",
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10,
+        
+   
 
     },
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 50,
         flex: 1,
         backgroundColor: '#FFFFFF',
 
@@ -202,14 +203,16 @@ const styles = StyleSheet.create({
     },
     fifthText: {
         fontSize: 12,
-        color: '#0E101F',
+        color: '#49454F',
         fontWeight: '400',
         marginBottom: 10,
+        opacity: 0.5,
     },
     sixthText: {
         fontSize: 16,
         color: '#1D1B20',
         fontWeight: '400',
+        opacity: 0.5,
     },
     seventhText: {
         fontSize: 12,

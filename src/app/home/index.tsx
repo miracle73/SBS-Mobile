@@ -6,6 +6,10 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
 import SubscriptionModal from "../../components/modals/SubscriptionModal";
+import CalculatorModal from "../../components/modals/CalculatorModal";
+import ConfirmModal from "../../components/modals/ConfirmModal";
+import ErrorModal from "../../components/modals/ErrorModal";
+import SuccessModal from "../../components/modals/SuccessModal";
 
 export default function Page() {
     const router = useRouter();
@@ -93,7 +97,7 @@ export default function Page() {
                     </View>
                 </View>
             </View>
-            <SubscriptionModal modal={modalVisible} setModal={setModalVisible} />
+            <SuccessModal modal={modalVisible} setModal={setModalVisible} />
         </SafeAreaView>
     );
 }

@@ -14,11 +14,12 @@ const CourseCard = () => {
 
 const styles = StyleSheet.create({
     outerContainer: {
-        height: 180,
+        height: 150,
         backgroundColor: "#FEF7FF",
         padding: 8,
         marginVertical: 7,
         justifyContent: "space-between",
+        opacity: 0.7
         
     },
     firstText: {

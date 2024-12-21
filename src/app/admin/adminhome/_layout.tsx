@@ -19,8 +19,9 @@ const AdminTabsLayout = () => {
                         <HomeIcon />
                     )
                 }} />
+
             <Tabs.Screen
-                name="uploads"
+                name="upload"
                 options={{
                     title: "Uploads",
                     headerShown: false,
@@ -28,8 +29,8 @@ const AdminTabsLayout = () => {
                         <BookIcon />
                     )
                 }} />
-            
-            
+
+
             <Tabs.Screen
                 name="more"
                 options={{

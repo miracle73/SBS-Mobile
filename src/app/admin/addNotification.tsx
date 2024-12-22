@@ -4,25 +4,11 @@ import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const course3 = () => {
-    const [topicTitle, setTopicTitle] = useState("");
-    const [course, setCourse] = useState("");
-    const [description, setDescription] = useState("");
-    const [question, setQuestion] = useState("");
 
-    const questionChoices = [
-        { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'No' },
-
-
-    ];
-    const courseItems = [
-        { label: 'Engineering', value: 'engineering' },
-        { label: 'Medicine', value: 'medicine' },
-        { label: 'Law', value: 'law' },
-        { label: 'Business', value: 'business' },
-        { label: 'Arts & Humanities', value: 'arts_humanities' },
-    ];
+const addNotification = () => {
+    const [title, setTitle] = useState("");
+    const [message, setMessage] = useState("");
+   
 
 
     const router = useRouter();
@@ -35,100 +21,63 @@ const course3 = () => {
                     <View style={styles.innerLineContainer}></View>
                 </View>
                 <Text style={styles.fourthText}>
-                    Fill in your topic details
+                    Information details
                 </Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <Text style={styles.secondText}>
-                        Fill in the details about your topic.
+                        Add your information details here
                     </Text>
 
                 </View>
 
-                {/* Subject Picker */}
+
+
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Course</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) => setCourse(value)}
-                        items={courseItems}
-                        placeholder={{ label: 'Select Course', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={course}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    />
-                </View>
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic Title</Text>
+                    <Text style={styles.thirdText}>Title</Text>
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
                         placeholder={'Enter course title'}
                         onChangeText={text => {
-                            setTopicTitle(text);
+                            setTitle(text);
                         }}
-                        value={topicTitle}
+                        value={title}
 
                     />
                 </View>
 
 
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic description</Text>
+                    <Text style={styles.thirdText}>Message Content</Text>
                     <TextInput
                         style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter description'}
+                        placeholder={'Enter message'}
                         onChangeText={text => {
-                            setDescription(text);
+                            setMessage(text);
                         }}
-                        value={description}
+                        value={message}
                         multiline={true}
 
                     />
                 </View>
-                
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Is this course free?</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) => setQuestion(value)}
-                        items={questionChoices}
-                        placeholder={{ label: 'Select option', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={question}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    />
-                </View>
+
+            
 
                 <View style={styles.thirdContainer}>
                     <View>
                         <Text style={styles.fifthText}>Course Image</Text>
                         <Text style={styles.sixthText}>Upload image</Text>
                     </View>
-     
                     <View style={styles.smallContainer}>
-                        <Text style={styles.seventhText}>Next</Text>
+                        <Text style={styles.seventhText}>Browse files</Text>
                     </View>
                 </View>
-                <Text style={styles.eighthText}>Add 5 images max</Text>
+
 
                 <TouchableOpacity style={styles.button}>
 
-                    <Text style={styles.buttonText}>Create lecture Note</Text>
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
@@ -146,7 +95,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#0337A4",
         height: 9,
         borderRadius: 20,
-        width: "70%"
+        width: "40%"
     },
     smallContainer: {
         borderWidth: 1,
@@ -155,8 +104,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         flexDirection: "row",
         height: 30,
-        width: 60,
-        borderRadius: 6,
+        paddingHorizontal: 10,
+        borderRadius: 10,
         backgroundColor: "#FFFFFF"
     },
     thirdContainer: {
@@ -169,8 +118,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10,
-        
-   
+
+
 
     },
     bodyContainer: {
@@ -220,11 +169,6 @@ const styles = StyleSheet.create({
         color: '#1849D6',
         fontWeight: '600',
     },
-    eighthText: {
-        fontSize: 12,
-        color: '#1A1A1A',
-        fontWeight: '400',
-    },
     pickerContainer: {
         marginTop: 20,
     },
@@ -237,7 +181,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
         marginTop: 50,
-        marginBottom: 20
+        marginBottom: 30
 
     }
     ,
@@ -297,4 +241,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default course3;
+export default addNotification;

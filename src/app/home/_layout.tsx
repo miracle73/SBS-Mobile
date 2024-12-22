@@ -3,20 +3,29 @@ import { BookIcon, ClassIcon, HomeIcon, UserIcon, VideoIcon } from "../../../ass
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
+import { View, StyleSheet } from "react-native";
 
 const TabsLayout = () => {
     const router = useRouter();
     return (
-    
-        
-          <Tabs >
+
+
+        <Tabs
+            screenOptions={({ route }) => ({
+              
+
+            })}
+        >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: "Home",
+                    tabBarStyle: { borderTopWidth: 2, borderColor: "green" },
                     headerShown: false,
                     tabBarIcon: ({ size, color }) => (
-                        <HomeIcon />
+                        
+                            <HomeIcon />
+                    
                     )
                 }} />
             <Tabs.Screen
@@ -40,23 +49,24 @@ const TabsLayout = () => {
             <Tabs.Screen
                 name="classes"
                 options={{
-                    title: "Notifications", 
-                    headerTitleAlign: "center", 
+                    title: "Notifications",
+                    headerTitleAlign: "center",
                     headerShown: true,
                     headerLeft: () => (
                         <MaterialIcons
-                          name="arrow-back-ios"
-                          size={24}
-                          color="black"
-                          style={{ marginLeft: 10 }}
-                          onPress={() => router.back()} 
+                            name="arrow-back-ios"
+                            size={24}
+                            color="black"
+                            style={{ marginLeft: 10 }}
+                            onPress={() => router.back()}
                         />
-                      ),
+                    ),
                     tabBarIcon: ({ size, color }) => (
                         <ClassIcon />
                     )
                 }} />
             <Tabs.Screen
+            
                 name="more"
                 options={{
                     title: "More",
@@ -67,9 +77,12 @@ const TabsLayout = () => {
                 }} />
 
         </Tabs>
- 
-       
+
+
     )
 }
+const styles = StyleSheet.create({
+ 
+})
 
 export default TabsLayout

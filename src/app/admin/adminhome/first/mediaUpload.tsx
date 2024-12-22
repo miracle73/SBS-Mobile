@@ -87,7 +87,7 @@ const mediaUpload = () => {
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Birthday message</Text>
                     <TextInput
-                        style={[styles.secondInnerContainer, , { height: 100, textAlignVertical: 'top' }]}
+                        style={[styles.secondInnerContainer , { height: 100, textAlignVertical: 'top' }]}
                         placeholderTextColor='#98A2B3'
                         placeholder={'Type a message'}
                         onChangeText={text => {

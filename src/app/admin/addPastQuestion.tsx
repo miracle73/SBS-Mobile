@@ -4,24 +4,39 @@ import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 
-const course3 = () => {
-    const [topicTitle, setTopicTitle] = useState("");
-    const [course, setCourse] = useState("");
-    const [description, setDescription] = useState("");
-    const [question, setQuestion] = useState("");
-
-    const questionChoices = [
-        { label: 'Yes', value: 'Yes' },
-        { label: 'No', value: 'No' },
-
+const addPastQuestion = () => {
+    const [courseTitle, setCourseTitle] = useState("");
+    const [courseCode, setCourseCode] = useState("");
+    const [department, setDepartment] = useState("");
+    const [topic, setTopic] = useState("");
+    const [level, setLevel] = useState("");
+    const [year, setYear] = useState("");
+    const levelItems = [
+        { label: '100 Level', value: '100 Level' },
+        { label: '200 Level', value: '200 Level' },
+        { label: '300 Level', value: '300 Level' },
+        { label: '400 Level', value: '400 Level' },
+        { label: '500 Level', value: '500 Level' },
 
     ];
-    const courseItems = [
-        { label: 'Engineering', value: 'engineering' },
-        { label: 'Medicine', value: 'medicine' },
-        { label: 'Law', value: 'law' },
-        { label: 'Business', value: 'business' },
-        { label: 'Arts & Humanities', value: 'arts_humanities' },
+    const yearItems = [
+        { label: '2015', value: '2015' },
+        { label: '2016', value: '2016' },
+        { label: '2017', value: '2017' },
+        { label: '2018', value: '2018' },
+        { label: '2019', value: '2019' },
+        { label: '2020', value: '2020' },
+        { label: '2021', value: '2021' },
+        { label: '2022', value: '2022' },
+        { label: '2023', value: '2023' },
+    ];
+
+    const departmentItems = [
+        { label: 'Electrical and Electronics Engineering', value: 'Electrical and Electronics Engineering' },
+        { label: 'Chemical Engineering', value: 'Chemical Engineering' },
+        { label: 'Mechanical Engineering', value: 'Mechanical Engineering' },
+        { label: 'Civil Engineering', value: 'Civil Engineering' },
+
     ];
 
 
@@ -35,25 +50,64 @@ const course3 = () => {
                     <View style={styles.innerLineContainer}></View>
                 </View>
                 <Text style={styles.fourthText}>
-                    Fill in your topic details
+                    Provide your course details
                 </Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                     <Text style={styles.secondText}>
-                        Fill in the details about your topic.
+                        Fill in the details about your course.
                     </Text>
 
                 </View>
 
-                {/* Subject Picker */}
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Course</Text>
+                    <Text style={styles.thirdText}>Year</Text>
                     <RNPickerSelect
-                        onValueChange={(value) => setCourse(value)}
-                        items={courseItems}
-                        placeholder={{ label: 'Select Course', value: null }}
+                        onValueChange={(value) => setYear(value)}
+                        items={yearItems}
+                        placeholder={{ label: 'Choose Year', value: null }}
                         useNativeAndroidPickerStyle={false}
                         style={pickerSelectStyles}
-                        value={course}
+                        value={year}
+                        Icon={() => (
+                            <MaterialIcons
+                                name="keyboard-arrow-down"
+                                size={24}
+                                color="#B0BEC5"
+                                style={{ alignSelf: 'center' }}
+                            />
+                        )}
+                    />
+                </View>
+                
+                <View style={styles.pickerContainer}>
+                    <Text style={styles.thirdText}>Department</Text>
+                    <RNPickerSelect
+                        onValueChange={(value) => setDepartment(value)}
+                        items={departmentItems}
+                        placeholder={{ label: 'Select school', value: null }}
+                        useNativeAndroidPickerStyle={false}
+                        style={pickerSelectStyles}
+                        value={department}
+                        Icon={() => (
+                            <MaterialIcons
+                                name="keyboard-arrow-down"
+                                size={24}
+                                color="#B0BEC5"
+                                style={{ alignSelf: 'center' }}
+                            />
+                        )}
+                    />
+                </View>
+          
+                <View style={styles.pickerContainer}>
+                    <Text style={styles.thirdText}>Level</Text>
+                    <RNPickerSelect
+                        onValueChange={(value) => setLevel(value)}
+                        items={levelItems}
+                        placeholder={{ label: 'Select level', value: null }}
+                        useNativeAndroidPickerStyle={false}
+                        style={pickerSelectStyles}
+                        value={level}
                         Icon={() => (
                             <MaterialIcons
                                 name="keyboard-arrow-down"
@@ -65,52 +119,44 @@ const course3 = () => {
                     />
                 </View>
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic Title</Text>
+                    <Text style={styles.thirdText}>Topic</Text>
+                    <TextInput
+                        style={styles.secondInnerContainer}
+                        placeholderTextColor='#98A2B3'
+                        placeholder={'Enter topic'}
+                        onChangeText={text => {
+                            setTopic(text);
+                        }}
+                        value={topic}
+
+                    />
+                </View>
+                <View style={styles.pickerContainer}>
+                    <Text style={styles.thirdText}>Course Title</Text>
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
                         placeholder={'Enter course title'}
                         onChangeText={text => {
-                            setTopicTitle(text);
+                            setCourseTitle(text);
                         }}
-                        value={topicTitle}
+                        value={courseTitle}
 
                     />
                 </View>
 
 
                 <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic description</Text>
+                    <Text style={styles.thirdText}>Course code</Text>
                     <TextInput
-                        style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
+                        style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter description'}
+                        placeholder={'Enter course code'}
                         onChangeText={text => {
-                            setDescription(text);
+                            setCourseCode(text);
                         }}
-                        value={description}
-                        multiline={true}
+                        value={courseCode}
 
-                    />
-                </View>
-                
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Is this course free?</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) => setQuestion(value)}
-                        items={questionChoices}
-                        placeholder={{ label: 'Select option', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={question}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
                     />
                 </View>
 
@@ -119,16 +165,15 @@ const course3 = () => {
                         <Text style={styles.fifthText}>Course Image</Text>
                         <Text style={styles.sixthText}>Upload image</Text>
                     </View>
-     
                     <View style={styles.smallContainer}>
-                        <Text style={styles.seventhText}>Next</Text>
+                        <Text style={styles.seventhText}>Browse files</Text>
                     </View>
                 </View>
-                <Text style={styles.eighthText}>Add 5 images max</Text>
+
 
                 <TouchableOpacity style={styles.button}>
 
-                    <Text style={styles.buttonText}>Create lecture Note</Text>
+                    <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
@@ -146,7 +191,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#0337A4",
         height: 9,
         borderRadius: 20,
-        width: "70%"
+        width: "40%"
     },
     smallContainer: {
         borderWidth: 1,
@@ -155,8 +200,8 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         flexDirection: "row",
         height: 30,
-        width: 60,
-        borderRadius: 6,
+        paddingHorizontal: 10,
+        borderRadius: 10,
         backgroundColor: "#FFFFFF"
     },
     thirdContainer: {
@@ -220,11 +265,6 @@ const styles = StyleSheet.create({
         color: '#1849D6',
         fontWeight: '600',
     },
-    eighthText: {
-        fontSize: 12,
-        color: '#1A1A1A',
-        fontWeight: '400',
-    },
     pickerContainer: {
         marginTop: 20,
     },
@@ -237,7 +277,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
         marginTop: 50,
-        marginBottom: 20
+        marginBottom: 30
 
     }
     ,
@@ -297,4 +337,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default course3;
+export default addPastQuestion;

@@ -1,14 +1,18 @@
 import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
-import BirthdayImage from '../../assets/images/birthdayImage.png'
 
-const BirthdayCard = () => {
+interface BirthdayCardProps {
+    name: string;
+    image: string;
+    note: string;
+}
+
+const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note }) => {
     return (
         <View style={styles.outerContainer}>
-            <Image source={BirthdayImage} />
-            <Text style={styles.firstText}>Happy Birthday, John!🎉</Text>
-            <Text style={styles.secondText}>Learn more about equations each and every day.
-                blahblahabfygigeyhdgbdkuthdgfbsnfh</Text>
+            <Image source={{ uri: image }} style={styles.image} />
+            <Text style={styles.firstText}>Happy Birthday, {name}!🎉</Text>
+            <Text style={styles.secondText}>{note}</Text>
         </View>
     )
 }
@@ -20,16 +24,18 @@ const styles = StyleSheet.create({
         padding: 8,
         marginVertical: 7,
         justifyContent: "space-between",
-        
+    },
+    image: {
+        width: '100%',
+        height: 80,
+        resizeMode: 'cover',
     },
     firstText: {
-     
         fontSize: 14,
         fontWeight: '400',
         color: '#000000',
     },
     secondText: {
-       
         fontSize: 8,
         fontWeight: '400',
         color: '#000000',

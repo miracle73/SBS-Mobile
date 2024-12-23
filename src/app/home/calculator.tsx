@@ -27,7 +27,7 @@ const calculator = () => {
                 </TouchableOpacity>
 
 
-                <Text style={styles.fifthText}>Previous CGPA</Text>
+                {/* <Text style={styles.fifthText}>Previous CGPA</Text>
                 <Text style={styles.sixthText}>View all your past CGPAs here</Text>
                 <View style={styles.secondContainer}>
                     <View style={{ justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-start" }}>
@@ -46,7 +46,7 @@ const calculator = () => {
                     <View style={{ justifyContent: "center", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-end" }}>
                         <Text style={styles.seventhText}>4.98</Text>
                     </View>
-                </View>
+                </View> */}
             </View>
             {modal && <CalculatorModal modal={modal} setModal={setModal} />}
         </SafeAreaView>

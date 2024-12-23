@@ -46,9 +46,7 @@ const addPastQuestion = () => {
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
+             
                 <Text style={styles.fourthText}>
                     Provide your course details
                 </Text>
@@ -219,7 +217,7 @@ const styles = StyleSheet.create({
 
     },
     bodyContainer: {
-        paddingTop: 50,
+        paddingTop: 20,
         flex: 1,
         backgroundColor: '#FFFFFF',
 

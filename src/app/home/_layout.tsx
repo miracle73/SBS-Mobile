@@ -1,5 +1,5 @@
 import { Tabs } from "expo-router"
-import { BookIcon, ClassIcon, HomeIcon, UserIcon, VideoIcon } from "../../../assets/svg"
+import { BookIcon, ClassIcon, HomeIcon2, HomeIcon, UserIcon, VideoIcon } from "../../../assets/svg"
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from "expo-router";
@@ -12,26 +12,25 @@ const TabsLayout = () => {
 
         <Tabs
             screenOptions={({ route }) => ({
-              
-
+                
             })}
         >
             <Tabs.Screen
                 name="index"
                 options={{
                     title: "Home",
-                    tabBarStyle: { borderTopWidth: 2, borderColor: "green" },
+                    // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
                     headerShown: false,
                     tabBarIcon: ({ size, color }) => (
-                        
-                            <HomeIcon />
-                    
+                        <HomeIcon2 />
                     )
                 }} />
+
             <Tabs.Screen
                 name="notes"
                 options={{
                     title: "Notes",
+                    // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
                     headerShown: false,
                     tabBarIcon: ({ size, color }) => (
                         <BookIcon />
@@ -39,8 +38,10 @@ const TabsLayout = () => {
                 }} />
             <Tabs.Screen
                 name="edu"
+
                 options={{
                     title: "Edu",
+                    // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
                     headerShown: false,
                     tabBarIcon: ({ size, color }) => (
                         <VideoIcon />
@@ -52,6 +53,7 @@ const TabsLayout = () => {
                     title: "Notifications",
                     headerTitleAlign: "center",
                     headerShown: true,
+                    // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
                     headerLeft: () => (
                         <MaterialIcons
                             name="arrow-back-ios"
@@ -66,11 +68,12 @@ const TabsLayout = () => {
                     )
                 }} />
             <Tabs.Screen
-            
+
                 name="more"
                 options={{
                     title: "More",
                     headerShown: false,
+                    // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
                     tabBarIcon: ({ size, color }) => (
                         <UserIcon />
                     )
@@ -82,7 +85,7 @@ const TabsLayout = () => {
     )
 }
 const styles = StyleSheet.create({
- 
+
 })
 
 export default TabsLayout

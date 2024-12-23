@@ -13,9 +13,9 @@ interface SchoolsResponse {
 }
 
 interface RectifyRequestBody {
-  phone_imei: string;
+  phone_imei: string | null;
   role: string;
-  school_id: number;
+  school_id: number | null;
 }
 
 interface RectifyResponse {
@@ -64,7 +64,7 @@ export const userApi = createApi({
         body,
       }),
     }),
-    getSchoolLevelsCourses: builder.query<SchoolsLevelsCoursesResponse, { phone_imei: string }>({
+    getSchoolLevelsCourses: builder.query<SchoolsLevelsCoursesResponse, { phone_imei: string | null }>({
       query: ({ phone_imei }) => `/user/schools-levels-courses?phone_imei=${phone_imei}`,
     }),
     getBirthdays: builder.query<Birthday[], void>({

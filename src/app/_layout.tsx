@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar'
 import React from 'react';
 import { PersistGate } from 'redux-persist/integration/react'
 import { ToastProvider } from 'react-native-toast-notifications'
+import Toast from 'react-native-toast-message'
 import { ActivityIndicator, View } from 'react-native'
 import { Provider } from 'react-redux'
 import { persistor, store } from "../components/redux/store"
@@ -27,6 +28,7 @@ const RootLayout = () => {
             <Provider store={store}>
                 <PersistGate loading={<LoadingSpinner />} persistor={persistor}>
                     <Stack screenOptions={{ headerShown: false }} />
+                    <Toast />
                 </PersistGate>
             </Provider>
         </>

@@ -4,18 +4,26 @@ import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import * as Device from 'expo-device';
+import Toast from 'react-native-toast-message';
 // import { useGetSchoolsQuery } from './api';
 
-import { useGetSchoolsQuery } from '../../components/services/userService';
+import { useGetSchoolsQuery, useRectifyUserMutation, useGetSchoolLevelsCoursesQuery } from '../../components/services/userService';
 
 const school = () => {
     const [school, setSchool] = useState("");
     const [schoolItems, setSchoolItems] = useState<{ label: string; value: string | number }[]>([]);
     const router = useRouter();
     const { data, isSuccess, isLoading } = useGetSchoolsQuery();
-    console.log('Device ID:', Device.osBuildId, 44);
-    console.log(data)
+    const [rectifyUser] = useRectifyUserMutation();
+    const [loading, setLoading] = useState(false);
+    const { data: schoolLevelsCoursesData } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
 
+    console.log('Device ID:', Device.osBuildId);
+    console.log('Device Name:', Device.deviceName);
+    console.log('Model Name:', Device.modelName);
+    console.log('OS Name:', Device.osName);
+    console.log('OS Version:', Device.osVersion);
+    console.log('Brand:', Device.brand);
     useEffect(() => {
         if (isSuccess && data?.result) {
             const formattedSchools = data.result.map((school: any) => ({
@@ -25,6 +33,47 @@ const school = () => {
             setSchoolItems(formattedSchools);
         }
     }, [data, isSuccess]);
+
+
+    const handleSave = async () => {
+
+        try {
+            setLoading(true)
+            if (schoolLevelsCoursesData?.id) {
+                router.replace(`/home`);
+                return;
+            }
+            const response = await rectifyUser({
+                phone_imei: Device.osBuildId,
+                school_id: Number(school),
+                role: 'student'
+            });
+
+            if (response.error) {
+                console.error('Error rectifying user:', response.error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: response.error.data.detail.message,
+                });
+                return;
+            }
+
+            router.replace(`/home`);
+
+        } catch (error) {
+            console.error('Error rectifying user:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.data.detail.message,
+            });
+        } finally {
+            setSchool("")
+            setLoading(false);
+
+        }
+    };
 
     if (isLoading) {
         return (
@@ -65,8 +114,9 @@ const school = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) }} >
-                    <Text style={styles.buttonText}>Save</Text>
+                <TouchableOpacity style={styles.button} onPress={handleSave} >
+                    {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Save</Text>}
+
                 </TouchableOpacity>
             </View>
         </SafeAreaView>

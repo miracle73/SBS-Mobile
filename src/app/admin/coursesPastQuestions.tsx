@@ -6,9 +6,7 @@ const coursesPastQuestions = () => {
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
+              
                 <Text style={styles.fourthText}>
                     Past Questions
                 </Text>

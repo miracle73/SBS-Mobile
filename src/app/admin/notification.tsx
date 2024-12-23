@@ -27,13 +27,13 @@ const notification = () => {
     ];
 
     return (
-        <ScrollView style={styles.container}>
+        <View style={styles.container}>
             <Text style={styles.firstText}>
-                Past Questions
+                Notification
             </Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                 <Text style={styles.secondText}>
-                    View all Past questions
+                View all notification
                 </Text>
 
             </View>
@@ -48,7 +48,7 @@ const notification = () => {
                             time={item.time}
                         />
                     )}
-                    contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 30 }}
+                    contentContainerStyle={{ paddingTop: 30 }}
                 />
             ) : (
                 <View style={styles.noNotificationsContainer}>
@@ -62,7 +62,7 @@ const notification = () => {
 
                 <Text style={styles.buttonText}>Add Questions</Text>
             </TouchableOpacity>
-        </ScrollView>
+        </View>
     );
 };
 
@@ -70,6 +70,8 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#FFFFFF',
+        paddingHorizontal: 20,
+        paddingTop: 20
     },
     noNotificationsContainer: {
         flex: 1,

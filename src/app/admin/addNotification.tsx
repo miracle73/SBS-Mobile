@@ -17,9 +17,7 @@ const addNotification = () => {
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
+               
                 <Text style={styles.fourthText}>
                     Information details
                 </Text>
@@ -50,7 +48,7 @@ const addNotification = () => {
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Message Content</Text>
                     <TextInput
-                        style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
+                        style={[styles.secondInnerContainer, { height: 150, textAlignVertical: 'top' }]}
                         placeholderTextColor='#98A2B3'
                         placeholder={'Enter message'}
                         onChangeText={text => {
@@ -123,7 +121,7 @@ const styles = StyleSheet.create({
 
     },
     bodyContainer: {
-        paddingTop: 50,
+        paddingTop: 20,
         flex: 1,
         backgroundColor: '#FFFFFF',
 

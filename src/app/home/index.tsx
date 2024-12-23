@@ -1,27 +1,25 @@
 import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
 import { StatusBar } from 'expo-status-bar';
-import React, {useState, useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import { NotificationIcon, KeyIcon, SearchIcon, PadlockIcon, SnowflakeIcon } from "../../../assets/svg";
 import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
 import SubscriptionModal from "../../components/modals/SubscriptionModal";
-import CalculatorModal from "../../components/modals/CalculatorModal";
-import ConfirmModal from "../../components/modals/ConfirmModal";
-import ErrorModal from "../../components/modals/ErrorModal";
 import SuccessModal from "../../components/modals/SuccessModal";
+
 
 export default function Page() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setModalVisible(true);
-    }, 3000); // Show modal after 3 seconds
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setModalVisible(true);
+        }, 3000); // Show modal after 3 seconds
 
-    return () => clearTimeout(timer); // Cleanup the timer on component unmount
-  }, []);
+        return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    }, []);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
             <View style={styles.container}>
@@ -41,28 +39,28 @@ export default function Page() {
                             firstText="Activate Subscription"
                             secondText="Unlock Premium Features Today!"
                             backgroundColor="#E53935"
-                            disabled={false} 
+                            disabled={false}
                         />
                         <HomeComponent
                             Icon={SnowflakeIcon}
                             firstText="Birthdays"
                             secondText="Celebrate with Us!"
                             backgroundColor="#E5AD35"
-                            disabled={false} 
+                            disabled={false}
                         />
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Past Questions"
                             secondText="Questions from previous exams"
                             backgroundColor="#B0BEC5"
-                            disabled={true} 
+                            disabled={true}
                         />
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Revision Questions"
                             secondText="Join live sessions and learn with peers"
                             backgroundColor="#B0BEC5"
-                            disabled={true} 
+                            disabled={true}
                         />
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
@@ -71,28 +69,28 @@ export default function Page() {
                             firstText="CGPA Calculator"
                             secondText="Track Your Academic Progress"
                             backgroundColor="#FFAD84"
-                            disabled={false} 
+                            disabled={false}
                         />
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Lecture Notes"
                             secondText="Stay ahead with our lecture notes"
                             backgroundColor="#B0BEC5"
-                            disabled={true} 
+                            disabled={true}
                         />
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Educational content"
                             secondText="Vidoes and articles available for you"
                             backgroundColor="#B0BEC5"
-                            disabled={true} 
+                            disabled={true}
                         />
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Question and solutions"
                             secondText="Solve questions and get answers instantly"
                             backgroundColor="#B0BEC5"
-                            disabled={true} 
+                            disabled={true}
                         />
                     </View>
                 </View>

@@ -41,7 +41,7 @@ const ConfirmModal = ({ setModal, modal }: ConfirmModalProps) => {
                             </View>
                         </View>
                         <Text style={styles.firstText}>Confirm</Text>
-                        <Text style={styles.secondText}>Hold on! you are about existing with out saving, are you sure?</Text>
+                        <Text style={styles.secondText}>Are you done adding all the courses?</Text>
                         <View style={{
                             flexDirection: "row",
                             justifyContent: "space-between",
@@ -50,10 +50,10 @@ const ConfirmModal = ({ setModal, modal }: ConfirmModalProps) => {
                             gap: 8
                         }}>
                             <TouchableOpacity style={styles.button} onPress={() => setModal(false)}>
-                                <Text style={styles.buttonText}>Yes, close</Text>
+                                <Text style={styles.buttonText}>Yes </Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={[styles.button, {backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#1A1A1A"}]} onPress={() => setModal(false)}>
-                                <Text style={[styles.buttonText, {color: "#000000"}]}>No, cancel</Text>
+                                <Text style={[styles.buttonText, {color: "#000000"}]}>No</Text>
                             </TouchableOpacity>
                         </View>
 

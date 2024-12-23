@@ -4,6 +4,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
 import TouchableOutside from './TouchableOutside'
+import Toast from 'react-native-toast-message';
 
 
 
@@ -17,10 +18,30 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
     const [level, setLevel] = useState("");
     const [course, setCourse] = useState("");
 
+    const router = useRouter();
+ 
+    const handleSubmit = () => {
+        if (level === "" || course === "") {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Please select a level and course",
+            });
+            return;
+        }
+        router.push({
+            pathname: '/other/level',
+            params: { level: "200 Level", course: "EEE" }
+        });
+
+        setModal(false)
+    }
     const levelItems = [
-        { label: 'Undergraduate', value: 'undergraduate' },
-        { label: 'Postgraduate', value: 'postgraduate' },
-        { label: 'Doctorate', value: 'doctorate' },
+        { label: '100 Level', value: '100 Level' },
+        { label: '200 Level', value: '200 Level' },
+        { label: '300 Level', value: '300 Level' },
+        { label: '400 Level', value: '400 Level' },
+        { label: '500 Level', value: '500 Level' },
     ];
 
     const courseItems = [
@@ -88,7 +109,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                 )}
                             />
                         </View>
-                        <TouchableOpacity style={styles.button} onPress={() => setModal(false)}>
+                        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                             <Text style={styles.buttonText}>Continue</Text>
                         </TouchableOpacity>
 

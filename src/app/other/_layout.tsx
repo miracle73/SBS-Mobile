@@ -45,19 +45,7 @@ const OtherLayout = () => {
                     }}
 
                 />
-                <Stack.Screen
-                    name="pastQuestions"
-                    options={{
-                        title: "Past Questions",
-                    }}
-                />
-
-                <Stack.Screen
-                    name="birthdayCelebration"
-                    options={{
-                        title: "",
-                    }}
-                />
+            
                 <Stack.Screen
                     name="calculator"
                     options={{
@@ -92,6 +80,13 @@ const OtherLayout = () => {
                     name="school"
                     options={{
                         headerShown: false
+                    }}
+                />
+                    <Stack.Screen
+                    name="notification"
+                    options={{
+                        title: "Notification",
+                        headerTitleAlign: 'center'
                     }}
                 />
             </Stack>

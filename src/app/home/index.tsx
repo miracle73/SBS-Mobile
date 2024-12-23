@@ -6,28 +6,27 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
 import SubscriptionModal from "../../components/modals/SubscriptionModal";
-import SuccessModal from "../../components/modals/SuccessModal";
 
 
 export default function Page() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
 
-    useEffect(() => {
-        const timer = setTimeout(() => {
-            setModalVisible(true);
-        }, 3000); // Show modal after 3 seconds
+    // useEffect(() => {
+    //     const timer = setTimeout(() => {
+    //         setModalVisible(true);
+    //     }, 3000); // Show modal after 3 seconds
 
-        return () => clearTimeout(timer); // Cleanup the timer on component unmount
-    }, []);
+    //     return () => clearTimeout(timer); // Cleanup the timer on component unmount
+    // }, []);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
             <View style={styles.container}>
                 <StatusBar style="dark" />
                 <View style={styles.main}>
-                    <View style={styles.roundedContainer}>
+                    <TouchableOpacity style={styles.roundedContainer} onPress={() => router.push("/other/notification")}>
                         <Ionicons name="notifications-outline" size={20} />
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
                 <Text style={styles.title}>Welcome to SBS App</Text>
@@ -95,7 +94,7 @@ export default function Page() {
                     </View>
                 </View>
             </View>
-            <SuccessModal modal={modalVisible} setModal={setModalVisible} />
+            {/* <SubscriptionModal modal={modalVisible} setModal={setModalVisible} /> */}
         </SafeAreaView>
     );
 }

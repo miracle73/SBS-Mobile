@@ -42,27 +42,20 @@ const TabsLayout = () => {
                 options={{
                     title: "Edu",
                     // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
+                    headerTitleAlign: "center",
                     headerShown: false,
+                
                     tabBarIcon: ({ size, color }) => (
                         <VideoIcon />
                     )
                 }} />
             <Tabs.Screen
-                name="classes"
+                name="calculator"
                 options={{
-                    title: "Notifications",
-                    headerTitleAlign: "center",
-                    headerShown: true,
+                    title: "Calculator",
+                    headerShown: false,
                     // tabBarItemStyle: { borderTopWidth: 2, borderColor: "#003F91", paddingHorizontal: 15 },
-                    headerLeft: () => (
-                        <MaterialIcons
-                            name="arrow-back-ios"
-                            size={24}
-                            color="black"
-                            style={{ marginLeft: 10 }}
-                            onPress={() => router.back()}
-                        />
-                    ),
+                  
                     tabBarIcon: ({ size, color }) => (
                         <ClassIcon />
                     )

@@ -1,12 +1,60 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
+import * as Device from 'expo-device';
+import { useActivateUserMutation } from '../../components/services/userService';
+import Toast from 'react-native-toast-message';
+import SuccessModal from '../../components/modals/SuccessModal';
+import ErrorModal from '../../components/modals/ErrorModal';
 
 const activateSubscription = () => {
     const [pin, setPin] = useState("");
-
+    const [modal, setModal] = useState(false)
+    const [secondModal, setSecondModal] = useState(false)
+    const [activateUser] = useActivateUserMutation();
     const router = useRouter();
+    const [loading, setLoading] = useState(false);
 
+
+    const handleActivate = async () => {
+
+        try {
+            setLoading(true)
+
+            const response = await activateUser({
+                phone_imei: Device.osBuildId,
+                pin
+
+            });
+
+            if (response.error) {
+              
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: response.error.data.detail.message,
+                });
+
+                setSecondModal(true)
+                return;
+            }
+
+           setModal(true)
+
+        } catch (error) {
+            // console.error('Error rectifying user:', error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: error.data.detail.message,
+            });
+            return;
+        } finally {
+            setPin("")
+            setLoading(false);
+
+        }
+    };
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -29,16 +77,19 @@ const activateSubscription = () => {
                         onChangeText={text => {
                             setPin(text);
                         }}
+                        keyboardType='numeric'
                         value={pin}
 
                     />
                 </View>
 
 
-                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
+                <TouchableOpacity style={styles.button} onPress={handleActivate}>
                     <Text style={styles.buttonText}>Activate Now</Text>
                 </TouchableOpacity>
             </View>
+            {modal && <SuccessModal modal={modal} setModal={setModal} />}
+            {secondModal && <ErrorModal modal={secondModal} setModal={setSecondModal} />}
         </SafeAreaView>
     );
 };

@@ -1,45 +1,103 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity  } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
+import { useRouter } from 'expo-router';
+import * as Device from 'expo-device';
+import Toast from 'react-native-toast-message';
+import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from '../../components/services/userService';
 
-const notes = () => {
+const Notes = () => {
   const [institution, setInstitution] = useState("");
   const [school, setSchool] = useState("");
   const [level, setLevel] = useState("");
   const [course, setCourse] = useState("");
-  const router = useRouter()
+  const [loading, setLoading] = useState(false);
+  const [schoolItems, setSchoolItems] = useState<{ label: string; value: string }[]>([]);
+  const [levelItems, setLevelItems] = useState<{ label: string; value: string }[]>([]);
+  const [courseItems, setCourseItems] = useState<{ label: string; value: string }[]>([]);
+  const router = useRouter();
 
-  const institutionItems = [
-    { label: 'Harvard University', value: 'harvard' },
-    { label: 'Stanford University', value: 'stanford' },
-    { label: 'MIT', value: 'mit' },
-    { label: 'University of Oxford', value: 'oxford' },
-    { label: 'University of Cambridge', value: 'cambridge' },
-  ];
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
+  const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
 
-  const schoolItems = [
-    { label: 'School of Engineering', value: 'engineering' },
-    { label: 'School of Medicine', value: 'medicine' },
-    { label: 'School of Law', value: 'law' },
-    { label: 'School of Business', value: 'business' },
-    { label: 'School of Arts', value: 'arts' },
-  ];
+  console.log(data, 56, schoolItems)
+ 
+  
+  useEffect(() => {
+    if (isSuccess && data) {
+      const formattedSchools = {
+        label: data.name,
+        value: data.id.toString(),
+      };
+      setSchoolItems([formattedSchools]);
+    }
+  }, [data, isSuccess]);
 
-  const levelItems = [
-    { label: 'Undergraduate', value: 'undergraduate' },
-    { label: 'Postgraduate', value: 'postgraduate' },
-    { label: 'Doctorate', value: 'doctorate' },
-  ];
+  useEffect(() => {
+    if (isSuccess && data) {
+     
+     
+        const formattedLevels = data.levels.map((level) => ({
+          label: level.name,
+          value: level.id,
+        }));
+        setLevelItems(formattedLevels);
 
-  const courseItems = [
-    { label: 'Computer Science', value: 'cs' },
-    { label: 'Mechanical Engineering', value: 'mech_eng' },
-    { label: 'Economics', value: 'economics' },
-    { label: 'Psychology', value: 'psychology' },
-    { label: 'Physics', value: 'physics' },
-  ];
+        const formattedCourses = data.courses.map((course) => ({
+          label: course.name,
+          value: course.id,
+        }));
+        setCourseItems(formattedCourses);
+      
+    }
+  }, [school, data]);
+
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const result = await searchTopicsInCourses({
+        course_id: parseInt(course),
+        level_id: parseInt(level),
+        school_id: parseInt(school),
+      }).unwrap();
+
+      if (result.status === 'successful') {
+        router.push({
+          pathname: '/other/topics',
+          params: { topics: JSON.stringify(result.topics) },
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to fetch topics. Please try again.',
+        });
+        return;
+      }
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'An error occurred. Please try again.',
+      });
+      return;
+    } finally {
+      setSchool("");
+      setLevel("");
+      setCourse("");
+      setLoading(false);
+    }
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.bodyContainer}>
+        <ActivityIndicator size="large" color="#FF8C00" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.bodyContainer}>
@@ -49,26 +107,6 @@ const notes = () => {
           Get access to unlimited notes from your lecturers and learn easily.
         </Text>
 
-        {/* Institution Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Institution</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setInstitution(value)}
-            items={institutionItems}
-            placeholder={{ label: 'Select Institution', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={institution}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          />
-        </View>
 
         {/* School Picker */}
         <View style={styles.pickerContainer}>
@@ -132,9 +170,11 @@ const notes = () => {
             )}
           />
         </View>
-        <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
-            <Text style={styles.buttonText}>Search Note</Text>
-          </TouchableOpacity>
+
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Search Note</Text>}
+         
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -174,9 +214,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF8C00",
     paddingVertical: 15,
     marginTop: 20
-
-  }
-  ,
+  },
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
@@ -214,4 +252,4 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-export default notes;
+export default Notes;

@@ -2,6 +2,7 @@ import { View, Text, Dimensions, Modal, StyleSheet, Image, TouchableOpacity } fr
 import React, { useState } from 'react'
 import ModalIcon from '../../../assets/images/Modal Icon.png'
 import TouchableOutside from './TouchableOutside'
+import { useRouter } from 'expo-router'
 
 
 
@@ -12,7 +13,7 @@ interface SubscriptionModalProps {
 
 }
 const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
-
+ const router = useRouter();
     return (
         <Modal
             animationType="slide"
@@ -33,7 +34,10 @@ const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
                         <Text style={styles.secondText}>Looks like you haven’t activated your subscription yet. Enter your pin to explore all features!</Text>
 
 
-                        <TouchableOpacity style={styles.button} >
+                        <TouchableOpacity style={styles.button} onPress={() => {
+                            router.push("/other/activation");
+                            setModal(false)
+                        }} >
                             <Text style={styles.buttonText}>Activate Now</Text>
                         </TouchableOpacity>
 
@@ -42,6 +46,7 @@ const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
                     </View>
                 </View>
             </TouchableOutside>
+            
         </Modal>
     )
 }

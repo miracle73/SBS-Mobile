@@ -6,6 +6,7 @@ import { useRouter } from 'expo-router';
 import * as Device from 'expo-device';
 import Toast from 'react-native-toast-message';
 // import { useGetSchoolsQuery } from './api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useGetSchoolsQuery, useRectifyUserMutation, useGetSchoolLevelsCoursesQuery } from '../../components/services/userService';
 
@@ -40,6 +41,7 @@ const school = () => {
         try {
             setLoading(true)
             if (schoolLevelsCoursesData?.id) {
+                await AsyncStorage.setItem('isAuthenticated', 'true')
                 router.replace(`/home`);
                 return;
             }
@@ -58,7 +60,8 @@ const school = () => {
                 });
                 return;
             }
-
+            await AsyncStorage.setItem('isAuthenticated', 'true');
+       
             router.replace(`/home`);
 
         } catch (error) {

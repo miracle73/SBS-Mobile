@@ -35,7 +35,7 @@ const OtherLayout = () => {
                 <Stack.Screen
                     name="topics"
                     options={{
-                        title: "Bio 101 Topics",
+                        title: "Topics",
                     }}
                 />
                 <Stack.Screen

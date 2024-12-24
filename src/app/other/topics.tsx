@@ -1,27 +1,32 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView } from 'react-native';
 import React from 'react';
 import TopicComponent from '../../components/TopicComponent';
+import { useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 const topics = () => {
-    const topicResults = [
-        { title: 'Concept of human life', topics: 1 },
-        { title: 'Concept of human life', topics: 1 },
-        { title: 'Concept of human life', topics: 1 },
-        { title: 'Concept of human life', topics: 1 },
-        { title: 'Concept of human life', topics: 1 },
+    const { topics } = useLocalSearchParams();
+    const searchResults = typeof topics === 'string' ? JSON.parse(topics) : [];
 
-    ];
+   
+    const topicResults = searchResults.map((topic: any) => ({
+        id: topic.id,
+        title: topic.title,
+        free: topic.free,
+    }));
+
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
 
                 <Text style={styles.firstText}>{topicResults.length} View all the topics here</Text>
-                {topicResults.map((result, index) => (
+                   {topicResults.map((result: any, index: any) => (
                     <TopicComponent
                         key={index}
+                        id={result.id}
                         title={result.title}
-                        topics={result.topics}
+                        free={result.free}
                     />
                 ))}
 

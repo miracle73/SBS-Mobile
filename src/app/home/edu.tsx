@@ -6,8 +6,6 @@ import { useRouter } from 'expo-router'
 
 const edu = () => {
   const [school, setSchool] = useState("");
-  const [level, setLevel] = useState("");
-  const [topic, setTopic] = useState("");
   const [course, setCourse] = useState("");
   const [year, setYear] = useState("");
   const router = useRouter();
@@ -29,43 +27,8 @@ const edu = () => {
     { label: 'Arts & Humanities', value: 'arts_humanities' },
   ];
 
-  // Define Topics (sub-categories of each subject)
-  const topicItems = [
-
-    { label: 'Computer Science', value: 'cs' },
-    { label: 'Mechanical Engineering', value: 'mech_eng' },
-    { label: 'Electrical Engineering', value: 'elec_eng' },
-    { label: 'Civil Engineering', value: 'civil_eng' },
-
-    { label: 'General Medicine', value: 'general_medicine' },
-    { label: 'Surgery', value: 'surgery' },
-    { label: 'Pharmacology', value: 'pharmacology' },
-    { label: 'Pediatrics', value: 'pediatrics' },
-
-    { label: 'Criminal Law', value: 'criminal_law' },
-    { label: 'Corporate Law', value: 'corporate_law' },
-    { label: 'International Law', value: 'intl_law' },
-    { label: 'Family Law', value: 'family_law' },
-
-    { label: 'Accounting', value: 'accounting' },
-    { label: 'Marketing', value: 'marketing' },
-    { label: 'Management', value: 'management' },
-    { label: 'Finance', value: 'finance' },
 
 
-    { label: 'Philosophy', value: 'philosophy' },
-    { label: 'History', value: 'history' },
-    { label: 'Literature', value: 'literature' },
-    { label: 'Psychology', value: 'psychology' },
-
-  ];
-
-  // Define Levels of Study
-  const levelItems = [
-    { label: 'Undergraduate', value: 'undergraduate' },
-    { label: 'Postgraduate', value: 'postgraduate' },
-    { label: 'Doctorate', value: 'doctorate' },
-  ];
 
   // Define Years (could be specific to subject or level)
   const yearItems = [
@@ -129,48 +92,7 @@ const edu = () => {
           />
         </View>
 
-        {/* Topic Picker */}
-
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Topic</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setTopic(value)}
-            items={topicItems}
-            placeholder={{ label: 'Select Topic', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={topic}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          />
-        </View>
-
-        {/* Level Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Level</Text>
-          <RNPickerSelect
-            onValueChange={(value) => setLevel(value)}
-            items={levelItems}
-            placeholder={{ label: 'Choose Level', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={level}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          />
-        </View>
+    
 
         {/* Year Picker */}
         <View style={styles.pickerContainer}>

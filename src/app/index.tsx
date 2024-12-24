@@ -2,9 +2,21 @@ import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "r
 import BackgroundImage from "../../assets/images/firstBackgroundImage.png"
 import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect } from "react";
+
 
 export default function Page() {
   const router = useRouter()
+  useEffect(() => {
+    const checkAuth = async () => {
+        const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
+        if (isAuthenticated) {
+            router.replace('/home');
+        }
+    };
+    checkAuth();
+}, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91"}}>
       <StatusBar style="light" backgroundColor="#003F91" />

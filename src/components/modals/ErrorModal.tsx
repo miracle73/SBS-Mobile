@@ -15,7 +15,7 @@ interface ErrorModalProps {
 
 }
 const ErrorModal = ({ setModal, modal }: ErrorModalProps) => {
-
+ const router = useRouter();
 
     return (
         <Modal
@@ -45,7 +45,7 @@ const ErrorModal = ({ setModal, modal }: ErrorModalProps) => {
                         <Text style={styles.secondText}>Oops! That pin is invalid or expired. Please try again.</Text>
 
 
-                        <TouchableOpacity style={styles.button} onPress={() => setModal(false)}>
+                        <TouchableOpacity style={styles.button} onPress={() => {router.push("/home"); setModal(false)}}>
                             <Text style={styles.buttonText}>Try again</Text>
                         </TouchableOpacity>
 

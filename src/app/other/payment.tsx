@@ -1,6 +1,7 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
+import Toast from 'react-native-toast-message';
 
 const payment = () => {
     const [amount, setAmount] = useState("");
@@ -8,7 +9,27 @@ const payment = () => {
     const [email, setEmail] = useState("");
     const router = useRouter();
 
-
+    const handleProceed = () => {
+        if (!amount || !name || !email) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Please fill out all fields before proceeding.",
+            });
+            return;
+        }
+        // Email validation regex
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Please enter a valid email address.",
+            });
+            return;
+        }
+        router.push('/other/activateSubscription');
+    };
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <View style={{ paddingHorizontal: 20 }}>
@@ -19,7 +40,7 @@ const payment = () => {
                     Secure your access to premium features. Complete your payment below.
                 </Text>
 
-        
+
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Amount</Text>
                     <TextInput
@@ -29,12 +50,13 @@ const payment = () => {
                         onChangeText={text => {
                             setAmount(text);
                         }}
+                        keyboardType='numeric'
                         value={amount}
 
                     />
                 </View>
 
-         
+
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Your name</Text>
                     <TextInput
@@ -64,7 +86,7 @@ const payment = () => {
                 </View>
 
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleProceed}>
                     <Text style={styles.buttonText}>Pay with flutterwave</Text>
                 </TouchableOpacity>
             </View>

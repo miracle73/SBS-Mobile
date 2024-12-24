@@ -13,7 +13,7 @@ interface SuccessModalProps {
 
 }
 const SuccessModal = ({ setModal, modal }: SuccessModalProps) => {
-
+ const router = useRouter();
 
     return (
         <Modal
@@ -43,7 +43,7 @@ const SuccessModal = ({ setModal, modal }: SuccessModalProps) => {
                         <Text style={styles.secondText}>Subscription activated successfully! Enjoy your access to all features.</Text>
 
 
-                        <TouchableOpacity style={styles.button} onPress={() => setModal(false)}>
+                        <TouchableOpacity style={styles.button} onPress={() =>  {router.push("/home"); setModal(false)}}>
                             <Text style={styles.buttonText}>Proceed</Text>
                         </TouchableOpacity>
 

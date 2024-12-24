@@ -3,8 +3,11 @@ import React from 'react';
 import SearchComponent from '../../components/SearchComponent';
 import Picture from '../../../assets/images/searchpicture.png';
 import NotificationImage from "../../../assets/images/NotificationImage.png"
+import { useRouter } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 
 const search = () => {
+  
     const searchResults = [
         { image: Picture, title: 'Bio 101', topics: 10 },
         { image: Picture, title: 'Chemistry 201', topics: 15 },

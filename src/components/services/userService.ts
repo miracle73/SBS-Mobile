@@ -48,6 +48,35 @@ interface Birthday {
   note: string;
 }
 
+interface ActivateRequestBody {
+  phone_imei: string | null;
+  pin: string;
+}
+// Flexible interface to handle unknown keys 
+interface ActivateResponse {
+  [key: string]: string;
+}
+
+interface SearchTopicsInCoursesRequestBody {
+  course_id: number;
+  level_id: number;
+  school_id: number;
+}
+
+interface SearchTopicsInCoursesResponse {
+  status: string;
+  topics: {
+    id: number;
+    title: string;
+    free: boolean;
+  }[];
+}
+
+// Flexible interface to handle unknown keys in topic content response
+interface TopicContentResponse {
+  [key: string]: string;
+}
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -70,6 +99,26 @@ export const userApi = createApi({
     getBirthdays: builder.query<Birthday[], void>({
       query: () => '/user/birthdays',
     }),
+    activateUser: builder.mutation<ActivateResponse, ActivateRequestBody>({
+      query: (body) => ({
+        url: '/useractivate',
+        method: 'POST',
+        body,
+      }),
+    }),
+    searchTopicsInCourses: builder.mutation<SearchTopicsInCoursesResponse, SearchTopicsInCoursesRequestBody>({
+      query: (body) => ({
+        url: '/user/search-topics-in-courses',
+        method: 'POST',
+        body,
+      }),
+    }),
+    getTopicContent: builder.mutation<TopicContentResponse, { phone_imei: string | null; topic_id: number }>({
+      query: ({ phone_imei, topic_id }) => ({
+        url: `/user/get-topic-content?phone_imei=${phone_imei}&topic_id=${topic_id}`,
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
@@ -78,6 +127,9 @@ export const {
   useRectifyUserMutation,
   useGetSchoolLevelsCoursesQuery,
   useGetBirthdaysQuery,
+  useActivateUserMutation,
+  useSearchTopicsInCoursesMutation,
+  useGetTopicContentMutation,
 } = userApi;
 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';

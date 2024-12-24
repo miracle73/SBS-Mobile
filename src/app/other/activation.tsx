@@ -2,18 +2,32 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-na
 import React, { useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
+import { useRouter } from 'expo-router';
+import Toast from 'react-native-toast-message';
 
-const activation = () => {
+const Activation = () => {
     const [method, setMethod] = useState("");
     const router = useRouter();
 
     const theMethods = [
         { label: 'Pin', value: 'Pin' },
         { label: 'QR', value: 'QR' },
-
     ];
 
+    const handleProceed = () => {
+        if (method) {
+
+            router.push('/other/payment');
+            setMethod("")
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Please enter a valid email address.",
+            });
+            return;
+        }
+    };
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -25,7 +39,6 @@ const activation = () => {
                     Select the method you want to use to activate your student account
                 </Text>
 
-                {/* School Picker */}
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Activation method</Text>
                     <RNPickerSelect
@@ -46,7 +59,11 @@ const activation = () => {
                     />
                 </View>
 
-                <TouchableOpacity style={styles.button} >
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={handleProceed}
+
+                >
                     <Text style={styles.buttonText}>Proceed</Text>
                 </TouchableOpacity>
             </View>
@@ -94,9 +111,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FF8C00",
         paddingVertical: 15,
         marginTop: 70
-
-    }
-    ,
+    },
     buttonText: {
         fontSize: 14,
         fontWeight: "600",
@@ -134,4 +149,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default activation;
+export default Activation;

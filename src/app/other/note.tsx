@@ -2,15 +2,19 @@ import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, ScrollVi
 import React, { useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
+import { useRouter, useLocalSearchParams } from 'expo-router'
 import NoteImage from "../../../assets/images/note-image.png"
 import SecondNoteImage from "../../../assets/images/second-note-image.png"
 import VideoThumbnail from "../../../assets/images/Video Thumbnail.png"
+
 
 const note = () => {
     const [note, setNote] = useState("");
 
     const router = useRouter()
+    const { content } = useLocalSearchParams();
+    const searchResults = typeof content === 'string' ? JSON.parse(content) : [];
+    console.log(searchResults, 67)
 
     const noteItems = [
         { label: 'Harvard University', value: 'harvard' },
@@ -28,7 +32,7 @@ const note = () => {
 
 
                 {/* Institution Picker */}
-                <View style={styles.pickerContainer}>
+                {/* <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>All notes</Text>
                     <RNPickerSelect
                         onValueChange={(value) => setNote(value)}
@@ -46,39 +50,24 @@ const note = () => {
                             />
                         )}
                     />
-                </View>
+                </View> */}
 
-                <Text style={styles.firstText}>Concept of the human life</Text>
-                <Image source={NoteImage} />
-                <Text style={styles.secondText}>Charges</Text>
+                <Text style={styles.firstText}>{searchResults.title}</Text>
+                <Image source={NoteImage}  style={{marginTop: 20}}/>
+
                 <Text style={styles.fourthText}>
-                    Electrostatics is the study of electrical phenomena that are associated with charges and charged systems at rest. Now let us understand what a charge is:
+                    {searchResults.content}
                 </Text>
-                <Text style={styles.fourthText}>
-                    Electric Charge is the basic property of matter carried by some elementary particles that governs how th particles are affected by an electric or magnetic field.
-                </Text>
-                <Text style={styles.fourthText}>
-                    Example such particles are; electrons which are negative and proton which are positive.
-                </Text>
-                <Text style={styles.fifthText}>Images</Text>
-                <Image source={SecondNoteImage} />
-                <Text style={styles.secondText}>Charges</Text>
-                <Text style={styles.fourthText}>
-                    Electrostatics is the study of electrical phenomena that are associated with charges and charged systems at rest. Now let us understand what a charge is:
-                </Text>
-                <Text style={styles.fourthText}>
-                    Electric Charge is the basic property of matter carried by some elementary particles that governs how th particles are affected by an electric or magnetic field.
-                </Text>
-                <Text style={[styles.fourthText, {marginBottom: 10}]}>
-                    Example such particles are; electrons which are negative and proton which are positive.
-                </Text>
-                <Image source={VideoThumbnail} />
+
                 <View style={styles.container}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: "#FFFFFF", borderWidth: 1.5, borderColor: "#B0BEC5" }]} onPress={() => { router.push(`/other/search`) }}>
-                        <Text style={[styles.buttonText, { color: "#B0BEC5" }]}>Previous</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: "#FFFFFF", borderWidth: 1.5, borderColor: "#B0BEC5" }]}
+                        onPress={() => { router.back(); }}
+                    >
+                        <Text style={[styles.buttonText, { color: "#B0BEC5" }]}>Back</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
-                        <Text style={styles.buttonText}>Next Page</Text>
+                    <TouchableOpacity style={styles.button}
+                        disabled={true}>
+                        <Text style={styles.buttonText}>Next</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -92,10 +81,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 30 
+        marginBottom: 30
     },
     bodyContainer: {
-
+        paddingTop: 20,
         flex: 1,
         backgroundColor: '#FFFFFF',
     },

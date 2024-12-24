@@ -33,20 +33,25 @@ export default function Page() {
                 <Text style={styles.subtitle}>Empowering Students, One student at a Time!</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <HomeComponent
-                            Icon={KeyIcon}
-                            firstText="Activate Subscription"
-                            secondText="Unlock Premium Features Today!"
-                            backgroundColor="#E53935"
-                            disabled={false}
-                        />
-                        <HomeComponent
-                            Icon={SnowflakeIcon}
-                            firstText="Birthdays"
-                            secondText="Celebrate with Us!"
-                            backgroundColor="#E5AD35"
-                            disabled={false}
-                        />
+                        <TouchableOpacity onPress={() => router.push("/other/activation")}>
+                            <HomeComponent
+                                Icon={KeyIcon}
+                                firstText="Activate Subscription"
+                                secondText="Unlock Premium Features Today!"
+                                backgroundColor="#E53935"
+                                disabled={false}
+                            />
+                        </TouchableOpacity >
+                        <TouchableOpacity onPress={() => router.push("/home/more")}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Birthdays"
+                                secondText="Celebrate with Us!"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
+
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Past Questions"
@@ -54,6 +59,7 @@ export default function Page() {
                             backgroundColor="#B0BEC5"
                             disabled={true}
                         />
+
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Revision Questions"
@@ -63,20 +69,24 @@ export default function Page() {
                         />
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <HomeComponent
-                            Icon={SearchIcon}
-                            firstText="CGPA Calculator"
-                            secondText="Track Your Academic Progress"
-                            backgroundColor="#FFAD84"
-                            disabled={false}
-                        />
-                        <HomeComponent
-                            Icon={PadlockIcon}
-                            firstText="Lecture Notes"
-                            secondText="Stay ahead with our lecture notes"
-                            backgroundColor="#B0BEC5"
-                            disabled={true}
-                        />
+                        <TouchableOpacity  onPress={() => router.push("/home/calculator")}>
+                            <HomeComponent
+                                Icon={SearchIcon}
+                                firstText="CGPA Calculator"
+                                secondText="Track Your Academic Progress"
+                                backgroundColor="#FFAD84"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
+         
+                            <HomeComponent
+                                Icon={PadlockIcon}
+                                firstText="Lecture Notes"
+                                secondText="Stay ahead with our lecture notes"
+                                backgroundColor="#B0BEC5"
+                                disabled={true}
+                            />
+               
                         <HomeComponent
                             Icon={PadlockIcon}
                             firstText="Educational content"

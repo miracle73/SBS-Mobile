@@ -7,6 +7,9 @@ import Toast from 'react-native-toast-message'
 import { ActivityIndicator, View } from 'react-native'
 import { Provider } from 'react-redux'
 import { persistor, store } from "../components/redux/store"
+import * as SystemUI from "expo-system-ui";
+
+SystemUI.setBackgroundColorAsync("transparent");
 
 const RootLayout = () => {
     const LoadingSpinner = () => {

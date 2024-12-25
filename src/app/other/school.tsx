@@ -25,15 +25,21 @@ const school = () => {
     console.log('OS Name:', Device.osName);
     console.log('OS Version:', Device.osVersion);
     console.log('Brand:', Device.brand);
-    useEffect(() => {
-        if (isSuccess && data?.result) {
-            const formattedSchools = data.result.map((school: any) => ({
-                label: school.name,
-                value: school.id,
-            }));
-            setSchoolItems(formattedSchools);
-        }
-    }, [data, isSuccess]);
+    const allSchools = [
+        { label: 'FUTO', value: '1' },
+        { label: 'NEKEDE', value: '2' },
+
+    ];
+    // useEffect(() => {
+    //     if (isSuccess && data?.result) {
+    //         const formattedSchools = data.result.map((school: any) => ({
+    //             label: school.name,
+    //             value: school.id,
+    //         }));
+    //         setSchoolItems(formattedSchools);
+    //     }
+    // }, [data, isSuccess]);
+    
 
 
     const handleSave = async () => {
@@ -101,7 +107,7 @@ const school = () => {
                     <Text style={styles.thirdText}>School</Text>
                     <RNPickerSelect
                         onValueChange={(value) => setSchool(value)}
-                        items={schoolItems}
+                        items={allSchools}
                         placeholder={{ label: 'Choose Your school', value: null }}
                         useNativeAndroidPickerStyle={false}
                         style={pickerSelectStyles}

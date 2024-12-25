@@ -29,7 +29,7 @@ export default function Page() {
 
           <Text style={styles.title}>Welcome to SBS Mobile</Text>
           <Text style={styles.subtitle}>Your Ultimate Study Companion!</Text>
-          <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/school`) }}>
+          <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) }}>
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
         </View>

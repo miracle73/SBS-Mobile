@@ -33,7 +33,7 @@ export default function Page() {
                 <Text style={styles.subtitle}>Empowering Students, One student at a Time!</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <TouchableOpacity onPress={() => router.push("/other/activation")}>
+                        <TouchableOpacity onPress={() => router.push("/other/school")}>
                             <HomeComponent
                                 Icon={KeyIcon}
                                 firstText="Activate Subscription"

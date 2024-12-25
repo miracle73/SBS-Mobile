@@ -32,7 +32,8 @@
     "react-redux": "^9.2.0",
     "redux-persist": "^6.0.0",
     "expo-updates": "~0.26.10",
-    "expo-system-ui": "~4.0.6"
+    "expo-system-ui": "~4.0.6",
+    "expo-splash-screen": "~0.29.18"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",

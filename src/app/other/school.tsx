@@ -43,7 +43,7 @@ const school = () => {
             if (schoolLevelsCoursesData?.id) {
                 await AsyncStorage.setItem('isAuthenticated', 'true')
                 router.replace(`/home`);
-                return;
+                // return;
             }
             const response = await rectifyUser({
                 phone_imei: Device.osBuildId,

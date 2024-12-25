@@ -1,6 +1,6 @@
 import { Stack } from "expo-router"
 import { StatusBar } from 'expo-status-bar'
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { PersistGate } from 'redux-persist/integration/react'
 import { ToastProvider } from 'react-native-toast-notifications'
 import Toast from 'react-native-toast-message'
@@ -15,21 +15,21 @@ SystemUI.setBackgroundColorAsync("transparent");
 const RootLayout = () => {
     useEffect(() => {
         async function prepare() {
-          try {
-    
-            await SplashScreen.preventAutoHideAsync();
-    
-            await new Promise(resolve => setTimeout(resolve, 1000));
-          } catch (e) {
-            console.warn(e);
-          } finally {
-    
-            SplashScreen.hideAsync();
-          }
+            try {
+
+                await SplashScreen.preventAutoHideAsync();
+
+                await new Promise(resolve => setTimeout(resolve, 1000));
+            } catch (e) {
+                console.warn(e);
+            } finally {
+
+                SplashScreen.hideAsync();
+            }
         }
-    
+
         prepare();
-      }, []);
+    }, []);
     const LoadingSpinner = () => {
         return (
             <View
@@ -48,7 +48,32 @@ const RootLayout = () => {
             <StatusBar style="dark" />
             <Provider store={store}>
                 <PersistGate loading={<LoadingSpinner />} persistor={persistor}>
-                    <Stack screenOptions={{ headerShown: false }} />
+                    <Stack screenOptions={{ headerShown: false }} >
+                        <Stack.Screen
+                            name="admin"
+                            options={{
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="home"
+                            options={{
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="other"
+                            options={{
+                                headerShown: false,
+                            }}
+                        />
+                        <Stack.Screen
+                            name="index"
+                            options={{
+                                headerShown: false,
+                            }}
+                        />
+                    </Stack >
                     <Toast />
                 </PersistGate>
             </Provider>

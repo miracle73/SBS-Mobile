@@ -46,7 +46,7 @@ const payment = () => {
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter amount'}
+                        placeholder={' Enter amount'}
                         onChangeText={text => {
                             setAmount(text);
                         }}
@@ -62,7 +62,7 @@ const payment = () => {
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter name'}
+                        placeholder={' Enter name'}
                         onChangeText={text => {
                             setName(text);
                         }}
@@ -76,7 +76,7 @@ const payment = () => {
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter email address'}
+                        placeholder={' Enter email address'}
                         onChangeText={text => {
                             setEmail(text);
                         }}
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     secondInnerContainer: {
         height: 40,
         borderWidth: 1,
+        padding: 5,
         borderColor: "#D0D5DD",
         flexShrink: 0,
         flexGrow: 0,

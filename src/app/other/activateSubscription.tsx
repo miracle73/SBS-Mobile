@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import * as Device from 'expo-device';
@@ -28,7 +28,7 @@ const activateSubscription = () => {
             });
 
             if (response.error) {
-              
+
                 Toast.show({
                     type: 'error',
                     text1: 'Error',
@@ -36,10 +36,10 @@ const activateSubscription = () => {
                 });
 
                 setSecondModal(true)
-                return;
+                return
             }
 
-           setModal(true)
+            setModal(true)
 
         } catch (error) {
             // console.error('Error rectifying user:', error);
@@ -48,7 +48,7 @@ const activateSubscription = () => {
                 text1: 'Error',
                 text2: error.data.detail.message,
             });
-            return;
+            return
         } finally {
             setPin("")
             setLoading(false);
@@ -73,7 +73,7 @@ const activateSubscription = () => {
                     <TextInput
                         style={styles.secondInnerContainer}
                         placeholderTextColor='#98A2B3'
-                        placeholder={'Enter Activation Pin'}
+                        placeholder={' Enter Activation Pin'}
                         onChangeText={text => {
                             setPin(text);
                         }}
@@ -85,7 +85,8 @@ const activateSubscription = () => {
 
 
                 <TouchableOpacity style={styles.button} onPress={handleActivate}>
-                    <Text style={styles.buttonText}>Activate Now</Text>
+                    {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> :
+                        <Text style={styles.buttonText}>Activate Now</Text>}
                 </TouchableOpacity>
             </View>
             {modal && <SuccessModal modal={modal} setModal={setModal} />}
@@ -156,6 +157,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: "#D0D5DD",
         flexShrink: 0,
+        padding: 5,
         flexGrow: 0,
         color: '#000000',
         width: "100%",

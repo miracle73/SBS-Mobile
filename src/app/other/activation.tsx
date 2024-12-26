@@ -4,10 +4,12 @@ import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import Toast from 'react-native-toast-message';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Activation = () => {
     const [method, setMethod] = useState("");
     const router = useRouter();
+     const [open, setOpen] = useState(false);
 
     const theMethods = [
         { label: 'Pin', value: 'Pin' },
@@ -41,7 +43,17 @@ const Activation = () => {
 
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Activation method</Text>
-                    <RNPickerSelect
+                    <DropDownPicker
+                        open={open}
+                        value={method}
+                        items={theMethods}
+                        setOpen={setOpen}
+                        setValue={setMethod}
+                        placeholder="Select method"
+                        style={pickerSelectStyles.inputIOS}
+                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                    />
+                    {/* <RNPickerSelect
                         onValueChange={(value) => setMethod(value)}
                         items={theMethods}
                         placeholder={{ label: 'Select method', value: null }}
@@ -56,7 +68,7 @@ const Activation = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
-                    />
+                    /> */}
                 </View>
 
                 <TouchableOpacity
@@ -140,6 +152,9 @@ const pickerSelectStyles = StyleSheet.create({
         paddingRight: 30,
         alignSelf: 'stretch',
     },
+    dropDownContainer: {
+        borderColor: '#B0BEC5',
+      },
     iconContainer: {
         top: '50%',
         right: 10,

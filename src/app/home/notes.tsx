@@ -6,10 +6,14 @@ import { useRouter } from 'expo-router';
 import * as Device from 'expo-device';
 import Toast from 'react-native-toast-message';
 import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from '../../components/services/userService';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const Notes = () => {
   const [institution, setInstitution] = useState("");
   const [school, setSchool] = useState("");
+  const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const [level, setLevel] = useState("");
   const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,8 +26,8 @@ const Notes = () => {
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
 
   console.log(data, 56, schoolItems)
- 
-  
+
+
   useEffect(() => {
     if (isSuccess && data) {
       const formattedSchools = {
@@ -36,20 +40,20 @@ const Notes = () => {
 
   useEffect(() => {
     if (isSuccess && data) {
-     
-     
-        const formattedLevels = data.levels.map((level) => ({
-          label: level.name,
-          value: level.id,
-        }));
-        setLevelItems(formattedLevels);
 
-        const formattedCourses = data.courses.map((course) => ({
-          label: course.name,
-          value: course.id,
-        }));
-        setCourseItems(formattedCourses);
-      
+
+      const formattedLevels = data.levels.map((level) => ({
+        label: level.name,
+        value: level.id,
+      }));
+      setLevelItems(formattedLevels);
+
+      const formattedCourses = data.courses.map((course) => ({
+        label: course.name,
+        value: course.id,
+      }));
+      setCourseItems(formattedCourses);
+
     }
   }, [school, data]);
 
@@ -111,7 +115,18 @@ const Notes = () => {
         {/* School Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>School</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open}
+            value={school}
+            items={schoolItems}
+            setOpen={setOpen}
+            setValue={setSchool}
+            setItems={setSchoolItems}
+            placeholder="Select School"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setSchool(value)}
             items={schoolItems}
             placeholder={{ label: 'Select School', value: null }}
@@ -126,13 +141,24 @@ const Notes = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
         {/* Level Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>Level</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open2}
+            value={level}
+            items={levelItems}
+            setOpen={setOpen2}
+            setValue={setLevel}
+            setItems={setLevelItems}
+            placeholder="Select Level"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setLevel(value)}
             items={levelItems}
             placeholder={{ label: 'Select Level', value: null }}
@@ -147,13 +173,24 @@ const Notes = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
         {/* Course Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>Course</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open3}
+            value={course}
+            items={courseItems}
+            setOpen={setOpen3}
+            setValue={setCourse}
+            setItems={setCourseItems}
+            placeholder="Select Course"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setCourse(value)}
             items={courseItems}
             placeholder={{ label: 'Select Course', value: null }}
@@ -168,12 +205,12 @@ const Notes = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
           {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Search Note</Text>}
-         
+
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -242,6 +279,9 @@ const pickerSelectStyles = StyleSheet.create({
     color: '#000000',
     paddingRight: 30,
     alignSelf: 'stretch',
+  },
+  dropDownContainer: {
+    borderColor: '#B0BEC5',
   },
   iconContainer: {
     top: '50%',

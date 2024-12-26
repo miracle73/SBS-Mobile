@@ -5,6 +5,7 @@ import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
 import TouchableOutside from './TouchableOutside'
 import Toast from 'react-native-toast-message';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 
 
@@ -17,9 +18,11 @@ interface CalculatorModalProps {
 const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
     const [level, setLevel] = useState("");
     const [course, setCourse] = useState("");
+    const [open, setOpen] = useState(false);
+    const [open2, setOpen2] = useState(false);
 
     const router = useRouter();
- 
+
     const handleSubmit = () => {
         if (level === "" || course === "") {
             Toast.show({
@@ -71,7 +74,17 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                         {/* Level Picker */}
                         <View style={[styles.pickerContainer, { marginTop: 10 }]}>
                             <Text style={styles.thirdText}>Level</Text>
-                            <RNPickerSelect
+                            <DropDownPicker
+                                open={open}
+                                value={level}
+                                items={levelItems}
+                                setOpen={setOpen}
+                                setValue={setLevel}
+                                placeholder="Select Level"
+                                style={pickerSelectStyles.inputIOS}
+                                dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                            />
+                            {/* <RNPickerSelect
                                 onValueChange={(value) => setLevel(value)}
                                 items={levelItems}
                                 placeholder={{ label: 'Select Level', value: null }}
@@ -86,13 +99,23 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                         style={{ alignSelf: 'center' }}
                                     />
                                 )}
-                            />
+                            /> */}
                         </View>
 
                         {/* Course Picker */}
                         <View style={styles.pickerContainer}>
                             <Text style={styles.thirdText}>Course</Text>
-                            <RNPickerSelect
+                            <DropDownPicker
+                                open={open2}
+                                value={course}
+                                items={courseItems}
+                                setOpen={setOpen2}
+                                setValue={setCourse}
+                                placeholder="Select Course"
+                                style={pickerSelectStyles.inputIOS}
+                                dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                            />
+                            {/* <RNPickerSelect
                                 onValueChange={(value) => setCourse(value)}
                                 items={courseItems}
                                 placeholder={{ label: 'Select Course', value: null }}
@@ -107,7 +130,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                         style={{ alignSelf: 'center' }}
                                     />
                                 )}
-                            />
+                            /> */}
                         </View>
                         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                             <Text style={styles.buttonText}>Continue</Text>
@@ -210,6 +233,9 @@ const pickerSelectStyles = StyleSheet.create({
         color: '#000000',
         paddingRight: 30,
         alignSelf: 'stretch',
+    },
+    dropDownContainer: {
+        borderColor: '#B0BEC5',
     },
     iconContainer: {
         top: '50%',

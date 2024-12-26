@@ -8,17 +8,17 @@ import { useEffect } from "react";
 
 export default function Page() {
   const router = useRouter()
-  useEffect(() => {
-    const checkAuth = async () => {
-        const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
-        if (isAuthenticated) {
-            router.replace('/home');
-        }
-    };
-    checkAuth();
-}, []);
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
+  //     if (isAuthenticated) {
+  //       router.replace('/home');
+  //     }
+  //   };
+  //   checkAuth();
+  // }, []);
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91"}}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91" }}>
       <StatusBar style="light" backgroundColor="#003F91" />
       <View style={styles.container}>
 
@@ -29,7 +29,7 @@ export default function Page() {
 
           <Text style={styles.title}>Welcome to SBS Mobile</Text>
           <Text style={styles.subtitle}>Your Ultimate Study Companion!</Text>
-          <TouchableOpacity style={styles.button} onPress={() => { router.push(`/home`) }}>
+          <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/school`) }}>
             <Text style={styles.buttonText}>Get Started</Text>
           </TouchableOpacity>
         </View>

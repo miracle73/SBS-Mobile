@@ -3,11 +3,15 @@ import React, { useState } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const edu = () => {
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
   const [year, setYear] = useState("");
+  const [open, setOpen] = useState(false);
+  const [open2, setOpen2] = useState(false);
+  const [open3, setOpen3] = useState(false);
   const router = useRouter();
 
   const schoolItems = [
@@ -44,7 +48,7 @@ const edu = () => {
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
         <Text style={styles.fourthText}>
-        Past Questions
+          Past Questions
         </Text>
         <Text style={styles.secondText}>
           Select a course and topic you wish to study
@@ -53,7 +57,17 @@ const edu = () => {
         {/* School Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>School</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open}
+            value={school}
+            items={schoolItems}
+            setOpen={setOpen}
+            setValue={setSchool}
+            placeholder="Choose Your School"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setSchool(value)}
             items={schoolItems}
             placeholder={{ label: 'Choose Your school', value: null }}
@@ -68,13 +82,23 @@ const edu = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
         {/* Subject Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>Subject</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open2}
+            value={course}
+            items={subjectItems}
+            setOpen={setOpen2}
+            setValue={setCourse}
+            placeholder="Select Subject"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setCourse(value)}
             items={subjectItems}
             placeholder={{ label: 'Select Subject', value: null }}
@@ -89,15 +113,25 @@ const edu = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
-    
+
 
         {/* Year Picker */}
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>Year</Text>
-          <RNPickerSelect
+          <DropDownPicker
+            open={open3}
+            value={year}
+            items={yearItems}
+            setOpen={setOpen3}
+            setValue={setYear}
+            placeholder="Select Year"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+          {/* <RNPickerSelect
             onValueChange={(value) => setYear(value)}
             items={yearItems}
             placeholder={{ label: 'Select Year', value: null }}
@@ -112,7 +146,7 @@ const edu = () => {
                 style={{ alignSelf: 'center' }}
               />
             )}
-          />
+          /> */}
         </View>
 
         <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
@@ -134,7 +168,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: '700',
     marginBottom: 5,
-},
+  },
   firstText: {
     fontSize: 24,
     color: '#000000',
@@ -193,6 +227,9 @@ const pickerSelectStyles = StyleSheet.create({
     color: '#000000',
     paddingRight: 30,
     alignSelf: 'stretch',
+  },
+  dropDownContainer: {
+    borderColor: '#B0BEC5',
   },
   iconContainer: {
     top: '50%',

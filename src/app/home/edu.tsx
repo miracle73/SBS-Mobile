@@ -61,6 +61,11 @@ const edu = () => {
             open={open}
             value={school}
             items={schoolItems}
+            closeAfterSelecting={true}
+            closeOnBackPressed={true}
+            listItemContainerStyle={{
+              height: 40
+            }}
             setOpen={setOpen}
             setValue={setSchool}
             placeholder="Choose Your School"
@@ -86,12 +91,17 @@ const edu = () => {
         </View>
 
         {/* Subject Picker */}
-        <View style={styles.pickerContainer}>
+        <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
           <Text style={styles.thirdText}>Subject</Text>
           <DropDownPicker
             open={open2}
             value={course}
             items={subjectItems}
+            closeAfterSelecting={true}
+            closeOnBackPressed={true}
+            listItemContainerStyle={{
+              height: 40
+            }}
             setOpen={setOpen2}
             setValue={setCourse}
             placeholder="Select Subject"
@@ -119,12 +129,17 @@ const edu = () => {
 
 
         {/* Year Picker */}
-        <View style={styles.pickerContainer}>
+        <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
           <Text style={styles.thirdText}>Year</Text>
           <DropDownPicker
             open={open3}
             value={year}
             items={yearItems}
+            closeAfterSelecting={true}
+            closeOnBackPressed={true}
+            listItemContainerStyle={{
+              height: 40
+            }}
             setOpen={setOpen3}
             setValue={setYear}
             placeholder="Select Year"
@@ -149,7 +164,12 @@ const edu = () => {
           /> */}
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
+        <TouchableOpacity style={styles.button} onPress={() => {
+          setSchool("");
+          setCourse("");
+          setYear("");
+          router.push(`/other/search`)
+        }}>
           <Text style={styles.buttonText}>Load Questions</Text>
         </TouchableOpacity>
       </View>

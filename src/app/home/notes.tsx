@@ -120,6 +120,11 @@ const Notes = () => {
             value={school}
             items={schoolItems}
             setOpen={setOpen}
+            closeAfterSelecting={true}
+            closeOnBackPressed={true}
+            listItemContainerStyle={{
+              height: 40
+            }}
             setValue={setSchool}
             setItems={setSchoolItems}
             placeholder="Select School"
@@ -145,19 +150,26 @@ const Notes = () => {
         </View>
 
         {/* Level Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Level</Text>
-          <DropDownPicker
-            open={open2}
-            value={level}
-            items={levelItems}
-            setOpen={setOpen2}
-            setValue={setLevel}
-            setItems={setLevelItems}
-            placeholder="Select Level"
-            style={pickerSelectStyles.inputIOS}
-            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-          />
+        <View style={[styles.pickerContainer, open && {zIndex: -20}]}>
+         
+              <Text style={styles.thirdText}>Level</Text>
+              <DropDownPicker
+                open={open2}
+                value={level}
+                items={levelItems}
+                closeAfterSelecting={true}
+                closeOnBackPressed={true}
+                listItemContainerStyle={{
+                  height: 40
+                }}
+                setOpen={setOpen2}
+                setValue={setLevel}
+                setItems={setLevelItems}
+                placeholder="Select Level"
+                style={pickerSelectStyles.inputIOS}
+                dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+              />
+        
           {/* <RNPickerSelect
             onValueChange={(value) => setLevel(value)}
             items={levelItems}
@@ -177,19 +189,26 @@ const Notes = () => {
         </View>
 
         {/* Course Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Course</Text>
-          <DropDownPicker
-            open={open3}
-            value={course}
-            items={courseItems}
-            setOpen={setOpen3}
-            setValue={setCourse}
-            setItems={setCourseItems}
-            placeholder="Select Course"
-            style={pickerSelectStyles.inputIOS}
-            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-          />
+        <View style={[styles.pickerContainer, (open2 || open) && {zIndex: -20}]}>
+        
+              <Text style={styles.thirdText}>Course</Text>
+              <DropDownPicker
+                open={open3}
+                value={course}
+                items={courseItems}
+                closeAfterSelecting={true}
+                closeOnBackPressed={true}
+                listItemContainerStyle={{
+                  height: 40
+                }}
+                setOpen={setOpen3}
+                setValue={setCourse}
+                setItems={setCourseItems}
+                placeholder="Select Course"
+                style={pickerSelectStyles.inputIOS}
+                dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+              />
+            
           {/* <RNPickerSelect
             onValueChange={(value) => setCourse(value)}
             items={courseItems}

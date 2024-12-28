@@ -48,6 +48,11 @@ const Activation = () => {
                         value={method}
                         items={theMethods}
                         setOpen={setOpen}
+                        closeAfterSelecting={true}
+                        closeOnBackPressed={true}
+                        listItemContainerStyle={{
+                          height: 40
+                        }}
                         setValue={setMethod}
                         placeholder="Select method"
                         style={pickerSelectStyles.inputIOS}

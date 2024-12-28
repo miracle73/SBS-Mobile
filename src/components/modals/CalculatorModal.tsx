@@ -78,6 +78,11 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                 open={open}
                                 value={level}
                                 items={levelItems}
+                                closeAfterSelecting={true}
+                                closeOnBackPressed={true}
+                                listItemContainerStyle={{
+                                  height: 40
+                                }}
                                 setOpen={setOpen}
                                 setValue={setLevel}
                                 placeholder="Select Level"
@@ -103,12 +108,17 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                         </View>
 
                         {/* Course Picker */}
-                        <View style={styles.pickerContainer}>
+                        <View style={[styles.pickerContainer, open && {zIndex: -20}]}>
                             <Text style={styles.thirdText}>Course</Text>
                             <DropDownPicker
                                 open={open2}
                                 value={course}
                                 items={courseItems}
+                                closeAfterSelecting={true}
+                                closeOnBackPressed={true}
+                                listItemContainerStyle={{
+                                  height: 40
+                                }}
                                 setOpen={setOpen2}
                                 setValue={setCourse}
                                 placeholder="Select Course"

@@ -2,9 +2,11 @@ import { View, Image, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView }
 import React from 'react';
 import NotificationComponent from '../../components/NotificationComponent';
 import NotificationImage from "../../../assets/images/NotificationImage.png";
+import { useRouter } from 'expo-router'
 
 const notification = () => {
     // Array of notifications
+    const router = useRouter();
     const notifications = [
         {
             id: '1',
@@ -33,7 +35,7 @@ const notification = () => {
             </Text>
             <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
                 <Text style={styles.secondText}>
-                View all notification
+                    View all notification
                 </Text>
 
             </View>
@@ -58,9 +60,9 @@ const notification = () => {
                     </Text>
                 </View>
             )}
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity style={styles.button} onPress={() => { router.push("/admin/addNotification") }}>
 
-                <Text style={styles.buttonText}>Add Questions</Text>
+                <Text style={styles.buttonText}>Add New</Text>
             </TouchableOpacity>
         </View>
     );

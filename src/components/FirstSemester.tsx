@@ -95,7 +95,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
             renderItem={({ item, index }) => (
                 <View key={index} style={styles.courseContainer}>
                     <View style={{ width: '30%', alignItems: 'flex-start' }}>
-                        <Text style={styles.sixthText}>Course</Text>
+                        <Text style={[styles.sixthText, {marginTop: 20}]}>Course</Text>
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
@@ -106,7 +106,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
                     </View>
 
                     <View style={{ width: '30%', alignItems: 'flex-start' }}>
-                        <Text style={styles.sixthText}>Unit</Text>
+                        <Text style={[styles.sixthText, {marginTop: 20}]}>Unit</Text>
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
@@ -116,7 +116,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
                         />
                     </View>
 
-                    <View style={{ width: '30%', alignItems: 'flex-start' }}>
+                    <View style={[{ width: '33%', alignItems: 'flex-start' }, (open && currentIndex !== index) && { zIndex: -20 }]}>
                         <Text style={styles.sixthText}>Grade</Text>
 
                         <DropDownPicker
@@ -154,7 +154,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
 
 const styles = StyleSheet.create({
     scrollView: {
-        paddingHorizontal: 20,
+  
     },
     button: {
         flexDirection: "row",
@@ -184,7 +184,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     secondInnerContainer: {
-        height: 40,
+        height: 50,
         borderWidth: 1,
         borderColor: '#D0D5DD',
         flexShrink: 0,
@@ -193,6 +193,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: '100%',
         backgroundColor: '#FFFFFF',
+        
     },
 });
 

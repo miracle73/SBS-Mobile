@@ -29,9 +29,13 @@ export default function Page() {
 
           <Text style={styles.title}>Welcome to SBS Mobile</Text>
           <Text style={styles.subtitle}>Your Ultimate Study Companion!</Text>
-          <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/school`) }}>
-            <Text style={styles.buttonText}>Get Started</Text>
+          <TouchableOpacity style={[styles.button, {backgroundColor: "white", marginBottom: 30}]} onPress={() => { router.replace(`/admin/login`) }}>
+            <Text style={[styles.buttonText, {color: "black"}]}>Login as an Admin</Text>
           </TouchableOpacity>
+          <TouchableOpacity style={styles.button} onPress={() => { router.replace(`/other/school`) }}>
+            <Text style={styles.buttonText}>Get Started as a User</Text>
+          </TouchableOpacity>
+       
         </View>
       </View>
     </SafeAreaView>

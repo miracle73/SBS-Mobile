@@ -13,27 +13,34 @@ export default function Page() {
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}>
             <View style={styles.container}>
                 <StatusBar style="dark" />
-              
+
 
                 <Text style={styles.title}>Upload </Text>
                 <Text style={styles.subtitle}>Quick access to all your information</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
+
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/allPins") }}>
+
+                            <HomeComponent
+                                Icon={KeyIcon}
+                                firstText="Activate Subscription"
+                                secondText="View all activation pins"
+                                backgroundColor="#E53935"
+                                disabled={false}
+                            />
+
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/birthdays") }}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Birthdays"
+                                secondText="Upload new celebrations"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
                         <HomeComponent
-                            Icon={KeyIcon}
-                            firstText="Activate Subscription"
-                            secondText="View all activation pins"
-                            backgroundColor="#E53935"
-                            disabled={false}
-                        />
-                        <HomeComponent
-                            Icon={SnowflakeIcon}
-                            firstText="Birthdays"
-                            secondText="Upload new celebrations"
-                            backgroundColor="#E5AD35"
-                            disabled={false}
-                        />
-                          <HomeComponent
                             Icon={SecondNotificationIcon}
                             firstText="Notification"
                             secondText="Upload notifications"
@@ -61,7 +68,7 @@ export default function Page() {
                     </View>
                 </View>
 
-                
+
             </View>
 
         </SafeAreaView>

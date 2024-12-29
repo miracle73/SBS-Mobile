@@ -16,9 +16,9 @@ export default function Page() {
             <View style={styles.container}>
                 <StatusBar style="dark" />
                 <View style={styles.main}>
-                    <View style={styles.roundedContainer}>
+                    <TouchableOpacity style={styles.roundedContainer} onPress={() => { router.push("/admin/notification") }}>
                         <Ionicons name="notifications-outline" size={20} />
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
                 <Text style={styles.title}>Welcome Admin</Text>
@@ -32,14 +32,15 @@ export default function Page() {
                             backgroundColor="#E53935"
                             disabled={false}
                         />
-                        <HomeComponent
-                            Icon={SnowflakeIcon}
-                            firstText="Birthdays"
-                            secondText="Upload new celebrations"
-                            backgroundColor="#E5AD35"
-                            disabled={false}
-                        />
-
+                        <TouchableOpacity onPress={() => {router.push("/admin/adminhome/first/birthdays")}}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Birthdays"
+                                secondText="Upload new celebrations"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
                         <HomeComponent

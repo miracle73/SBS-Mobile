@@ -1,6 +1,8 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
+// import Clipboard from '@react-native-clipboard/clipboard';
+import Toast from 'react-native-toast-message';
 
 const allPins = () => {
     const [date, setDate] = useState("");
@@ -8,6 +10,15 @@ const allPins = () => {
     const [message, setMessage] = useState("");
     const router = useRouter();
 
+    // const handleCopy = (pin: any) => {
+    //     Clipboard.setString(pin);
+    //     Toast.show({
+    //         type: 'success',
+    //         text1: 'Success',
+    //         text2: ` Pin ${pin} copied to clipboard.`,
+    //     });
+
+    // };
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -23,12 +34,16 @@ const allPins = () => {
 
                 <View style={styles.container}>
                     <Text style={styles.firstText}>id</Text>
-                    <Text style={styles.firstText}>code</Text>
+                    {/* <TouchableOpacity onPress={() => handleCopy('10010')}> */}
+                        <Text style={styles.firstText}>code</Text>
+                    {/* </TouchableOpacity> */}
                     <Text style={styles.firstText}>Status</Text>
                 </View>
                 <View style={styles.secondContainer}>
                     <Text style={styles.thirdText}>1</Text>
-                    <Text style={styles.thirdText}>10010</Text>
+                    {/* <TouchableOpacity onPress={() => handleCopy('10010')}> */}
+                        <Text style={styles.thirdText}>10010</Text>
+                    {/* </TouchableOpacity> */}
                     <View style={styles.smallContainer}>
                         <Text style={styles.fifthText}>Status</Text>
                     </View>
@@ -44,8 +59,8 @@ const allPins = () => {
                 </View>
 
 
-                <TouchableOpacity style={styles.button}>
-                   
+                <TouchableOpacity style={styles.button} onPress={() => { router.push("/admin/adminhome/upload/newPins") }}>
+
                     <Text style={styles.buttonText}>Create pin</Text>
                 </TouchableOpacity>
             </ScrollView>
@@ -65,7 +80,7 @@ const styles = StyleSheet.create({
         borderRadius: 6,
         backgroundColor: "#A4030314"
     },
-     secondSmallContainer: {
+    secondSmallContainer: {
         borderWidth: 1,
         borderColor: "#4CAF50",
         alignItems: "center",
@@ -115,7 +130,7 @@ const styles = StyleSheet.create({
         fontSize: 12,
         color: '#4CAF50',
         fontWeight: '500',
-       
+
     },
     pickerContainer: {
         marginTop: 20,

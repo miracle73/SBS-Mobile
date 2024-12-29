@@ -2,9 +2,10 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-na
 import React from 'react';
 import BirthdayCard from '../../../../components/BirthdayCard';
 import { PlusIcon } from '../../../../../assets/svg';
+import { useRouter } from 'expo-router';
 
 const birthdays = () => {
-
+ const router = useRouter()
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <View style={{ paddingHorizontal: 20 }}>
@@ -26,7 +27,7 @@ const birthdays = () => {
                         <BirthdayCard />
                     </View>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => router.push("/admin/adminhome/first/mediaUpload")}>
                     <PlusIcon />
                     <Text style={styles.buttonText}>Add celebrant</Text>
                 </TouchableOpacity>

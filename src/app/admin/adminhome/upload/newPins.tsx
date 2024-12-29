@@ -1,10 +1,15 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
-import RNPickerSelect from 'react-native-picker-select';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+// import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
+import Toast from 'react-native-toast-message';
+import DropDownPicker from 'react-native-dropdown-picker';
 
 const newPins = () => {
+    const [open, setOpen] = useState(false);
+    const [open2, setOpen2] = useState(false);
     const [amount, setAmount] = useState("");
     const [digits, setDigits] = useState("");
     const [level, setLevel] = useState("");
@@ -20,59 +25,98 @@ const newPins = () => {
     const semesterItems = [
         { label: 'First Semester', value: 'First Semester' },
         { label: 'Second Semester', value: 'Second Semester' },
-        
+
 
     ];
 
 
     const router = useRouter();
 
+    const handleSubmit = () => {
+        if (!amount || !digits || !level || !semester) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Empty fields, please provide all information.",
+            });
+
+            return;
+        }
+
+        try {
+            router.push("/admin/adminhome/first/allPins")
+        } catch (error) {
+
+        } finally {
+            setSemester("")
+            setLevel("")
+            setDigits("")
+            setAmount("")
+        }
+    }
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <Text style={styles.fourthText}>
-                    Create pins for students to use
-                </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={styles.secondText}>
-                        Create pins to generate tokens for students use.
+            <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <View style={{ paddingHorizontal: 20, }} >
+                    <Text style={styles.fourthText}>
+                        Create pins for students to use
                     </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={styles.secondText}>
+                            Create pins to generate tokens for students use.
+                        </Text>
 
-                </View>
+                    </View>
 
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Token Amount</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter amout'}
-                        onChangeText={text => {
-                            setAmount(text);
-                        }}
-                        value={amount}
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Token Amount</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter amout'}
+                            onChangeText={text => {
+                                setAmount(text);
+                            }}
+                            value={amount}
+                            keyboardType="numeric"
+                        />
+                    </View>
 
-                    />
-                </View>
 
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Digits</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter digits'}
+                            onChangeText={text => {
+                                setDigits(text);
+                            }}
+                            value={digits}
+                            keyboardType="numeric"
 
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Digits</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter digits'}
-                        onChangeText={text => {
-                            setDigits(text);
-                        }}
-                        value={digits}
+                        />
+                    </View>
 
-                    />
-                </View>
-            
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Level</Text>
-                    <RNPickerSelect
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Level</Text>
+                        <DropDownPicker
+                            open={open}
+                            value={level}
+                            items={levelItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen}
+                            setValue={setLevel}
+                            placeholder="Select Level"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                        {/* <RNPickerSelect
                         onValueChange={(value) => setLevel(value)}
                         items={levelItems}
                         placeholder={{ label: 'Select level', value: null }}
@@ -86,14 +130,29 @@ const newPins = () => {
                                 color="#B0BEC5"
                                 style={{ alignSelf: 'center' }}
                             />
-                        )}
-                    />
-                </View>
+                        )} */}
+                        {/* /> */}
+                    </View>
 
-             
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Semester</Text>
-                    <RNPickerSelect
+
+                    <View style={[styles.pickerContainer, (open) && { zIndex: -20 }]}>
+                        <Text style={styles.thirdText}>Semester</Text>
+                        <DropDownPicker
+                            open={open2}
+                            value={semester}
+                            items={semesterItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen2}
+                            setValue={setSemester}
+                            placeholder="Choose semester"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                        {/* <RNPickerSelect
                         onValueChange={(value) => setSemester(value)}
                         items={semesterItems}
                         placeholder={{ label: 'Choose semester', value: null }}
@@ -108,14 +167,15 @@ const newPins = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
-                    />
+                    /> */}
+                    </View>
+
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+
+                        <Text style={styles.buttonText}>Generate Pin</Text>
+                    </TouchableOpacity>
                 </View>
-
-                <TouchableOpacity style={styles.button}>
-
-                    <Text style={styles.buttonText}>Generate Pin</Text>
-                </TouchableOpacity>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };
@@ -210,6 +270,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5
     },
 });
 
@@ -233,6 +294,9 @@ const pickerSelectStyles = StyleSheet.create({
         color: '#000000',
         paddingRight: 30,
         alignSelf: 'stretch',
+    },
+    dropDownContainer: {
+        borderColor: '#B0BEC5',
     },
     iconContainer: {
         top: '50%',

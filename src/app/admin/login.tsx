@@ -2,65 +2,115 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, Imag
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import AdminLoginImage from "../../../assets/images/AdminLogin.png"
+import Toast from 'react-native-toast-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const login = () => {
     const [amount, setAmount] = useState("");
-    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const router = useRouter();
 
 
+    const validateEmail = (email: any) => {
+        const re = /\S+@\S+\.\S+/;
+        return re.test(email);
+    };
+
+    const validatePassword = (password: any) => {
+        const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+        return re.test(password);
+    };
+
+    const HandleSubmit = () => {
+        if (!email || !validateEmail(email)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Invalid Email, Please enter a valid email address.",
+            });
+
+            return;
+        }
+
+        if (!password || !validatePassword(password)) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Invalid Password, Password must be at least 8 characters long, and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+            });
+
+            return;
+        }
+        try {
+            router.push(`/admin/adminhome/first`);
+        } catch (error) {
+
+        } finally {
+            setEmail("")
+            setPassword("")
+        }
+
+
+
+
+    };
+
+
+
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <View style={{ paddingHorizontal: 20 }}>
-                <View style={{
-                    flexDirection: "row",
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginTop: 50
-                }}>
-                    <Image source={AdminLoginImage} />
+            <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <View style={{ paddingHorizontal: 20 }}>
+                    <View style={{
+                        flexDirection: "row",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: 50
+                    }}>
+                        <Image source={AdminLoginImage} />
+                    </View>
+                    <Text style={styles.fourthText}>
+                        Admin Dashboard Login
+                    </Text>
+                    <Text style={styles.secondText}>
+                        Welcome to SBS Educational Admin portal. login to continue
+                    </Text>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Email address</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={' Enter email address'}
+                            onChangeText={text => {
+                                setEmail(text);
+                            }}
+                            value={email}
+
+                        />
+                    </View>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Password</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={' Enter password'}
+                            onChangeText={text => {
+                                setPassword(text);
+                            }}
+                            value={password}
+
+                        />
+                    </View>
+
+
+                    <TouchableOpacity style={styles.button} onPress={HandleSubmit}>
+                        <Text style={styles.buttonText}>Login</Text>
+                    </TouchableOpacity>
                 </View>
-                <Text style={styles.fourthText}>
-                    Admin Dashboard Login
-                </Text>
-                <Text style={styles.secondText}>
-                    Welcome to SBS Educational Admin portal. login to continue
-                </Text>
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Email address</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter email address'}
-                        onChangeText={text => {
-                            setEmail(text);
-                        }}
-                        value={email}
-
-                    />
-                </View>
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Password</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter password'}
-                        onChangeText={text => {
-                            setEmail(text);
-                        }}
-                        value={email}
-
-                    />
-                </View>
-
-
-                <TouchableOpacity style={styles.button} onPress={() => { router.push(`/other/search`) }}>
-                    <Text style={styles.buttonText}>Login</Text>
-                </TouchableOpacity>
-            </View>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };
@@ -119,7 +169,8 @@ const styles = StyleSheet.create({
         marginTop: 15,
         justifyContent: "space-between",
         alignItems: "center",
-        flexDirection: "row"
+        flexDirection: "row",
+      
 
     },
 
@@ -132,6 +183,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5
     },
 });
 

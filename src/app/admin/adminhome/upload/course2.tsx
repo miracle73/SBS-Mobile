@@ -3,14 +3,27 @@ import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
+import DropDownPicker from 'react-native-dropdown-picker';
+import Toast from 'react-native-toast-message';
+import * as ImagePicker from 'expo-image-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 const course2 = () => {
     const [courseTitle, setCourseTitle] = useState("");
+    const [open, setOpen] = useState(false)
+    const [open2, setOpen2] = useState(false)
+    const [open3, setOpen3] = useState(false)
+    const [open4, setOpen4] = useState(false)
+    const [open5, setOpen5] = useState(false)
     const [courseCode, setCourseCode] = useState("");
     const [department, setDepartment] = useState("");
     const [school, setSchool] = useState("");
     const [level, setLevel] = useState("");
     const [semester, setSemester] = useState("");
+    const [photo, setPhoto] = useState<string>("");
+
+
     const levelItems = [
         { label: 'Year 1', value: 'year_1' },
         { label: 'Year 2', value: 'year_2' },
@@ -40,13 +53,58 @@ const course2 = () => {
 
     ];
 
-
     const router = useRouter();
 
 
+    const handleUploadPhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const photoUri = result.assets[0].uri;
+            setPhoto(photoUri);
+            //   dispatch(setProfilePicture(photoUri))
+
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!courseCode || !courseTitle || !department || !school || !level || !semester) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Empty fields, please provide all information.",
+            });
+
+            return;
+        }
+
+
+
+        try {
+            router.replace("/admin/adminhome/upload/course3")
+        } catch (error) {
+
+        }
+        finally {
+            setCourseCode(" ")
+            setCourseTitle(" ")
+            setDepartment(" ")
+            setSchool("")
+            setLevel("")
+            setSemester("")
+            setPhoto("")
+        }
+    }
+
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
+            <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
                 <View style={styles.lineContainer}>
                     <View style={styles.innerLineContainer}></View>
                 </View>
@@ -85,12 +143,13 @@ const course2 = () => {
                             setCourseCode(text);
                         }}
                         value={courseCode}
+                    
 
                     />
                 </View>
                 <View style={styles.pickerContainer}>
                     <Text style={styles.thirdText}>Department</Text>
-                    <RNPickerSelect
+                    {/* <RNPickerSelect
                         onValueChange={(value) => setDepartment(value)}
                         items={departmentItems}
                         placeholder={{ label: 'Select school', value: null }}
@@ -105,11 +164,26 @@ const course2 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
+                    /> */}
+                    <DropDownPicker
+                        open={open}
+                        value={department}
+                        items={departmentItems}
+                        closeAfterSelecting={true}
+                        closeOnBackPressed={true}
+                        listItemContainerStyle={{
+                            height: 40
+                        }}
+                        setOpen={setOpen}
+                        setValue={setDepartment}
+                        placeholder="Choose Department"
+                        style={pickerSelectStyles.inputIOS}
+                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                     />
                 </View>
-                <View style={styles.pickerContainer}>
+                <View style={[styles.pickerContainer, (open) && { zIndex: -20 }]} >
                     <Text style={styles.thirdText}>School</Text>
-                    <RNPickerSelect
+                    {/* <RNPickerSelect
                         onValueChange={(value) => setSchool(value)}
                         items={schoolItems}
                         placeholder={{ label: 'Select school', value: null }}
@@ -124,11 +198,26 @@ const course2 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
+                    /> */}
+                    <DropDownPicker
+                        open={open2}
+                        value={school}
+                        items={schoolItems}
+                        closeAfterSelecting={true}
+                        closeOnBackPressed={true}
+                        listItemContainerStyle={{
+                            height: 40
+                        }}
+                        setOpen={setOpen2}
+                        setValue={setSchool}
+                        placeholder="Select school"
+                        style={pickerSelectStyles.inputIOS}
+                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                     />
                 </View>
-                <View style={styles.pickerContainer}>
+                <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
                     <Text style={styles.thirdText}>Semester</Text>
-                    <RNPickerSelect
+                    {/* <RNPickerSelect
                         onValueChange={(value) => setSemester(value)}
                         items={semesterItems}
                         placeholder={{ label: 'Select semester', value: null }}
@@ -143,11 +232,26 @@ const course2 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
+                    /> */}
+                    <DropDownPicker
+                        open={open3}
+                        value={semester}
+                        items={semesterItems}
+                        closeAfterSelecting={true}
+                        closeOnBackPressed={true}
+                        listItemContainerStyle={{
+                            height: 40
+                        }}
+                        setOpen={setOpen3}
+                        setValue={setSemester}
+                        placeholder="Select semester"
+                        style={pickerSelectStyles.inputIOS}
+                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                     />
                 </View>
-                <View style={styles.pickerContainer}>
+                <View style={[styles.pickerContainer, (open3 || open2 || open) && { zIndex: -20 }]}>
                     <Text style={styles.thirdText}>Level</Text>
-                    <RNPickerSelect
+                    {/* <RNPickerSelect
                         onValueChange={(value) => setLevel(value)}
                         items={levelItems}
                         placeholder={{ label: 'Select level', value: null }}
@@ -162,25 +266,46 @@ const course2 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
+                    /> */}
+                    <DropDownPicker
+                        open={open4}
+                        value={level}
+                        items={levelItems}
+                        closeAfterSelecting={true}
+                        closeOnBackPressed={true}
+                        listItemContainerStyle={{
+                            height: 40
+                        }}
+                        setOpen={setOpen4}
+                        setValue={setLevel}
+                        placeholder="Select level"
+                        style={pickerSelectStyles.inputIOS}
+                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                     />
                 </View>
 
                 <View style={styles.thirdContainer}>
                     <View>
                         <Text style={styles.fifthText}>Course Image</Text>
-                        <Text style={styles.sixthText}>Upload image</Text>
+                        {photo
+                            ?
+                            <Image source={{ uri: photo }} style={styles.image} />
+                            :
+                            <Text style={styles.sixthText}>Upload image</Text>
+                        }
                     </View>
-                    <View style={styles.smallContainer}>
+                    <TouchableOpacity style={styles.smallContainer} onPress={handleUploadPhoto}>
                         <Text style={styles.seventhText}>Browse files</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
 
                     <Text style={styles.buttonText}>Create lecture Note</Text>
                 </TouchableOpacity>
-            </ScrollView>
+                </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };
@@ -191,6 +316,12 @@ const styles = StyleSheet.create({
         height: 9,
         borderRadius: 20,
         marginVertical: 20
+    },
+    image: {
+        width: 100,
+        height: 100,
+        backgroundColor: '#A9A9A9',
+        borderRadius: 50,
     },
     innerLineContainer: {
         backgroundColor: "#0337A4",
@@ -210,7 +341,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF"
     },
     thirdContainer: {
-        height: 50,
+        height: 150,
         backgroundColor: "#E7E7E9",
         borderBottomWidth: 1,
         marginTop: 20,
@@ -219,8 +350,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10,
-        
-   
+
+
 
     },
     bodyContainer: {
@@ -309,6 +440,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5
     },
 });
 
@@ -332,6 +464,9 @@ const pickerSelectStyles = StyleSheet.create({
         color: '#000000',
         paddingRight: 30,
         alignSelf: 'stretch',
+    },
+    dropDownContainer: {
+        borderColor: '#B0BEC5',
     },
     iconContainer: {
         top: '50%',

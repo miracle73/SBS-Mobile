@@ -41,7 +41,7 @@ const OtherLayout = () => {
                 <Stack.Screen
                     name="note"
                     options={{
-                        title: "",
+                        headerShown: false
                     }}
 
                 />

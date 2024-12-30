@@ -275,6 +275,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5,
     },
 });
 

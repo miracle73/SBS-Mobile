@@ -3,12 +3,21 @@ import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
+import DropDownPicker from 'react-native-dropdown-picker';
+import Toast from 'react-native-toast-message';
+import * as ImagePicker from 'expo-image-picker';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 const course3 = () => {
     const [topicTitle, setTopicTitle] = useState("");
     const [course, setCourse] = useState("");
+    const [open, setOpen] = useState(false)
+    const [open2, setOpen2] = useState(false)
     const [description, setDescription] = useState("");
     const [question, setQuestion] = useState("");
+    const [photo, setPhoto] = useState<string>("");
+
+
 
     const questionChoices = [
         { label: 'Yes', value: 'Yes' },
@@ -24,30 +33,72 @@ const course3 = () => {
         { label: 'Arts & Humanities', value: 'arts_humanities' },
     ];
 
-
     const router = useRouter();
 
+    const handleUploadPhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const photoUri = result.assets[0].uri;
+            setPhoto(photoUri);
+            //   dispatch(setProfilePicture(photoUri))
+
+        }
+    };
+
+    const handleSubmit = () => {
+        if (!topicTitle || !course || !question || !description) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: "Empty fields, please provide all information.",
+            });
+
+            return;
+        }
+
+
+
+        try {
+            router.replace("/admin/adminhome/upload/course4")
+        } catch (error) {
+
+        }
+        finally {
+            setTopicTitle(" ")
+            setCourse(" ")
+            setQuestion(" ")
+            setDescription("")
+            setPhoto("")
+        }
+    }
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
-                <Text style={styles.fourthText}>
-                    Fill in your topic details
-                </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={styles.secondText}>
-                        Fill in the details about your topic.
+            <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
+                <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
+                    <View style={styles.lineContainer}>
+                        <View style={styles.innerLineContainer}></View>
+                    </View>
+                    <Text style={styles.fourthText}>
+                        Fill in your topic details
                     </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={styles.secondText}>
+                            Fill in the details about your topic.
+                        </Text>
 
-                </View>
+                    </View>
 
-                {/* Subject Picker */}
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Course</Text>
-                    <RNPickerSelect
+                    {/* Subject Picker */}
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Course</Text>
+                        {/* <RNPickerSelect
                         onValueChange={(value) => setCourse(value)}
                         items={courseItems}
                         placeholder={{ label: 'Select Course', value: null }}
@@ -62,41 +113,56 @@ const course3 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
-                    />
-                </View>
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic Title</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter course title'}
-                        onChangeText={text => {
-                            setTopicTitle(text);
-                        }}
-                        value={topicTitle}
+                    /> */}
+                        <DropDownPicker
+                            open={open}
+                            value={course}
+                            items={courseItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen}
+                            setValue={setCourse}
+                            placeholder="Select Course"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                    </View>
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Topic Title</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter course title'}
+                            onChangeText={text => {
+                                setTopicTitle(text);
+                            }}
+                            value={topicTitle}
 
-                    />
-                </View>
+                        />
+                    </View>
 
 
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Topic description</Text>
-                    <TextInput
-                        style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter description'}
-                        onChangeText={text => {
-                            setDescription(text);
-                        }}
-                        value={description}
-                        multiline={true}
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Topic description</Text>
+                        <TextInput
+                            style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter description'}
+                            onChangeText={text => {
+                                setDescription(text);
+                            }}
+                            value={description}
+                            multiline={true}
 
-                    />
-                </View>
-                
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Is this course free?</Text>
-                    <RNPickerSelect
+                        />
+                    </View>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Is this course free?</Text>
+                        {/* <RNPickerSelect
                         onValueChange={(value) => setQuestion(value)}
                         items={questionChoices}
                         placeholder={{ label: 'Select option', value: null }}
@@ -111,26 +177,47 @@ const course3 = () => {
                                 style={{ alignSelf: 'center' }}
                             />
                         )}
-                    />
-                </View>
-
-                <View style={styles.thirdContainer}>
-                    <View>
-                        <Text style={styles.fifthText}>Course Image</Text>
-                        <Text style={styles.sixthText}>Upload image</Text>
+                    /> */}
+                        <DropDownPicker
+                            open={open2}
+                            value={question}
+                            items={questionChoices}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen2}
+                            setValue={setQuestion}
+                            placeholder="Select option"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
                     </View>
-     
-                    <View style={styles.smallContainer}>
-                        <Text style={styles.seventhText}>Next</Text>
+
+                    <View style={styles.thirdContainer}>
+                        <View>
+                            <Text style={styles.fifthText}>Course Image</Text>
+                            {photo
+                                ?
+                                <Image source={{ uri: photo }} style={styles.image} />
+                                :
+                                <Text style={styles.sixthText}>Upload image</Text>
+                            }
+                        </View>
+
+                        <TouchableOpacity style={styles.smallContainer} onPress={handleUploadPhoto}>
+                            <Text style={styles.seventhText}>Browse files</Text>
+                        </TouchableOpacity>
                     </View>
-                </View>
-                <Text style={styles.eighthText}>Add 5 images max</Text>
+                    <Text style={styles.eighthText}>Add 5 images max</Text>
 
-                <TouchableOpacity style={styles.button}>
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
 
-                    <Text style={styles.buttonText}>Create lecture Note</Text>
-                </TouchableOpacity>
-            </ScrollView>
+                        <Text style={styles.buttonText}>Next</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };
@@ -148,6 +235,12 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         width: "70%"
     },
+    image: {
+        width: 100,
+        height: 100,
+        backgroundColor: '#A9A9A9',
+        borderRadius: 50,
+    },
     smallContainer: {
         borderWidth: 1,
         borderColor: "#1849D6",
@@ -155,12 +248,12 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         flexDirection: "row",
         height: 30,
-        width: 60,
+        width: 80,
         borderRadius: 6,
         backgroundColor: "#FFFFFF"
     },
     thirdContainer: {
-        height: 50,
+        height: 150,
         backgroundColor: "#E7E7E9",
         borderBottomWidth: 1,
         marginTop: 20,
@@ -169,8 +262,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         padding: 10,
-        
-   
+
+
 
     },
     bodyContainer: {
@@ -264,6 +357,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5
     },
 });
 
@@ -287,6 +381,9 @@ const pickerSelectStyles = StyleSheet.create({
         color: '#000000',
         paddingRight: 30,
         alignSelf: 'stretch',
+    },
+    dropDownContainer: {
+        borderColor: '#B0BEC5',
     },
     iconContainer: {
         top: '50%',

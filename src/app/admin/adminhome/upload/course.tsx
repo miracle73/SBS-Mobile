@@ -33,7 +33,8 @@ const course = () => {
                     <Image source={IllustrationsImage} />
                 </View>
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button}
+                onPress={() => { router.push("/admin/adminhome/upload/course2") }}>
 
                     <Text style={styles.buttonText}>Create lecture Note</Text>
                 </TouchableOpacity>

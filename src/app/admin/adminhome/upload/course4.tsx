@@ -1,10 +1,10 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React from 'react';
 import FirstImage from "../../../../../assets/images/Dropdown.png"
-
+import { useRouter } from 'expo-router';
 const course4 = () => {
 
-
+const router = useRouter()
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -110,7 +110,8 @@ const course4 = () => {
                     <Text style={styles.seventhText}>Topic 1</Text>
                     <Text style={[styles.seventhText, { fontSize: 14 }]}>CONCEPT OF ELECTRIC CHARGE</Text>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button}
+                    onPress={() => { router.replace("/admin/adminhome/upload/course5") }}>
 
                     <Text style={styles.buttonText}>Upload Course</Text>
                 </TouchableOpacity>

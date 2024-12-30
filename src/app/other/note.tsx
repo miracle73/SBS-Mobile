@@ -53,13 +53,14 @@ const note = () => {
                 </View> */}
 
                 <Text style={styles.firstText}>{searchResults.title}</Text>
-                <Image source={NoteImage}  style={{marginTop: 20}}/>
-
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                    <Image source={NoteImage} style={{ marginTop: 20 }} />
+                </View>
                 <Text style={styles.fourthText}>
                     {searchResults.content}
                 </Text>
 
-                <View style={styles.container}>
+                {/* <View style={styles.container}>
                     <TouchableOpacity style={[styles.button, { backgroundColor: "#FFFFFF", borderWidth: 1.5, borderColor: "#B0BEC5" }]}
                         onPress={() => { router.back(); }}
                     >
@@ -69,7 +70,7 @@ const note = () => {
                         disabled={true}>
                         <Text style={styles.buttonText}>Next</Text>
                     </TouchableOpacity>
-                </View>
+                </View> */}
 
             </ScrollView>
         </SafeAreaView>
@@ -84,7 +85,7 @@ const styles = StyleSheet.create({
         marginBottom: 30
     },
     bodyContainer: {
-        paddingTop: 20,
+        paddingTop: 50,
         flex: 1,
         backgroundColor: '#FFFFFF',
     },
@@ -94,6 +95,7 @@ const styles = StyleSheet.create({
         fontWeight: '600',
         marginVertical: 5,
         marginTop: 10,
+        textAlign: "center"
     },
     secondText: {
         fontSize: 16,
@@ -113,6 +115,7 @@ const styles = StyleSheet.create({
         color: '#1A1A1A',
         fontWeight: '400',
         marginBottom: 5,
+        marginTop: 20
     },
     fifthText: {
         fontSize: 16,

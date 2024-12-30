@@ -3,21 +3,67 @@ import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
-
+import * as ImagePicker from 'expo-image-picker';
+import Toast from 'react-native-toast-message';
+import AddNotificationSuccessModal from '../../components/modals/AddNotificationSuccessModal';
 
 const addNotification = () => {
     const [title, setTitle] = useState("");
     const [message, setMessage] = useState("");
-   
-
-
     const router = useRouter();
+    const [modal, setModal] = useState(false)
+
+    const [photo, setPhoto] = useState<string>("");
+
+
+
+    const handleUploadPhoto = async () => {
+        const result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            const photoUri = result.assets[0].uri;
+            setPhoto(photoUri);
+            //   dispatch(setProfilePicture(photoUri))
+
+        }
+    };
+
+     const handleSubmit = () => {
+            if (!title || !message) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: "Empty fields, please provide all information.",
+                });
+    
+                return;
+            }
+    
+          
+    
+            try {
+
+                setModal(true)
+            } catch (error) {
+    
+            }
+            finally {
+                setTitle(" ")
+                setMessage(" ")
+                setPhoto("")
+            }
+        }
 
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-               
+
                 <Text style={styles.fourthText}>
                     Information details
                 </Text>
@@ -60,24 +106,31 @@ const addNotification = () => {
                     />
                 </View>
 
-            
+
 
                 <View style={styles.thirdContainer}>
                     <View>
                         <Text style={styles.fifthText}>Course Image</Text>
-                        <Text style={styles.sixthText}>Upload image</Text>
+                        {photo
+                            ?
+                            <Image source={{ uri: photo }} style={styles.image} />
+                            :
+                            <Text style={styles.sixthText}>Upload image</Text>
+                        }
+
                     </View>
-                    <View style={styles.smallContainer}>
+                    <TouchableOpacity style={styles.smallContainer} onPress={handleUploadPhoto}>
                         <Text style={styles.seventhText}>Browse files</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
 
 
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
 
                     <Text style={styles.buttonText}>Save</Text>
                 </TouchableOpacity>
             </ScrollView>
+            {modal && <AddNotificationSuccessModal modal={modal} setModal={setModal} />}
         </SafeAreaView>
     );
 };
@@ -88,6 +141,12 @@ const styles = StyleSheet.create({
         height: 9,
         borderRadius: 20,
         marginVertical: 20
+    },
+    image: {
+        width: 100,
+        height: 100,
+        backgroundColor: '#A9A9A9',
+        borderRadius: 50,
     },
     innerLineContainer: {
         backgroundColor: "#0337A4",
@@ -107,7 +166,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF"
     },
     thirdContainer: {
-        height: 50,
+        height: 150,
         backgroundColor: "#E7E7E9",
         borderBottomWidth: 1,
         marginTop: 20,
@@ -206,6 +265,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: "100%",
         backgroundColor: "#FFFFFF",
+        padding: 5
     },
 });
 

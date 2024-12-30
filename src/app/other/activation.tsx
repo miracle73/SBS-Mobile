@@ -13,19 +13,25 @@ const Activation = () => {
 
     const theMethods = [
         { label: 'Pin', value: 'Pin' },
-        { label: 'QR', value: 'QR' },
+        { label: 'Payment', value: 'Payment' },
     ];
 
     const handleProceed = () => {
         if (method) {
+            if (method == "Payment") {
+                router.push('/other/payment');
+                setMethod("")
+            } else if (method == "Pin") {
+                router.push('/other/activateSubscription');
+                setMethod("")
+            }
 
-            router.push('/other/payment');
-            setMethod("")
+           
         } else {
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: "Please enter a valid email address.",
+                text2: "Please select a method",
             });
             return;
         }

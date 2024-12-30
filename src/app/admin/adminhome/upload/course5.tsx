@@ -2,17 +2,15 @@ import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, Tex
 import React from 'react';
 import FirstImage from "../../../../../assets/images/Dropdown.png"
 import CourseCard from '../../../../components/CourseCard';
-
+import { useRouter } from 'expo-router';
 const course5 = () => {
-
+const router = useRouter()
 
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
+             
                 <Text style={styles.fourthText}>
                     Courses
                 </Text>
@@ -33,7 +31,7 @@ const course5 = () => {
                         <CourseCard />
                     </View>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => {router.push("/admin/adminhome/upload/course2")}}>
 
                     <Text style={styles.buttonText}>Add course</Text>
                 </TouchableOpacity>

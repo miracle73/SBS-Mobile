@@ -16,7 +16,7 @@ export default function Page() {
             <View style={styles.container}>
                 <StatusBar style="dark" />
                 <View style={styles.main}>
-                    <TouchableOpacity style={styles.roundedContainer} onPress={() => { router.push("/admin/notification") }}>
+                    <TouchableOpacity style={styles.roundedContainer} onPress={() => { router.push("/admin/adminhome/first/notification") }}>
                         <Ionicons name="notifications-outline" size={20} />
                     </TouchableOpacity>
                 </View>
@@ -25,14 +25,16 @@ export default function Page() {
                 <Text style={styles.subtitle}>Quick access to all your information</Text>
                 <View style={{ flexDirection: "row", justifyContent: "space-between", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <HomeComponent
-                            Icon={KeyIcon}
-                            firstText="Activate Subscription"
-                            secondText="View all activation pins"
-                            backgroundColor="#E53935"
-                            disabled={false}
-                        />
-                        <TouchableOpacity onPress={() => {router.push("/admin/adminhome/first/birthdays")}}>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/allPins") }}>
+                            <HomeComponent
+                                Icon={KeyIcon}
+                                firstText="Activate Subscription"
+                                secondText="View all activation pins"
+                                backgroundColor="#E53935"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/birthdays") }}>
                             <HomeComponent
                                 Icon={SnowflakeIcon}
                                 firstText="Birthdays"
@@ -43,20 +45,24 @@ export default function Page() {
                         </TouchableOpacity>
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <HomeComponent
-                            Icon={SearchIcon}
-                            firstText="Past Questions"
-                            secondText="Add past questions"
-                            backgroundColor="#FFAD84"
-                            disabled={false}
-                        />
-                        <HomeComponent
-                            Icon={SnowflakeIcon}
-                            firstText="Lecture Notes"
-                            secondText="Add lecture notes"
-                            backgroundColor="#E5AD35"
-                            disabled={true}
-                        />
+                        <TouchableOpacity onPress={() => { router.push("/admin/coursesPastQuestions") }}>
+                            <HomeComponent
+                                Icon={SearchIcon}
+                                firstText="Past Questions"
+                                secondText="Add past questions"
+                                backgroundColor="#FFAD84"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/upload/course") }}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Lecture Notes"
+                                secondText="Add lecture notes"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
 
                     </View>
                 </View>

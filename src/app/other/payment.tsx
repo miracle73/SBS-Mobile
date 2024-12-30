@@ -28,7 +28,7 @@ const payment = () => {
             });
             return;
         }
-        router.push('/other/activateSubscription');
+        router.push('/home');
     };
     return (
         <SafeAreaView style={styles.bodyContainer}>

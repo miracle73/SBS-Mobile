@@ -3,6 +3,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from 'expo-status-bar';
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
+import { StyleSheet } from "react-native";
 
 const FirstLayout = () => {
     const router = useRouter();
@@ -20,7 +21,7 @@ const FirstLayout = () => {
                     options={{ headerShown: false }}
 
                 />
-                
+
                 <Stack.Screen
                     name="birthdays"
                     options={{ headerShown: false }}
@@ -44,7 +45,26 @@ const FirstLayout = () => {
                     }}
 
                 />
-                 <Stack.Screen
+                <Stack.Screen
+                    name="notification"
+                    options={{
+                        title: "Notification",
+                        headerTitleAlign: "center",
+                        headerTintColor: '#000000',
+
+                        headerLeft: () => (
+                            <MaterialIcons
+                                name="arrow-back-ios"
+                                size={24}
+                                color="black"
+                                style={{ marginLeft: 10 }}
+                                onPress={() => router.back()}
+                            />
+                        ),
+                    }}
+
+                />
+                <Stack.Screen
                     name="allPins"
                     options={{
                         title: "",
@@ -67,4 +87,9 @@ const FirstLayout = () => {
     );
 };
 
+const styles = StyleSheet.create({
+    header: {
+        alignItems: "center"
+    }
+})
 export default FirstLayout;

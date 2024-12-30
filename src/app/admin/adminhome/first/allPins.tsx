@@ -1,7 +1,7 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
-// import Clipboard from '@react-native-clipboard/clipboard';
+import Clipboard from '@react-native-clipboard/clipboard';
 import Toast from 'react-native-toast-message';
 
 const allPins = () => {
@@ -10,15 +10,15 @@ const allPins = () => {
     const [message, setMessage] = useState("");
     const router = useRouter();
 
-    // const handleCopy = (pin: any) => {
-    //     Clipboard.setString(pin);
-    //     Toast.show({
-    //         type: 'success',
-    //         text1: 'Success',
-    //         text2: ` Pin ${pin} copied to clipboard.`,
-    //     });
+    const handleCopy = (pin: any) => {
+        Clipboard.setString(pin);
+        Toast.show({
+            type: 'success',
+            text1: 'Success',
+            text2: ` Pin ${pin} copied to clipboard.`,
+        });
 
-    // };
+    };
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
@@ -34,16 +34,16 @@ const allPins = () => {
 
                 <View style={styles.container}>
                     <Text style={styles.firstText}>id</Text>
-                    {/* <TouchableOpacity onPress={() => handleCopy('10010')}> */}
+                    <TouchableOpacity onPress={() => handleCopy('10010')}>
                         <Text style={styles.firstText}>code</Text>
-                    {/* </TouchableOpacity> */}
+                    </TouchableOpacity>
                     <Text style={styles.firstText}>Status</Text>
                 </View>
                 <View style={styles.secondContainer}>
                     <Text style={styles.thirdText}>1</Text>
-                    {/* <TouchableOpacity onPress={() => handleCopy('10010')}> */}
+                    <TouchableOpacity onPress={() => handleCopy('10010')}>
                         <Text style={styles.thirdText}>10010</Text>
-                    {/* </TouchableOpacity> */}
+                    </TouchableOpacity>
                     <View style={styles.smallContainer}>
                         <Text style={styles.fifthText}>Status</Text>
                     </View>

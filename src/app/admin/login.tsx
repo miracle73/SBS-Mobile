@@ -82,7 +82,7 @@ const login = () => {
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder={' Enter email address'}
+                            placeholder={'Enter email address'}
                             onChangeText={text => {
                                 setEmail(text);
                             }}
@@ -96,7 +96,7 @@ const login = () => {
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder={' Enter password'}
+                            placeholder={'Enter password'}
                             onChangeText={text => {
                                 setPassword(text);
                             }}

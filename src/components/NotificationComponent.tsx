@@ -15,7 +15,7 @@ const NotificationComponent = ({ title, content, time }: NotificationComponentPr
   const pins = content.match(pinRegex); // Extract all pins
 
   return (
-    <View style={{ marginBottom: 10 }}>
+    <View style={{ marginBottom: 20 }}>
       <Text style={styles.firstText}>{title}</Text>
       <View style={styles.Container}>
         <Text style={styles.secondText}>
@@ -61,6 +61,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'flex-end',
+    marginTop: 5
   },
 });
 

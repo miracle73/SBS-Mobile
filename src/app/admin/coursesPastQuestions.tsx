@@ -1,8 +1,10 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
 import React from 'react';
 import PastQuestionCard from '../../components/PastQuestionCard';
+import { useRouter } from 'expo-router';
 
 const coursesPastQuestions = () => {
+    const router = useRouter()
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
@@ -27,7 +29,7 @@ const coursesPastQuestions = () => {
                         <PastQuestionCard />
                     </View>
                 </View>
-                <TouchableOpacity style={styles.button}>
+                <TouchableOpacity style={styles.button} onPress={() => {router.push("/admin/addPastQuestion")}}>
 
                     <Text style={styles.buttonText}>Add Questions</Text>
                 </TouchableOpacity>

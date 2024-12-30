@@ -2,6 +2,7 @@ import { View, Text, Dimensions, Modal, StyleSheet, Image, TouchableOpacity } fr
 import React, { useState } from 'react'
 import ModalIcon from '../../../assets/images/Modal Icon.png'
 import TouchableOutside from './TouchableOutside'
+import { useRouter } from 'expo-router'
 
 
 
@@ -12,7 +13,7 @@ interface AddNotificationSuccessModalProps {
 
 }
 const AddNotificationSuccessModal = ({ setModal, modal }: AddNotificationSuccessModalProps) => {
-
+ const router = useRouter()
     return (
         <Modal
             animationType="slide"
@@ -32,7 +33,7 @@ const AddNotificationSuccessModal = ({ setModal, modal }: AddNotificationSuccess
                         <Text style={styles.secondText}>Your notification has successfully been uploaded.</Text>
 
 
-                        <TouchableOpacity style={styles.button} >
+                        <TouchableOpacity style={styles.button} onPress={() => {router.replace("/admin/notification"); setModal(false)}}>
                             <Text style={styles.buttonText}>Close page</Text>
                         </TouchableOpacity>
 

@@ -32,22 +32,25 @@ export default function Page() {
 
                         </TouchableOpacity>
                         <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/birthdays") }}>
+                            <TouchableOpacity onPress={() => { router.push("/admin/coursesPastQuestions") }}>
+                                <HomeComponent
+                                    Icon={SnowflakeIcon}
+                                    firstText="Birthdays"
+                                    secondText="Upload new celebrations"
+                                    backgroundColor="#E5AD35"
+                                    disabled={false}
+                                />
+                            </TouchableOpacity>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { router.push("/admin/notification") }}>
                             <HomeComponent
-                                Icon={SnowflakeIcon}
-                                firstText="Birthdays"
-                                secondText="Upload new celebrations"
-                                backgroundColor="#E5AD35"
+                                Icon={SecondNotificationIcon}
+                                firstText="Notification"
+                                secondText="Upload notifications"
+                                backgroundColor="#FFAD84"
                                 disabled={false}
                             />
                         </TouchableOpacity>
-                        <HomeComponent
-                            Icon={SecondNotificationIcon}
-                            firstText="Notification"
-                            secondText="Upload notifications"
-                            backgroundColor="#FFAD84"
-                            disabled={false}
-                        />
-
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
                         <HomeComponent
@@ -57,13 +60,15 @@ export default function Page() {
                             backgroundColor="#FFAD84"
                             disabled={false}
                         />
-                        <HomeComponent
-                            Icon={SnowflakeIcon}
-                            firstText="Lecture Notes"
-                            secondText="Add lecture notes"
-                            backgroundColor="#E5AD35"
-                            disabled={false}
-                        />
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/upload/course") }}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Lecture Notes"
+                                secondText="Add lecture notes"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
 
                     </View>
                 </View>

@@ -2,12 +2,18 @@ import { View, Text, StyleSheet, Image } from 'react-native'
 import React from 'react'
 import FirstImage from '../../assets/images/Thumbnail-2.png'
 
-const CourseCard = () => {
+interface CourseCardProps {
+
+    course: any;
+
+}
+
+const CourseCard : React.FC<CourseCardProps> = ({ course }) => {
     return (
         <View style={styles.outerContainer}>
             <Image source={FirstImage} style={{padding: 5}} />
-            <Text style={styles.firstText}>ELECTROMAGNETISM</Text>
-            <Text style={styles.secondText}>PHY 102</Text>
+            <Text style={styles.firstText}>{course.title}</Text>
+            <Text style={styles.secondText}>{course.course_id}</Text>
         </View>
     )
 }

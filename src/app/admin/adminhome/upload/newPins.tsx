@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -6,6 +6,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { MaterialIcons } from '@expo/vector-icons';
 import Toast from 'react-native-toast-message';
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useGeneratePinMutation } from '../../../../components/services/adminService';
+import { RootState } from '../../../../components/redux/store';
+import { useSelector } from 'react-redux';
 
 const newPins = () => {
     const [open, setOpen] = useState(false);
@@ -14,12 +17,17 @@ const newPins = () => {
     const [digits, setDigits] = useState("");
     const [level, setLevel] = useState("");
     const [semester, setSemester] = useState("");
+    const [generatePin, { isLoading }] = useGeneratePinMutation();
+   
+    const secret = useSelector((state: RootState) => state.admin.admin.secret);
+    console.log(secret);
+
     const levelItems = [
-        { label: 'Year 1', value: 'year_1' },
-        { label: 'Year 2', value: 'year_2' },
-        { label: 'Year 3', value: 'year_3' },
-        { label: 'Year 4', value: 'year_4' },
-        { label: 'Year 5', value: 'year_5' },
+        { label: 'Year 1', value: '1' },
+        { label: 'Year 2', value: '2' },
+        { label: 'Year 3', value: '3' },
+        { label: 'Year 4', value: '4' },
+        { label: 'Year 5', value: '5' },
 
     ];
     const semesterItems = [
@@ -32,7 +40,7 @@ const newPins = () => {
 
     const router = useRouter();
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!amount || !digits || !level || !semester) {
             Toast.show({
                 type: 'error',
@@ -44,14 +52,30 @@ const newPins = () => {
         }
 
         try {
-            router.push("/admin/adminhome/first/allPins")
+            const data = {
+                level: Number(level),
+                num_digits: parseInt(digits, 10),
+                num_pins: parseInt(amount, 10),
+                semester,
+            };
+            const response = await generatePin({ secret, data }).unwrap();
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Pins generated successfully.',
+            });
+            router.push("/admin/adminhome/first/allPins");
         } catch (error) {
-
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to generate pins. Please try again.',
+            });
         } finally {
-            setSemester("")
-            setLevel("")
-            setDigits("")
-            setAmount("")
+            setSemester("");
+            setLevel("");
+            setDigits("");
+            setAmount("");
         }
     }
 
@@ -74,7 +98,7 @@ const newPins = () => {
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder={'Enter amout'}
+                            placeholder={'Enter amount'}
                             onChangeText={text => {
                                 setAmount(text);
                             }}
@@ -116,22 +140,7 @@ const newPins = () => {
                             style={pickerSelectStyles.inputIOS}
                             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                         />
-                        {/* <RNPickerSelect
-                        onValueChange={(value) => setLevel(value)}
-                        items={levelItems}
-                        placeholder={{ label: 'Select level', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={level}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )} */}
-                        {/* /> */}
+
                     </View>
 
 
@@ -152,27 +161,12 @@ const newPins = () => {
                             style={pickerSelectStyles.inputIOS}
                             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
                         />
-                        {/* <RNPickerSelect
-                        onValueChange={(value) => setSemester(value)}
-                        items={semesterItems}
-                        placeholder={{ label: 'Choose semester', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={semester}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
+
                     </View>
 
                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Generate Pin</Text>}
 
-                        <Text style={styles.buttonText}>Generate Pin</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>

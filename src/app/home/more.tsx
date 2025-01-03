@@ -5,7 +5,7 @@ import { useGetBirthdaysQuery } from '../../components/services/userService';
 
 const More = () => {
   const { data, isSuccess, isLoading } = useGetBirthdaysQuery();
-  console.log(data, 56)
+
   if (isLoading) {
     return (
       <SafeAreaView style={styles.bodyContainer}>

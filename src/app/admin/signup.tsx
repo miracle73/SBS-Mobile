@@ -4,18 +4,13 @@ import { useRouter } from 'expo-router'
 import AdminLoginImage from "../../../assets/images/AdminLogin.png"
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { useLoginAdminMutation } from '../../components/services/adminService';
-import { useAppDispatch } from '../../components/redux/store';
-import { setAdminInfo } from '../../components/redux/slices/adminSlice';
-import { loginUser } from '../../components/redux/slices/authSlice';
+import { useCreateAdminMutation } from '../../components/services/adminService';
 
-const login = () => {
-
+const signup = () => {
     const [password, setPassword] = useState("");
     const [email, setEmail] = useState("");
     const router = useRouter();
-    const dispatch = useAppDispatch();
-    const [loginAdmin, { isLoading }] = useLoginAdminMutation();
+    const [createAdmin, { isLoading }] = useCreateAdminMutation();
 
 
     const validateEmail = (email: any) => {
@@ -29,6 +24,7 @@ const login = () => {
     };
 
     const HandleSubmit = async () => {
+
         if (!email || !validateEmail(email)) {
             Toast.show({
                 type: 'error',
@@ -49,27 +45,19 @@ const login = () => {
             return;
         }
         try {
-            const response = await loginAdmin({ email, password }).unwrap();
+            const response = await createAdmin({ email, password }).unwrap();
             Toast.show({
                 type: 'success',
                 text1: 'Success',
-                text2: 'Login successful.',
+                text2: 'Account created successfully.',
             });
-            dispatch(setAdminInfo({
-                email: response.secret.email,
-                id: response.secret.id.toString(),
-                is_active: response.secret.is_active,
-                admin_role: response.secret.admin_role,
-                secret: response.secret.secret,  // Storing the secret
-            }));
-            dispatch(loginUser(response.secret.secret));  // Storing the secret token
-
-            router.push(`/admin/adminhome/first`);
+            router.push(`/admin/login`);
         } catch (error) {
+            const errorMessage = (error as any)?.data?.detail?.message || (error as any)?.data?.detail || (error as any)?.data?.message || 'Failed to create account. Please try again.';
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to Login. Please try again.',
+                text2: errorMessage,
             });
         } finally {
             setEmail("");
@@ -96,10 +84,10 @@ const login = () => {
                         <Image source={AdminLoginImage} />
                     </View>
                     <Text style={styles.fourthText}>
-                        Admin Dashboard Login
+                        Admin Dashboard Signup
                     </Text>
                     <Text style={styles.secondText}>
-                        Welcome to SBS Educational Admin portal. login to continue
+                        Welcome to SBS Educational Admin portal. Create your account
                     </Text>
 
                     <View style={styles.pickerContainer}>
@@ -132,8 +120,8 @@ const login = () => {
 
 
                     <TouchableOpacity style={styles.button} onPress={HandleSubmit}>
-                          {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Login</Text>}
 
+                        {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Create account</Text>}
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={{
@@ -142,8 +130,8 @@ const login = () => {
                             alignItems: "center",
                             marginTop: 20
                         }}
-                        onPress={() => router.push(`/admin/signup`)}>
-                        <Text style={[styles.buttonText, { color: "#FF8C00" }]}>Signup</Text>
+                        onPress={() => router.push(`/admin/login`)}>
+                        <Text style={[styles.buttonText, { color: "#FF8C00" }]}>Login</Text>
                     </TouchableOpacity>
                 </View>
             </KeyboardAwareScrollView>
@@ -255,4 +243,4 @@ const pickerSelectStyles = StyleSheet.create({
     },
 });
 
-export default login;
+export default signup;

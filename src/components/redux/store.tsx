@@ -13,7 +13,10 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
 import userReducer from './slices/userSlice'
+import authReducer from './slices/authSlice'
+import adminReducer from './slices/adminSlice'
 import { userApi } from '../services/userService'
+import { adminApi } from '../services/adminService'
 // import { tutorauthApi } from '../services/tutorauthApi'
 // import { studentauthApi } from '../services/studentauthApi'
 // import { logoutUser } from './slices/authSlice'
@@ -26,7 +29,10 @@ import { userApi } from '../services/userService'
 
 const rootReducer = combineReducers({
   user: userReducer,
+  admin: adminReducer, 
+  auth: authReducer,
   [userApi.reducerPath]: userApi.reducer,
+  [adminApi.reducerPath]: adminApi.reducer,
 //   [studentauthApi.reducerPath]: studentauthApi.reducer,
 //   [locationApi.reducerPath]: locationApi.reducer,
 //   [materialApi.reducerPath]: materialApi.reducer,
@@ -39,7 +45,7 @@ const rootReducer = combineReducers({
 const persistConfig = {
   key: 'root',
   storage: AsyncStorage,
-  whitelist: ['user'], 
+  whitelist: ['user', 'admin', 'auth'], 
   version: 1 
 }
 
@@ -57,6 +63,7 @@ export const store = configureStore({
     })
     .concat(
         userApi.middleware,
+        adminApi.middleware,
     //      studentauthApi.middleware,
     //       locationApi.middleware,
     //        materialApi.middleware,

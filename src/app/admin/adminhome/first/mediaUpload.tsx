@@ -1,11 +1,14 @@
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
+import { useSelector } from 'react-redux';
 import { CancelIcon, Line, PlusIcon } from '../../../../../assets/svg';
 import UploadImage from "../../../../../assets/images/upload.png"
 import * as ImagePicker from 'expo-image-picker';
 import Toast from 'react-native-toast-message';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useCreateBirthdayMutation } from '../../../../components/services/adminService';
+import { RootState } from '../../../../components/redux/store';
 
 
 const mediaUpload = () => {
@@ -14,7 +17,11 @@ const mediaUpload = () => {
     const [message, setMessage] = useState("");
     const router = useRouter();
     const [photo, setPhoto] = useState<string>("");
-
+    const [createBirthday, { isLoading }] = useCreateBirthdayMutation();
+    const formData = new FormData();
+    // Access the secret from the Redux store
+    const secret = useSelector((state: RootState) => state.admin.admin.secret);
+    console.log(secret);
     const validateDate = (date: string) => {
         // Example validation: date must be in the format YYYY-MM-DD
         const re = /^\d{4}-\d{2}-\d{2}$/;
@@ -33,11 +40,18 @@ const mediaUpload = () => {
             const photoUri = result.assets[0].uri;
             setPhoto(photoUri);
             //   dispatch(setProfilePicture(photoUri))
+            const mimeType = photoUri.endsWith(".png") ? "image/png" : photoUri.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
+            // formData.append("picture", new File([photoUri], "profile-picture.jpg", { type: mimeType }));
+            formData.append("file", {
+                uri: photoUri,
+                name: "profile-picture.jpg",
+                type: mimeType,
+            } as any);
 
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!name || !message || !date) {
             Toast.show({
                 type: 'error',
@@ -59,15 +73,33 @@ const mediaUpload = () => {
         }
 
         try {
+            const data = {
+                file: formData.get('file') as File,
+                name,
+                dob: date,
+                department: ' ', // Add appropriate values
+                level: ' ', // Add appropriate values
+                school: ' ', // Add appropriate values
+                note: message,
+            };
+            const response = await createBirthday({ secret, data }).unwrap();
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Celebrant saved successfully.',
+            });
             router.back();
         } catch (error) {
-
-        }
-        finally {
-            setDate(" ")
-            setName(" ")
-            setMessage(" ")
-            setPhoto("")
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to save celebrant. Please try again.',
+            });
+        } finally {
+            setDate("");
+            setName("");
+            setMessage("");
+            setPhoto("");
         }
     }
 
@@ -75,105 +107,106 @@ const mediaUpload = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <Text style={styles.fourthText}>
-                    Media Upload
-                </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <View style={{ width: "70%" }}>
-                        <Text style={styles.secondText}>
-                            Add your documents here, and you can upload up to 5 files max
-                        </Text>
+                    <Text style={styles.fourthText}>
+                        Media Upload
+                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <View style={{ width: "70%" }}>
+                            <Text style={styles.secondText}>
+                                Add your documents here, and you can upload up to 5 files max
+                            </Text>
+                        </View>
+                        <View>
+                            <CancelIcon />
+                        </View>
+
+
                     </View>
-                    <View>
-                        <CancelIcon />
+                    <View style={styles.thirdContainer}>
+                        <TouchableOpacity onPress={handleUploadPhoto}>
+                            <Image source={UploadImage} />
+                        </TouchableOpacity>
+                        <Text>Drag your file(s) to start uploading</Text>
+                        <View style={{ flexDirection: "row", justifyContent: "center", gap: 4, alignItems: "center" }}>
+                            <Line />
+                            <Text>OR</Text>
+                            <Line />
+                        </View>
+                        <TouchableOpacity style={{
+                            flexDirection: "row",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            borderWidth: 1,
+                            borderColor: "#003F91",
+                            borderRadius: 8,
+                            padding: 5,
+                        }}
+                            onPress={handleUploadPhoto}>
+                            <Text style={styles.sixthText}>Browse files</Text>
+                        </TouchableOpacity>
+                    </View>
+
+                    <Text style={styles.secondText}>
+                        Only support .png, .jpeg files
+                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+                        {photo &&
+                            <Image source={{ uri: photo }} style={styles.image} />
+                        }
+                    </View>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Date</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder="YYYY-MM-DD"
+                            onChangeText={text => {
+                                setDate(text);
+                            }}
+                            value={date}
+                            keyboardType='numeric'
+
+                        />
                     </View>
 
 
-                </View>
-                <View style={styles.thirdContainer}>
-                    <TouchableOpacity onPress={handleUploadPhoto}>
-                        <Image source={UploadImage} />
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Name</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter name'}
+                            onChangeText={text => {
+                                setName(text);
+                            }}
+                            value={name}
+
+                        />
+                    </View>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Birthday message</Text>
+                        <TextInput
+                            style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Type a message'}
+                            onChangeText={text => {
+                                setMessage(text);
+                            }}
+                            value={message}
+                            multiline={true}
+                        />
+                    </View>
+
+
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        {!isLoading && <PlusIcon />}
+                        {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Save celebrant</Text>}
+
                     </TouchableOpacity>
-                    <Text>Drag your file(s) to start uploading</Text>
-                    <View style={{ flexDirection: "row", justifyContent: "center", gap: 4, alignItems: "center" }}>
-                        <Line />
-                        <Text>OR</Text>
-                        <Line />
-                    </View>
-                    <TouchableOpacity style={{
-                        flexDirection: "row",
-                        justifyContent: "center",
-                        alignItems: "center",
-                        borderWidth: 1,
-                        borderColor: "#003F91",
-                        borderRadius: 8,
-                        padding: 5,
-                    }}
-                        onPress={handleUploadPhoto}>
-                        <Text style={styles.sixthText}>Browse files</Text>
-                    </TouchableOpacity>
-                </View>
-
-                <Text style={styles.secondText}>
-                    Only support .png, .jpeg files
-                </Text>
-                <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
-                    {photo &&
-                        <Image source={{ uri: photo }} style={styles.image} />
-                    }
-                </View>
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Date</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder="YYYY-MM-DD"
-                        onChangeText={text => {
-                            setDate(text);
-                        }}
-                        value={date}
-                        keyboardType='numeric'
-
-                    />
-                </View>
-
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Name</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter name'}
-                        onChangeText={text => {
-                            setName(text);
-                        }}
-                        value={name}
-
-                    />
-                </View>
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Birthday message</Text>
-                    <TextInput
-                        style={[styles.secondInnerContainer, { height: 100, textAlignVertical: 'top' }]}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Type a message'}
-                        onChangeText={text => {
-                            setMessage(text);
-                        }}
-                        value={message}
-                        multiline={true}
-                    />
-                </View>
-
-
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-                    <PlusIcon />
-                    <Text style={styles.buttonText}>Save celebrant</Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </KeyboardAwareScrollView>
+                </ScrollView>
+            </KeyboardAwareScrollView>
         </SafeAreaView>
     );
 };

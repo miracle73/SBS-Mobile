@@ -77,6 +77,19 @@ interface TopicContentResponse {
   [key: string]: string;
 }
 
+interface TopicPastQuestionResponse {
+  content: string;
+  year: number;
+  image_3: string | null;
+  image_5: string | null;
+  topic_id: number;
+  id: number;
+  image_1: string | null;
+  image_2: string | null;
+  image_4: string | null;
+}
+
+
 export const userApi = createApi({
   reducerPath: 'userApi',
   baseQuery: fetchBaseQuery({
@@ -118,6 +131,14 @@ export const userApi = createApi({
         url: `/user/get-topic-content?phone_imei=${phone_imei}&topic_id=${topic_id}`,
         method: 'POST',
       }),
+    }),
+    getTopicPastQuestion: builder.query<TopicPastQuestionResponse[], { topic_id: number; year?: number }>({
+      query: ({ topic_id, year }) => {
+        const url = year 
+          ? `/user/topic-pq?topic_id=${topic_id}&year=${year}`
+          : `/user/topic-pq?topic_id=${topic_id}`;
+        return url;
+      },
     }),
   }),
 });

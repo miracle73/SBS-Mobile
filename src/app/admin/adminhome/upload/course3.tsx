@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
 import React, { useState } from 'react';
 import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
@@ -7,6 +7,9 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useCreateTopicMutation } from '../../../../components/services/adminService';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../components/redux/store';
 
 const course3 = () => {
     const [topicTitle, setTopicTitle] = useState("");
@@ -16,9 +19,11 @@ const course3 = () => {
     const [description, setDescription] = useState("");
     const [question, setQuestion] = useState("");
     const [photo, setPhoto] = useState<string>("");
+    const [createTopic, { isLoading }] = useCreateTopicMutation();
+    const formData = new FormData();
 
-
-
+    const secret = useSelector((state: RootState) => state.admin.admin.secret);
+    console.log(secret);
     const questionChoices = [
         { label: 'Yes', value: 'Yes' },
         { label: 'No', value: 'No' },
@@ -26,11 +31,11 @@ const course3 = () => {
 
     ];
     const courseItems = [
-        { label: 'Engineering', value: 'engineering' },
-        { label: 'Medicine', value: 'medicine' },
-        { label: 'Law', value: 'law' },
-        { label: 'Business', value: 'business' },
-        { label: 'Arts & Humanities', value: 'arts_humanities' },
+        { label: 'Engineering', value: '1' },
+        { label: 'Medicine', value: '2' },
+        { label: 'Law', value: '3' },
+        { label: 'Business', value: '4' },
+        { label: 'Arts & Humanities', value: '5' },
     ];
 
     const router = useRouter();
@@ -47,11 +52,16 @@ const course3 = () => {
             const photoUri = result.assets[0].uri;
             setPhoto(photoUri);
             //   dispatch(setProfilePicture(photoUri))
-
+            const mimeType = photoUri.endsWith(".png") ? "image/png" : photoUri.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
+            formData.append("file", {
+                uri: photoUri,
+                name: "topic-image.jpg",
+                type: mimeType,
+            } as any);
         }
     };
 
-    const handleSubmit = () => {
+    const handleSubmit = async () => {
         if (!topicTitle || !course || !question || !description) {
             Toast.show({
                 type: 'error',
@@ -61,20 +71,33 @@ const course3 = () => {
 
             return;
         }
-
-
-
         try {
-            router.replace("/admin/adminhome/upload/course4")
+            const data = {
+                file: formData.get('file') as File,
+                title: topicTitle,
+                content: description,
+                free: question === 'Yes',
+                course_id: Number(course),
+            };
+            const response = await createTopic({ secret, data }).unwrap();
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Topic created successfully.',
+            });
+            router.replace("/admin/adminhome/upload/course4");
         } catch (error) {
-
-        }
-        finally {
-            setTopicTitle(" ")
-            setCourse(" ")
-            setQuestion(" ")
-            setDescription("")
-            setPhoto("")
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to create topic. Please try again.',
+            });
+        } finally {
+            setTopicTitle("");
+            setCourse("");
+            setQuestion("");
+            setDescription("");
+            setPhoto("");
         }
     }
 
@@ -98,22 +121,7 @@ const course3 = () => {
                     {/* Subject Picker */}
                     <View style={styles.pickerContainer}>
                         <Text style={styles.thirdText}>Course</Text>
-                        {/* <RNPickerSelect
-                        onValueChange={(value) => setCourse(value)}
-                        items={courseItems}
-                        placeholder={{ label: 'Select Course', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={course}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
+
                         <DropDownPicker
                             open={open}
                             value={course}
@@ -162,22 +170,7 @@ const course3 = () => {
 
                     <View style={styles.pickerContainer}>
                         <Text style={styles.thirdText}>Is this course free?</Text>
-                        {/* <RNPickerSelect
-                        onValueChange={(value) => setQuestion(value)}
-                        items={questionChoices}
-                        placeholder={{ label: 'Select option', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={question}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
+
                         <DropDownPicker
                             open={open2}
                             value={question}
@@ -213,8 +206,9 @@ const course3 = () => {
                     <Text style={styles.eighthText}>Add 5 images max</Text>
 
                     <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Next</Text>}
 
-                        <Text style={styles.buttonText}>Next</Text>
+
                     </TouchableOpacity>
                 </ScrollView>
             </KeyboardAwareScrollView>

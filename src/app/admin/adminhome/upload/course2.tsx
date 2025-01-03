@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'expo-router'
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
@@ -7,10 +7,15 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import Toast from 'react-native-toast-message';
 import * as ImagePicker from 'expo-image-picker';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { useCreateCourseMutation } from '../../../../components/services/adminService';
+import { useGetSchoolsQuery } from '../../../../components/services/userService';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../../../components/redux/store';
 
 const course2 = () => {
     const [courseTitle, setCourseTitle] = useState("");
+    const { data, isSuccess, isLoading: isLoading2 } = useGetSchoolsQuery();
+    const [schoolItems, setSchoolItems] = useState<{ label: string; value: string | number }[]>([]);
     const [open, setOpen] = useState(false)
     const [open2, setOpen2] = useState(false)
     const [open3, setOpen3] = useState(false)
@@ -22,14 +27,27 @@ const course2 = () => {
     const [level, setLevel] = useState("");
     const [semester, setSemester] = useState("");
     const [photo, setPhoto] = useState<string>("");
+    const [createCourse, { isLoading }] = useCreateCourseMutation();
+    const formData = new FormData();
 
+    const secret = useSelector((state: RootState) => state.admin.admin.secret);
+    console.log(secret);
+    useEffect(() => {
+        if (isSuccess && data?.result) {
+            const formattedSchools = data.result.map((school: any) => ({
+                label: school.name,
+                value: school.id,
+            }));
+            setSchoolItems(formattedSchools);
+        }
+    }, [data, isSuccess]);
 
     const levelItems = [
-        { label: 'Year 1', value: 'year_1' },
-        { label: 'Year 2', value: 'year_2' },
-        { label: 'Year 3', value: 'year_3' },
-        { label: 'Year 4', value: 'year_4' },
-        { label: 'Year 5', value: 'year_5' },
+        { label: 'Year 1', value: '1' },
+        { label: 'Year 2', value: '2' },
+        { label: 'Year 3', value: '3' },
+        { label: 'Year 4', value: '4' },
+        { label: 'Year 5', value: '5' },
 
     ];
     const semesterItems = [
@@ -38,13 +56,7 @@ const course2 = () => {
 
 
     ];
-    const schoolItems = [
-        { label: 'School of Engineering', value: 'engineering' },
-        { label: 'School of Medicine', value: 'medicine' },
-        { label: 'School of Law', value: 'law' },
-        { label: 'School of Business', value: 'business' },
-        { label: 'School of Arts', value: 'arts' },
-    ];
+
     const departmentItems = [
         { label: 'Electrical and Electronics Engineering', value: 'Electrical and Electronics Engineering' },
         { label: 'Chemical Engineering', value: 'Chemical Engineering' },
@@ -68,11 +80,24 @@ const course2 = () => {
             const photoUri = result.assets[0].uri;
             setPhoto(photoUri);
             //   dispatch(setProfilePicture(photoUri))
-
+            const mimeType = photoUri.endsWith(".png") ? "image/png" : photoUri.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
+            // formData.append("picture", new File([photoUri], "profile-picture.jpg", { type: mimeType }));
+            formData.append("file", {
+                uri: photoUri,
+                name: "profile-picture.jpg",
+                type: mimeType,
+            } as any);
         }
     };
 
-    const handleSubmit = () => {
+    if (isLoading2) {
+        return (
+            <SafeAreaView style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FF8C00" />
+            </SafeAreaView>
+        );
+    }
+    const handleSubmit = async () => {
         if (!courseCode || !courseTitle || !department || !school || !level || !semester) {
             Toast.show({
                 type: 'error',
@@ -86,18 +111,34 @@ const course2 = () => {
 
 
         try {
-            router.replace("/admin/adminhome/upload/course3")
+            const data = {
+                name: courseTitle,
+                short_name: courseCode,
+                school_id: Number(school),
+                level_id: Number(level),
+                semester,
+            };
+            const response = await createCourse({ secret, data }).unwrap();
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Course created successfully.',
+            });
+            router.replace("/admin/adminhome/upload/5");
         } catch (error) {
-
-        }
-        finally {
-            setCourseCode(" ")
-            setCourseTitle(" ")
-            setDepartment(" ")
-            setSchool("")
-            setLevel("")
-            setSemester("")
-            setPhoto("")
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to create course. Please try again.',
+            });
+        } finally {
+            setCourseCode("");
+            setCourseTitle("");
+            setDepartment("");
+            setSchool("");
+            setLevel("");
+            setSemester("");
+            setPhoto("");
         }
     }
 
@@ -105,205 +146,146 @@ const course2 = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <KeyboardAwareScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-                <View style={styles.lineContainer}>
-                    <View style={styles.innerLineContainer}></View>
-                </View>
-                <Text style={styles.fourthText}>
-                    Provide your course details
-                </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={styles.secondText}>
-                        Fill in the details about your course.
-                    </Text>
-
-                </View>
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Course Title</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter course title'}
-                        onChangeText={text => {
-                            setCourseTitle(text);
-                        }}
-                        value={courseTitle}
-
-                    />
-                </View>
-
-
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Course code</Text>
-                    <TextInput
-                        style={styles.secondInnerContainer}
-                        placeholderTextColor='#98A2B3'
-                        placeholder={'Enter course code'}
-                        onChangeText={text => {
-                            setCourseCode(text);
-                        }}
-                        value={courseCode}
-                    
-
-                    />
-                </View>
-                <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>Department</Text>
-                    {/* <RNPickerSelect
-                        onValueChange={(value) => setDepartment(value)}
-                        items={departmentItems}
-                        placeholder={{ label: 'Select school', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={department}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
-                    <DropDownPicker
-                        open={open}
-                        value={department}
-                        items={departmentItems}
-                        closeAfterSelecting={true}
-                        closeOnBackPressed={true}
-                        listItemContainerStyle={{
-                            height: 40
-                        }}
-                        setOpen={setOpen}
-                        setValue={setDepartment}
-                        placeholder="Choose Department"
-                        style={pickerSelectStyles.inputIOS}
-                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-                    />
-                </View>
-                <View style={[styles.pickerContainer, (open) && { zIndex: -20 }]} >
-                    <Text style={styles.thirdText}>School</Text>
-                    {/* <RNPickerSelect
-                        onValueChange={(value) => setSchool(value)}
-                        items={schoolItems}
-                        placeholder={{ label: 'Select school', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={school}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
-                    <DropDownPicker
-                        open={open2}
-                        value={school}
-                        items={schoolItems}
-                        closeAfterSelecting={true}
-                        closeOnBackPressed={true}
-                        listItemContainerStyle={{
-                            height: 40
-                        }}
-                        setOpen={setOpen2}
-                        setValue={setSchool}
-                        placeholder="Select school"
-                        style={pickerSelectStyles.inputIOS}
-                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-                    />
-                </View>
-                <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
-                    <Text style={styles.thirdText}>Semester</Text>
-                    {/* <RNPickerSelect
-                        onValueChange={(value) => setSemester(value)}
-                        items={semesterItems}
-                        placeholder={{ label: 'Select semester', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={semester}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
-                    <DropDownPicker
-                        open={open3}
-                        value={semester}
-                        items={semesterItems}
-                        closeAfterSelecting={true}
-                        closeOnBackPressed={true}
-                        listItemContainerStyle={{
-                            height: 40
-                        }}
-                        setOpen={setOpen3}
-                        setValue={setSemester}
-                        placeholder="Select semester"
-                        style={pickerSelectStyles.inputIOS}
-                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-                    />
-                </View>
-                <View style={[styles.pickerContainer, (open3 || open2 || open) && { zIndex: -20 }]}>
-                    <Text style={styles.thirdText}>Level</Text>
-                    {/* <RNPickerSelect
-                        onValueChange={(value) => setLevel(value)}
-                        items={levelItems}
-                        placeholder={{ label: 'Select level', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={level}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
-                    <DropDownPicker
-                        open={open4}
-                        value={level}
-                        items={levelItems}
-                        closeAfterSelecting={true}
-                        closeOnBackPressed={true}
-                        listItemContainerStyle={{
-                            height: 40
-                        }}
-                        setOpen={setOpen4}
-                        setValue={setLevel}
-                        placeholder="Select level"
-                        style={pickerSelectStyles.inputIOS}
-                        dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-                    />
-                </View>
-
-                <View style={styles.thirdContainer}>
-                    <View>
-                        <Text style={styles.fifthText}>Course Image</Text>
-                        {photo
-                            ?
-                            <Image source={{ uri: photo }} style={styles.image} />
-                            :
-                            <Text style={styles.sixthText}>Upload image</Text>
-                        }
+                    <View style={styles.lineContainer}>
+                        <View style={styles.innerLineContainer}></View>
                     </View>
-                    <TouchableOpacity style={styles.smallContainer} onPress={handleUploadPhoto}>
-                        <Text style={styles.seventhText}>Browse files</Text>
+                    <Text style={styles.fourthText}>
+                        Provide your course details
+                    </Text>
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={styles.secondText}>
+                            Fill in the details about your course.
+                        </Text>
+
+                    </View>
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Course Title</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter course title'}
+                            onChangeText={text => {
+                                setCourseTitle(text);
+                            }}
+                            value={courseTitle}
+
+                        />
+                    </View>
+
+
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Course code</Text>
+                        <TextInput
+                            style={styles.secondInnerContainer}
+                            placeholderTextColor='#98A2B3'
+                            placeholder={'Enter course code'}
+                            onChangeText={text => {
+                                setCourseCode(text);
+                            }}
+                            value={courseCode}
+
+
+                        />
+                    </View>
+                    <View style={styles.pickerContainer}>
+                        <Text style={styles.thirdText}>Department</Text>
+
+                        <DropDownPicker
+                            open={open}
+                            value={department}
+                            items={departmentItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen}
+                            setValue={setDepartment}
+                            placeholder="Choose Department"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                    </View>
+                    <View style={[styles.pickerContainer, (open) && { zIndex: -20 }]} >
+                        <Text style={styles.thirdText}>School</Text>
+
+                        <DropDownPicker
+                            open={open2}
+                            value={school}
+                            items={schoolItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen2}
+                            setItems={setSchoolItems}
+                            setValue={setSchool}
+                            placeholder="Select school"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                    </View>
+                    <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
+                        <Text style={styles.thirdText}>Semester</Text>
+
+                        <DropDownPicker
+                            open={open3}
+                            value={semester}
+                            items={semesterItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen3}
+                            setValue={setSemester}
+                            placeholder="Select semester"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                    </View>
+                    <View style={[styles.pickerContainer, (open3 || open2 || open) && { zIndex: -20 }]}>
+                        <Text style={styles.thirdText}>Level</Text>
+
+                        <DropDownPicker
+                            open={open4}
+                            value={level}
+                            items={levelItems}
+                            closeAfterSelecting={true}
+                            closeOnBackPressed={true}
+                            listItemContainerStyle={{
+                                height: 40
+                            }}
+                            setOpen={setOpen4}
+                            setValue={setLevel}
+                            placeholder="Select level"
+                            style={pickerSelectStyles.inputIOS}
+                            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+                        />
+                    </View>
+
+                    <View style={styles.thirdContainer}>
+                        <View>
+                            <Text style={styles.fifthText}>Course Image</Text>
+                            {photo
+                                ?
+                                <Image source={{ uri: photo }} style={styles.image} />
+                                :
+                                <Text style={styles.sixthText}>Upload image</Text>
+                            }
+                        </View>
+                        <TouchableOpacity style={styles.smallContainer} onPress={handleUploadPhoto}>
+                            <Text style={styles.seventhText}>Browse files</Text>
+                        </TouchableOpacity>
+                    </View>
+
+
+                    <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+                        {isLoading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Create lecture Note</Text>}
+
                     </TouchableOpacity>
-                </View>
-
-
-                <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-
-                    <Text style={styles.buttonText}>Create lecture Note</Text>
-                </TouchableOpacity>
                 </ScrollView>
             </KeyboardAwareScrollView>
         </SafeAreaView>
@@ -311,6 +293,12 @@ const course2 = () => {
 };
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+    },
     lineContainer: {
         backgroundColor: "#E6EBF6",
         height: 9,

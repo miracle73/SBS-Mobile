@@ -34,7 +34,7 @@ export default function Page() {
                                 disabled={false}
                             />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/birthdays") }}>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/more") }}>
                             <HomeComponent
                                 Icon={SnowflakeIcon}
                                 firstText="Birthdays"

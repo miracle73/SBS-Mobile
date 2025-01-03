@@ -1,44 +1,65 @@
-import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ScrollView, TouchableOpacity, TextInput, Image, ActivityIndicator } from 'react-native';
 import React from 'react';
 import FirstImage from "../../../../../assets/images/Dropdown.png"
 import CourseCard from '../../../../components/CourseCard';
 import { useRouter } from 'expo-router';
-const course5 = () => {
-const router = useRouter()
+import { useViewAllCoursesQuery } from '../../../../components/services/adminService';
+import { RootState } from '../../../../components/redux/store';
+import { useSelector } from 'react-redux';
 
+const Course5 = () => {
+    const router = useRouter();
+    const secret = useSelector((state: RootState) => state.admin.admin.secret);
+    console.log(secret);
+    const { data, error, isLoading } = useViewAllCoursesQuery({ secret });
+
+   
+    if (isLoading) {
+        return (
+            <SafeAreaView style={styles.bodyContainer}>
+                <ActivityIndicator size="large" color="#FF8C00" />
+            </SafeAreaView>
+        );
+    }
 
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <ScrollView style={{ paddingHorizontal: 20, }} showsVerticalScrollIndicator={false}>
-             
+            <ScrollView style={{ paddingHorizontal: 20, justifyContent: "space-between" }} showsVerticalScrollIndicator={false}>
+
                 <Text style={styles.fourthText}>
                     Courses
                 </Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
-                    <Text style={styles.secondText}>
-                        View all uploaded courses
-                    </Text>
 
-                </View>
+                {Array.isArray(data) && data.length > 0 &&
+                    <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center" }}>
+                        <Text style={styles.secondText}>
+                            View all uploaded courses
+                        </Text>
+                    </View>
+                }
+
 
                 <View style={styles.layout}>
-                    <View style={{ width: "47%" }}>
-                        <CourseCard />
-                        <CourseCard />
-                    </View>
-                    <View style={{ width: "47%" }}>
-                        <CourseCard />
-                        <CourseCard />
-                    </View>
+                    {error && <Text>Error loading courses</Text>}
+                    {Array.isArray(data) && data.length > 0 ? (
+                        (data ?? []).map((course: any, index: any) => (
+                            <View key={index} style={{ width: '47%', marginBottom: 20 }}>
+                                <CourseCard course={course} />
+                            </View>
+                        ))
+                    ) : (
+                        <Text style={styles.secondText}>No courses available</Text>
+                    )}
                 </View>
-                <TouchableOpacity style={styles.button} onPress={() => {router.push("/admin/adminhome/upload/course2")}}>
 
+                <TouchableOpacity style={styles.button} onPress={() => { router.push("/admin/adminhome/upload/course2") }}>
                     <Text style={styles.buttonText}>Add course</Text>
                 </TouchableOpacity>
             </ScrollView>
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     lineContainer: {
@@ -137,4 +158,4 @@ const styles = StyleSheet.create({
 });
 
 
-export default course5;
+export default Course5;

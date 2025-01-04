@@ -60,10 +60,10 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
             return 0;
         }
         if (totalCGPA !== 0) {
-            const newCGPA = (totalCGPA + calculatedCGPA) / 2;
-            return newCGPA;
+            const newCGPA = ((totalCGPA + calculatedCGPA) / 2).toFixed(2);
+            return parseFloat(newCGPA);
         }
-        return calculatedCGPA;
+        return parseFloat(calculatedCGPA.toFixed(2));
     };
 
     useEffect(() => {
@@ -99,7 +99,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder=' GST 101'
+                            placeholder='GST 101'
                             onChangeText={text => handleCourseChange(index, 'course', text)}
                             value={item.course}
                         />
@@ -110,7 +110,7 @@ const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder=' 1'
+                            placeholder='1'
                             onChangeText={text => handleCourseChange(index, 'unit', text)}
                             value={item.unit}
                         />

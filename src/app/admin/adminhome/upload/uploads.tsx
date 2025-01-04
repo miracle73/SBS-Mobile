@@ -41,7 +41,7 @@ export default function Page() {
                             />
                         </TouchableOpacity>
 
-                        <TouchableOpacity onPress={() => { router.push("/admin/notification") }}>
+                        {/* <TouchableOpacity onPress={() => { router.push("/admin/notification") }}>
                             <HomeComponent
                                 Icon={SecondNotificationIcon}
                                 firstText="Notification"
@@ -49,7 +49,7 @@ export default function Page() {
                                 backgroundColor="#FFAD84"
                                 disabled={false}
                             />
-                        </TouchableOpacity>
+                        </TouchableOpacity> */}
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
                         {/* <TouchableOpacity onPress={() => { router.push("/admin/coursesPastQuestions") }}>

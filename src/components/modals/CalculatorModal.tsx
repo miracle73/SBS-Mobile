@@ -34,7 +34,8 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
         }
         router.push({
             pathname: '/other/level',
-            params: { level: "200 Level", course: "EEE" }
+            params: { level: JSON.stringify(level), course:  JSON.stringify(course)},
+
         });
 
         setModal(false)
@@ -53,6 +54,10 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
         { label: 'Economics', value: 'economics' },
         { label: 'Psychology', value: 'psychology' },
         { label: 'Physics', value: 'physics' },
+        { label: 'Business Admin', value: 'Business Admin' },
+        { label: 'Fisheries', value: 'Fisheries' },
+        { label: 'Electrical Engineering', value: 'elect_elect' },
+        
     ];
 
     return (

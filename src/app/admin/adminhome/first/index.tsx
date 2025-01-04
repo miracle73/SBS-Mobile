@@ -15,11 +15,11 @@ export default function Page() {
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
             <View style={styles.container}>
                 <StatusBar style="dark" />
-                <View style={styles.main}>
+                {/* <View style={styles.main}>
                     <TouchableOpacity style={styles.roundedContainer} onPress={() => { router.push("/admin/adminhome/first/notification") }}>
                         <Ionicons name="notifications-outline" size={20} />
                     </TouchableOpacity>
-                </View>
+                </View> */}
 
                 <Text style={styles.title}>Welcome Admin</Text>
                 <Text style={styles.subtitle}>Quick access to all your information</Text>

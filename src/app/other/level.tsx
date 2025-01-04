@@ -1,6 +1,8 @@
 import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native';
-import React, { useState } from 'react';
-import { useRouter } from 'expo-router';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+import { setCGPA } from '../../components/redux/slices/userSlice';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import ConfirmModal from '../../components/modals/ConfirmModal';
 import FirstSemester from '../../components/FirstSemester';
 import SecondSemester from '../../components/SecondSemester';
@@ -10,9 +12,11 @@ type LevelRouteProp = RouteProp<{ params: { level: string; course: string } }, '
 
 const Level = ({ route }: { route: LevelRouteProp }) => {
     const router = useRouter();
-    const { level, course: Department } = route?.params || { level: '', course: '' };
-    console.log(level, Department);
-    
+    const { course, level } = useLocalSearchParams() as { course: string; level: string };
+    console.log(course, level)
+    const dispatch = useDispatch();
+   
+
     const [selectedSemester, setSelectedSemester] = useState('1st Semester');
     const [modal, setModal] = useState(false);
     const [totalCGPA, setTotalCGPA] = useState(0.00);
@@ -21,6 +25,17 @@ const Level = ({ route }: { route: LevelRouteProp }) => {
         setTotalCGPA(cgpa);
     };
 
+    // useEffect(() => {
+    //     if (course && level) {
+    //         dispatch(setCGPA({ level, course, value: totalCGPA }));
+    //     }
+    // }, [totalCGPA, course, level, dispatch]);
+    
+    useEffect(() => {
+        if (course && level && !isNaN(totalCGPA)) {
+            dispatch(setCGPA({ level, course, value: totalCGPA }));
+        }
+    }, [totalCGPA, course, level, dispatch]);
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }} showsHorizontalScrollIndicator={false}>
@@ -38,17 +53,17 @@ const Level = ({ route }: { route: LevelRouteProp }) => {
                 </View>
 
                 <View style={styles.secondContainer}>
-                    <TouchableOpacity 
-                        style={[styles.innerContainer, selectedSemester === '1st Semester' && styles.selectedContainer]} 
+                    <TouchableOpacity
+                        style={[styles.innerContainer, selectedSemester === '1st Semester' && styles.selectedContainer]}
                         onPress={() => setSelectedSemester('1st Semester')}
                     >
                         <Text style={[styles.fifthText, selectedSemester === '1st Semester' && styles.selectedText]}>1st Semester</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
-                        style={[styles.innerContainer,  selectedSemester === '2nd Semester' && styles.selectedContainer]} 
+                    <TouchableOpacity
+                        style={[styles.innerContainer, selectedSemester === '2nd Semester' && styles.selectedContainer]}
                         onPress={() => setSelectedSemester('2nd Semester')}
                     >
-                        <Text style={[styles.fifthText,  selectedSemester === '2nd Semester' && styles.selectedText]}>2nd Semester</Text>
+                        <Text style={[styles.fifthText, selectedSemester === '2nd Semester' && styles.selectedText]}>2nd Semester</Text>
                     </TouchableOpacity>
                 </View>
 

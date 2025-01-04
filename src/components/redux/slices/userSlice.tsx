@@ -3,45 +3,27 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 interface User {
-  email: string;
-  username: string;
-  courses: string[];  // Array type for courses
   id: string;
-  name: string;
-  picture: string | null; // Nullable string type for picture
-  university: string;
-  faculty: string;
-  department: string;
+}
+
+interface CGPA {
   level: string;
+  course: string;
+  value: number;
 }
 
 interface UserState {
   idToken: string;
-  scopes: string[];
-  serverAuthCode: string;
   user: User;
-  status: 'idle' | 'loading' | 'success' | 'error';
-  darkMode: boolean; 
+  cgpaRecords: CGPA[];
 }
 
 const initialState: UserState = {
   idToken: '',
-  scopes: [],
-  serverAuthCode: '',
   user: {
-    email: '',
-    username: '', // Ensure username field is present
-    courses: [],  // Ensure courses is initialized as an empty array
     id: '',
-    name: '',
-    picture: "", // Ensure picture can be null
-    university: '',
-    faculty: '',
-    department: '',
-    level: ''
   },
-  status: 'idle',
-  darkMode: true,
+  cgpaRecords: [],  // Ensure this is initialized as an empty array
 };
 
 const userSlice = createSlice({
@@ -51,20 +33,27 @@ const userSlice = createSlice({
     setUserInfo: (state, action: PayloadAction<Partial<UserState>>) => {
       return { ...state, ...action.payload, status: 'success' };
     },
-    setProfilePicture: (state, action: PayloadAction<string>) => {
-      if (state.user) {
-        state.user.picture = action.payload;
+    clearUserInfo: () => initialState,
+    setCGPA: (state, action: PayloadAction<CGPA>) => {
+      if (!state.cgpaRecords) {
+        state.cgpaRecords = []; // Ensure cgpaRecords is defined
+      }
+      const index = state.cgpaRecords.findIndex(
+        (record) => record.level === action.payload.level && record.course === action.payload.course
+      );
+      if (index >= 0) {
+        state.cgpaRecords[index] = action.payload;
+      } else {
+        state.cgpaRecords.push(action.payload);
       }
     },
-    clearUserInfo: () => initialState,
-    toggleDarkMode: (state) => {
-      state.darkMode = !state.darkMode; 
+    clearCGPA: (state, action: PayloadAction<{ level: string; course: string }>) => {
+      state.cgpaRecords = state.cgpaRecords.filter(
+        (record) => record.level !== action.payload.level || record.course !== action.payload.course
+      );
     },
-    setDarkMode: (state, action: PayloadAction<boolean>) => {
-      state.darkMode = action.payload; 
-    }
   },
 });
 
-export const { setUserInfo, clearUserInfo, setProfilePicture, toggleDarkMode, setDarkMode } = userSlice.actions;
+export const { setUserInfo, clearUserInfo, setCGPA, clearCGPA } = userSlice.actions;
 export default userSlice.reducer;

@@ -60,10 +60,10 @@ const SecondSemester: React.FC<SecondSemesterProps> = ({ setTotalCGPA, totalCGPA
             return 0;
         }
         if (totalCGPA !== 0) {
-            const newCGPA = (totalCGPA + calculatedCGPA) / 2;
-            return newCGPA;
+            const newCGPA = ((totalCGPA + calculatedCGPA) / 2).toFixed(2);
+            return parseFloat(newCGPA);
         }
-        return calculatedCGPA;
+        return parseFloat(calculatedCGPA.toFixed(2));
     };
 
     useEffect(() => {
@@ -95,28 +95,28 @@ const SecondSemester: React.FC<SecondSemesterProps> = ({ setTotalCGPA, totalCGPA
             renderItem={({ item, index }) => (
                 <View key={index} style={styles.courseContainer}>
                     <View style={{ width: '30%', alignItems: 'flex-start' }}>
-                        <Text style={styles.sixthText}>Course</Text>
+                        <Text style={[styles.sixthText, {marginTop: 20}]}>Course</Text>
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder=' GST 101'
+                            placeholder='GST 101'
                             onChangeText={text => handleCourseChange(index, 'course', text)}
                             value={item.course}
                         />
                     </View>
 
                     <View style={{ width: '30%', alignItems: 'flex-start' }}>
-                        <Text style={styles.sixthText}>Unit</Text>
+                        <Text style={[styles.sixthText, {marginTop: 20}]}>Unit</Text>
                         <TextInput
                             style={styles.secondInnerContainer}
                             placeholderTextColor='#98A2B3'
-                            placeholder=' 1'
+                            placeholder='1'
                             onChangeText={text => handleCourseChange(index, 'unit', text)}
                             value={item.unit}
                         />
                     </View>
 
-                    <View style={{ width: '30%', alignItems: 'flex-start' }}>
+                    <View style={[{ width: '33%', alignItems: 'flex-start' }, (open && currentIndex !== index) && { zIndex: -20 }]}>
                         <Text style={styles.sixthText}>Grade</Text>
 
                         <DropDownPicker
@@ -138,10 +138,8 @@ const SecondSemester: React.FC<SecondSemesterProps> = ({ setTotalCGPA, totalCGPA
                         />
 
                     </View>
-                   
                 </View>
             )}
-           
             ListFooterComponent={() => (
                 <TouchableOpacity style={styles.button} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Save CGPA</Text>
@@ -156,7 +154,7 @@ const SecondSemester: React.FC<SecondSemesterProps> = ({ setTotalCGPA, totalCGPA
 
 const styles = StyleSheet.create({
     scrollView: {
-        paddingHorizontal: 20,
+  
     },
     button: {
         flexDirection: "row",
@@ -186,7 +184,7 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     secondInnerContainer: {
-        height: 40,
+        height: 50,
         borderWidth: 1,
         borderColor: '#D0D5DD',
         flexShrink: 0,
@@ -195,6 +193,7 @@ const styles = StyleSheet.create({
         color: '#000000',
         width: '100%',
         backgroundColor: '#FFFFFF',
+        
     },
 });
 

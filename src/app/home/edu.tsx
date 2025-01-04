@@ -209,7 +209,7 @@ const edu = () => {
         </View>
 
         {/* Year Picker */}
-        <View style={[styles.pickerContainer, (open3 || open2) && { zIndex: -20 }]}>
+        <View style={[styles.pickerContainer, (open3 || open2 || open) && { zIndex: -20 }]}>
           <Text style={styles.thirdText}>Year</Text>
           <DropDownPicker
             open={open4}

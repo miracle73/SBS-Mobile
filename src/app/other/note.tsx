@@ -1,11 +1,8 @@
 import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import NoteImage from "../../../assets/images/note-image.png"
-import SecondNoteImage from "../../../assets/images/second-note-image.png"
-import VideoThumbnail from "../../../assets/images/Video Thumbnail.png"
 
 
 const note = () => {
@@ -14,7 +11,7 @@ const note = () => {
     const router = useRouter()
     const { content } = useLocalSearchParams();
     const searchResults = typeof content === 'string' ? JSON.parse(content) : [];
-    console.log(searchResults, 67)
+
 
     const noteItems = [
         { label: 'Harvard University', value: 'harvard' },
@@ -29,49 +26,24 @@ const note = () => {
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }}>
-
-
-                {/* Institution Picker */}
-                {/* <View style={styles.pickerContainer}>
-                    <Text style={styles.thirdText}>All notes</Text>
-                    <RNPickerSelect
-                        onValueChange={(value) => setNote(value)}
-                        items={noteItems}
-                        placeholder={{ label: 'Select note', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={note}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    />
-                </View> */}
-
+                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                    {searchResults.image_1 && <Image source={{ uri: searchResults.image_1 }} style={styles.image} />}
+                </View>
                 <Text style={styles.firstText}>{searchResults.title}</Text>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    <Image source={NoteImage} style={{ marginTop: 20 }} />
+                    {searchResults.image_2 && <Image source={{ uri: searchResults.image_2 }} style={styles.image} />}
                 </View>
+                {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
+                    <Image source={NoteImage} style={{ marginTop: 20 }} />
+                </View> */}
                 <Text style={styles.fourthText}>
                     {searchResults.content}
                 </Text>
-
-                {/* <View style={styles.container}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: "#FFFFFF", borderWidth: 1.5, borderColor: "#B0BEC5" }]}
-                        onPress={() => { router.back(); }}
-                    >
-                        <Text style={[styles.buttonText, { color: "#B0BEC5" }]}>Back</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button}
-                        disabled={true}>
-                        <Text style={styles.buttonText}>Next</Text>
-                    </TouchableOpacity>
-                </View> */}
-
+                <View style={{ alignItems: "center", justifyContent: "center" }}>
+                    {searchResults.image_3 && <Image source={{ uri: searchResults.image_3 }} style={styles.image} />}
+                    {searchResults.image_4 && <Image source={{ uri: searchResults.image_4 }} style={styles.image} />}
+                    {searchResults.image_5 && <Image source={{ uri: searchResults.image_5 }} style={styles.image} />}
+                </View>
             </ScrollView>
         </SafeAreaView>
     );
@@ -103,6 +75,12 @@ const styles = StyleSheet.create({
         fontWeight: '700',
         marginBottom: 5,
         marginTop: 10,
+    },
+    image: {
+        width: '100%',
+        height: 200,
+        marginTop: 10,
+        borderRadius: 10,
     },
     thirdText: {
         fontSize: 10,

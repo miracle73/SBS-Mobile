@@ -31,17 +31,16 @@ export default function Page() {
                             />
 
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/first/birthdays") }}>
-                            <TouchableOpacity onPress={() => { router.push("/admin/coursesPastQuestions") }}>
-                                <HomeComponent
-                                    Icon={SnowflakeIcon}
-                                    firstText="Birthdays"
-                                    secondText="Upload new celebrations"
-                                    backgroundColor="#E5AD35"
-                                    disabled={false}
-                                />
-                            </TouchableOpacity>
+                        <TouchableOpacity onPress={() => { router.push("/admin/adminhome/more") }}>
+                            <HomeComponent
+                                Icon={SnowflakeIcon}
+                                firstText="Birthdays"
+                                secondText="Upload new celebrations"
+                                backgroundColor="#E5AD35"
+                                disabled={false}
+                            />
                         </TouchableOpacity>
+
                         <TouchableOpacity onPress={() => { router.push("/admin/notification") }}>
                             <HomeComponent
                                 Icon={SecondNotificationIcon}
@@ -53,13 +52,15 @@ export default function Page() {
                         </TouchableOpacity>
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <HomeComponent
-                            Icon={SearchIcon}
-                            firstText="Past Questions"
-                            secondText="Add past questions"
-                            backgroundColor="#FFAD84"
-                            disabled={false}
-                        />
+                        {/* <TouchableOpacity onPress={() => { router.push("/admin/coursesPastQuestions") }}>
+                            <HomeComponent
+                                Icon={SearchIcon}
+                                firstText="Past Questions"
+                                secondText="Add past questions"
+                                backgroundColor="#FFAD84"
+                                disabled={false}
+                            />
+                        </TouchableOpacity> */}
                         <TouchableOpacity onPress={() => { router.push("/admin/adminhome/upload/course") }}>
                             <HomeComponent
                                 Icon={SnowflakeIcon}
@@ -76,7 +77,7 @@ export default function Page() {
 
             </View>
 
-        </SafeAreaView>
+        </SafeAreaView >
     );
 }
 

@@ -67,7 +67,7 @@ export default function Page() {
                     </View>
                 </View>
 
-                <Text style={styles.firstText}>Recently Added</Text>
+                {/* <Text style={styles.firstText}>Recently Added</Text>
                 <Text style={styles.secondText}>View all recent notes</Text>
                 <View style={styles.secondContainer}>
 
@@ -86,7 +86,7 @@ export default function Page() {
                         <Text style={styles.thirdText}>Lecture note</Text>
                         <Text style={styles.fourthText}>Added: 24th Oct, 2024</Text>
                     </View>
-                </View>
+                </View> */}
             </View>
 
         </SafeAreaView>

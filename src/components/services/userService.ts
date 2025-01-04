@@ -151,6 +151,7 @@ export const {
   useActivateUserMutation,
   useSearchTopicsInCoursesMutation,
   useGetTopicContentMutation,
+  useGetTopicPastQuestionQuery,
 } = userApi;
 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';

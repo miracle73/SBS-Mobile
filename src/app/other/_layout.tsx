@@ -39,6 +39,12 @@ const OtherLayout = () => {
                     }}
                 />
                 <Stack.Screen
+                    name="pastQuestionTopic"
+                    options={{
+                        title: "Topics",
+                    }}
+                />
+                <Stack.Screen
                     name="note"
                     options={{
                         headerShown: false

@@ -5,52 +5,51 @@ import { SecondPadlockIcon } from '../../assets/svg';
 import { useRouter } from 'expo-router';
 import SubscriptionModal from './modals/SubscriptionModal';
 import * as Device from 'expo-device';
-import { useGetTopicContentMutation } from '../components/services/userService';
+import { useGetTopicPastQuestionQuery } from '../components/services/userService';
 import Toast from 'react-native-toast-message';
 
 
-interface TopicComponentProps {
+interface PastQuestionTopicComponentProps {
     title: string;
     id: number;
     free: boolean
+    year?: string
 }
 
 
-const TopicComponent: React.FC<TopicComponentProps> = ({ title, id, free }) => {
+const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({ title, id, free, year }) => {
     const router = useRouter();
     const [modal, setModal] = React.useState(false);
-    const [getTopicContent, { data, error, isLoading }] = useGetTopicContentMutation();
+   
+    const { data, error, isLoading } = useGetTopicPastQuestionQuery({ topic_id: id, year: Number(year) });
 
     const handlePress = async () => {
         // /admin/adminhome/first/birthdays
         // /admin/addNotification
-        console.log(1)
+        
         if (!free) {
             setModal(true)
             return;
         }
      
-        try {
-         
-            const result = await getTopicContent({ phone_imei: Device.osBuildId, topic_id: id }).unwrap();
-     
-            // If successful, navigate to the note page with topic content
-            router.push({
-                pathname: '/other/note',
-                params: { content: JSON.stringify(result.topic_content) },
-            });
-   
-        } catch (error) {
-          
+       
+        if (error) {
             console.error('Error fetching topic content:', error);
-            const errorMessage = (error as any)?.data?.detail?.message || 'Failed to fetch topic content.';
+            const errorMessage = (error as any).data?.detail?.message || 'Failed to fetch topic content.';
             Toast.show({
                 type: 'error',
                 text1: 'Error',
                 text2: errorMessage,
             });
             return;
-         
+        }
+
+        if (data) {
+            // If successful, navigate to the note page with topic content
+            router.push({
+                pathname: '/other/note',
+                params: { content: JSON.stringify(data) },
+            });
         }
 
     };
@@ -103,4 +102,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default TopicComponent
+export default PastQuestionTopicComponent

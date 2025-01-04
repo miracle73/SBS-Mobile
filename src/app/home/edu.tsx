@@ -1,26 +1,67 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect } from 'react';
 import RNPickerSelect from 'react-native-picker-select';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router'
 import DropDownPicker from 'react-native-dropdown-picker';
+import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from '../../components/services/userService';
+import * as Device from 'expo-device';
+import Toast from 'react-native-toast-message';
 
 const edu = () => {
+  const [loading, setLoading] = useState(false)
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
   const [year, setYear] = useState("");
+  const [level, setLevel] = useState("");
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
+  const [open4, setOpen4] = useState(false);
   const router = useRouter();
+  const [schoolItems, setSchoolItems] = useState<{ label: string; value: string }[]>([]);
+  const [levelItems, setLevelItems] = useState<{ label: string; value: string }[]>([]);
+  const [courseItems, setCourseItems] = useState<{ label: string; value: string }[]>([]);
 
-  const schoolItems = [
-    { label: 'School of Engineering', value: 'engineering' },
-    { label: 'School of Medicine', value: 'medicine' },
-    { label: 'School of Law', value: 'law' },
-    { label: 'School of Business', value: 'business' },
-    { label: 'School of Arts', value: 'arts' },
-  ];
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
+  const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      const formattedSchools = {
+        label: data.name,
+        value: data.id.toString(),
+      };
+      setSchoolItems([formattedSchools]);
+    }
+  }, [data, isSuccess]);
+
+  useEffect(() => {
+    if (isSuccess && data) {
+
+
+      const formattedLevels = data.levels.map((level) => ({
+        label: level.name,
+        value: level.id,
+      }));
+      setLevelItems(formattedLevels);
+
+      const formattedCourses = data.courses.map((course) => ({
+        label: course.name,
+        value: course.id,
+      }));
+      setCourseItems(formattedCourses);
+
+    }
+  }, [school, data]);
+
+  // const schoolItems = [
+  //   { label: 'School of Engineering', value: 'engineering' },
+  //   { label: 'School of Medicine', value: 'medicine' },
+  //   { label: 'School of Law', value: 'law' },
+  //   { label: 'School of Business', value: 'business' },
+  //   { label: 'School of Arts', value: 'arts' },
+  // ];
 
   // Define Subject Categories (example)
   const subjectItems = [
@@ -36,13 +77,59 @@ const edu = () => {
 
   // Define Years (could be specific to subject or level)
   const yearItems = [
-    { label: 'Year 1', value: 'year_1' },
-    { label: 'Year 2', value: 'year_2' },
-    { label: 'Year 3', value: 'year_3' },
-    { label: 'Year 4', value: 'year_4' },
-    { label: 'Year 5', value: 'year_5' },
+    { label: '2015', value: '2015' },
+    { label: '2016', value: '2016' },
+    { label: '2017', value: '2017' },
+    { label: '2018', value: '2018' },
+    { label: '2019', value: '2019' },
+    { label: '2020', value: '2020' },
+    { label: '2021', value: '2021' },
+    { label: '2022', value: '2022' },
 
   ];
+
+  const handleSubmit = async () => {
+    try {
+      setLoading(true);
+      const result = await searchTopicsInCourses({
+        course_id: parseInt(course),
+        level_id: parseInt(level),
+        school_id: parseInt(school),
+      }).unwrap();
+
+      if (result.status === 'successful') {
+        router.push({
+          pathname: '/other/topics',
+          params: { topics: JSON.stringify(result.topics), year: JSON.stringify(year) },
+        });
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Failed to fetch topics. Please try again.',
+        });
+        return;
+      }
+    } catch (error) {
+      // console.error(error.data.detail[0].msg)
+      const errorMessage = (error as any)?.data?.detail[0]?.msg ||
+        (error as any)?.data?.detail ||
+        (error as any)?.data?.message ||
+        'An error occurred. Please try again.';
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: errorMessage.toString(), // Ensure the error message is a string
+      });
+      return;
+    } finally {
+      setSchool("");
+      setLevel("");
+      setCourse("");
+      setYear("");
+      setLoading(false);
+    }
+  };
 
   return (
     <SafeAreaView style={styles.bodyContainer}>
@@ -61,6 +148,7 @@ const edu = () => {
             open={open}
             value={school}
             items={schoolItems}
+            setItems={setSchoolItems}
             closeAfterSelecting={true}
             closeOnBackPressed={true}
             listItemContainerStyle={{
@@ -72,22 +160,7 @@ const edu = () => {
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-          {/* <RNPickerSelect
-            onValueChange={(value) => setSchool(value)}
-            items={schoolItems}
-            placeholder={{ label: 'Choose Your school', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={school}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
+
         </View>
 
         {/* Subject Picker */}
@@ -96,7 +169,8 @@ const edu = () => {
           <DropDownPicker
             open={open2}
             value={course}
-            items={subjectItems}
+            items={courseItems}
+            setItems={setCourseItems}
             closeAfterSelecting={true}
             closeOnBackPressed={true}
             listItemContainerStyle={{
@@ -108,31 +182,37 @@ const edu = () => {
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-          {/* <RNPickerSelect
-            onValueChange={(value) => setCourse(value)}
-            items={subjectItems}
-            placeholder={{ label: 'Select Subject', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={course}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
-        </View>
 
+        </View>
 
 
         {/* Year Picker */}
         <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
-          <Text style={styles.thirdText}>Year</Text>
+          <Text style={styles.thirdText}>Level</Text>
           <DropDownPicker
             open={open3}
+            value={level}
+            items={levelItems}
+            setItems={setLevelItems}
+            closeAfterSelecting={true}
+            closeOnBackPressed={true}
+            listItemContainerStyle={{
+              height: 40
+            }}
+            setOpen={setOpen3}
+            setValue={setLevel}
+            placeholder="Select Level"
+            style={pickerSelectStyles.inputIOS}
+            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+          />
+
+        </View>
+
+        {/* Year Picker */}
+        <View style={[styles.pickerContainer, (open3 || open2) && { zIndex: -20 }]}>
+          <Text style={styles.thirdText}>Year</Text>
+          <DropDownPicker
+            open={open4}
             value={year}
             items={yearItems}
             closeAfterSelecting={true}
@@ -140,37 +220,18 @@ const edu = () => {
             listItemContainerStyle={{
               height: 40
             }}
-            setOpen={setOpen3}
+            setOpen={setOpen4}
             setValue={setYear}
             placeholder="Select Year"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-          {/* <RNPickerSelect
-            onValueChange={(value) => setYear(value)}
-            items={yearItems}
-            placeholder={{ label: 'Select Year', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={year}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
+
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={() => {
-          setSchool("");
-          setCourse("");
-          setYear("");
-          router.push(`/other/search`)
-        }}>
-          <Text style={styles.buttonText}>Load Questions</Text>
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          {loading ? <ActivityIndicator color="#FFFFFF" size={14} /> : <Text style={styles.buttonText}>Load Questions</Text>}
+
         </TouchableOpacity>
       </View>
     </SafeAreaView>

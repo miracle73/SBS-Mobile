@@ -51,8 +51,8 @@ const course2 = () => {
 
     ];
     const semesterItems = [
-        { label: 'First Semester', value: 'First Semester' },
-        { label: 'Second Semester', value: 'Second Semester' },
+        { label: 'First Semester', value: 'first' },
+        { label: 'Second Semester', value: 'second' },
 
 
     ];
@@ -126,11 +126,18 @@ const course2 = () => {
             });
             router.replace("/admin/adminhome/upload/5");
         } catch (error) {
+            console.error(error.data.detail);
+            const errorMessage = (error as any)?.data?.detail?.message ||
+                (error as any)?.data?.detail ||
+                (error as any)?.data?.detail[0]?.msg ||
+                (error as any)?.data?.message ||
+                'An error occurred. Please try again.';
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to create course. Please try again.',
+                text2: errorMessage.toString(), // Ensure the error message is a string
             });
+            return;
         } finally {
             setCourseCode("");
             setCourseTitle("");

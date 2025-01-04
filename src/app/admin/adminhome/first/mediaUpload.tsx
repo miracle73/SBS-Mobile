@@ -18,12 +18,12 @@ const mediaUpload = () => {
     const router = useRouter();
     const [photo, setPhoto] = useState<string>("");
     const [createBirthday, { isLoading }] = useCreateBirthdayMutation();
-    const formData = new FormData();
-    // Access the secret from the Redux store
+    // const formData = new FormData();
+   
     const secret = useSelector((state: RootState) => state.admin.admin.secret);
     console.log(secret);
     const validateDate = (date: string) => {
-        // Example validation: date must be in the format YYYY-MM-DD
+        
         const re = /^\d{4}-\d{2}-\d{2}$/;
         return re.test(date);
     };
@@ -40,19 +40,19 @@ const mediaUpload = () => {
             const photoUri = result.assets[0].uri;
             setPhoto(photoUri);
             //   dispatch(setProfilePicture(photoUri))
-            const mimeType = photoUri.endsWith(".png") ? "image/png" : photoUri.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
-            // formData.append("picture", new File([photoUri], "profile-picture.jpg", { type: mimeType }));
-            formData.append("file", {
-                uri: photoUri,
-                name: "profile-picture.jpg",
-                type: mimeType,
-            } as any);
+            // const mimeType = photoUri.endsWith(".png") ? "image/png" : photoUri.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
+
+            // formData.append("file", {
+            //     uri: photoUri,
+            //     name: "profile-picture.jpg",
+            //     type: mimeType,
+            // } as any);
 
         }
     };
 
     const handleSubmit = async () => {
-        if (!name || !message || !date) {
+        if (!name || !message || !date || !photo) {
             Toast.show({
                 type: 'error',
                 text1: 'Error',
@@ -72,17 +72,23 @@ const mediaUpload = () => {
             return;
         }
 
+        const formData = new FormData();
+        const mimeType = photo.endsWith(".png") ? "image/png" : photo.endsWith(".jpeg") ? "image/jpeg" : "image/jpg";
+        formData.append("file", {
+            uri: photo,
+            name: "profile-picture.jpg",
+            type: mimeType,
+        } as any);
+        formData.append("name", name);
+        formData.append("dob", date);
+        formData.append("department", 'N/A'); // Add appropriate values
+        formData.append("level", 'N/A'); // Add appropriate values
+        formData.append("school", 'N/A'); // Add appropriate values
+        formData.append("note", message);
+     
+
         try {
-            const data = {
-                file: formData.get('file') as File,
-                name,
-                dob: date,
-                department: ' ', // Add appropriate values
-                level: ' ', // Add appropriate values
-                school: ' ', // Add appropriate values
-                note: message,
-            };
-            const response = await createBirthday({ secret, data }).unwrap();
+           const response = await createBirthday({ secret, data: formData }).unwrap();
             Toast.show({
                 type: 'success',
                 text1: 'Success',
@@ -90,18 +96,25 @@ const mediaUpload = () => {
             });
             router.back();
         } catch (error) {
+            console.error(error.data.detail.message);
+            const errorMessage = error?.data?.detail?.message ||
+                error?.data?.detail ||
+                error?.data?.detail[0]?.msg ||
+                error?.data?.message ||
+                'An error occurred. Please try again.';
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: (error as any).data?.detail?.message || (error as any).data?.detail || (error as any).data?.message || 'Failed to save celebrant. Please try again.',
+                text2: errorMessage.toString(), // Ensure the error message is a string
             });
+            return;
         } finally {
             setDate("");
             setName("");
             setMessage("");
             setPhoto("");
         }
-    }
+    };
 
     return (
         <SafeAreaView style={styles.bodyContainer}>

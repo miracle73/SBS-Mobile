@@ -34,7 +34,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
         }
         router.push({
             pathname: '/other/level',
-            params: { level: JSON.stringify(level), course:  JSON.stringify(course)},
+            params: { level: JSON.stringify(level), course: JSON.stringify(course) },
 
         });
 
@@ -49,16 +49,62 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
     ];
 
     const courseItems = [
-        { label: 'Computer Science', value: 'cs' },
-        { label: 'Mechanical Engineering', value: 'mech_eng' },
-        { label: 'Economics', value: 'economics' },
-        { label: 'Psychology', value: 'psychology' },
+        { label: 'Agricultural Economics', value: 'agricultural_economics' },
+        { label: 'Agricultural Engineering', value: 'agricultural_engineering' },
+        { label: 'Agriculture', value: 'agriculture' },
+        { label: 'Animal Science and Technology', value: 'animal_science_and_technology' },
+        { label: 'Architecture', value: 'architecture' },
+        { label: 'Biochemistry', value: 'biochemistry' },
+        { label: 'Biological Science', value: 'biological_science' },
+        { label: 'Biology', value: 'biology' },
+        { label: 'Biomedical Engineering', value: 'biomedical_engineering' },
+        { label: 'Biotechnology', value: 'biotechnology' },
+        { label: 'Building Technology', value: 'building_technology' },
+        { label: 'Chemical Engineering', value: 'chemical_engineering' },
+        { label: 'Chemistry', value: 'chemistry' },
+        { label: 'Civil Engineering', value: 'civil_engineering' },
+        { label: 'Computer Engineering', value: 'computer_engineering' },
+        { label: 'Computer Science', value: 'computer_science' },
+        { label: 'Crop Science and Technology', value: 'crop_science_and_technology' },
+        { label: 'Cyber Security Science', value: 'cyber_security_science' },
+        { label: 'Dental Technology', value: 'dental_technology' },
+        { label: 'Electrical/Electronics Engineering', value: 'electrical_electronics_engineering' },
+        { label: 'Electronics Engineering', value: 'electronics_engineering' },
+        { label: 'Entrepreneurship and Innovation', value: 'entrepreneurship_and_innovation' },
+        { label: 'Environmental Health Science', value: 'environmental_health_science' },
+        { label: 'Environmental Management', value: 'environmental_management' },
+        { label: 'Fisheries and Aquaculture Technology', value: 'fisheries_and_aquaculture_technology' },
+        { label: 'Food Science and Technology', value: 'food_science_and_technology' },
+        { label: 'Forensic Science', value: 'forensic_science' },
+        { label: 'Forestry and Wildlife Technology', value: 'forestry_and_wildlife_technology' },
+        { label: 'Geology', value: 'geology' },
+        { label: 'History and International Studies', value: 'history_and_international_studies' },
+        { label: 'Human Physiology', value: 'human_physiology' },
+        { label: 'Information Technology', value: 'information_technology' },
+        { label: 'Logistics and Transport Technology', value: 'logistics_and_transport_technology' },
+        { label: 'Mathematics', value: 'mathematics' },
+        { label: 'Mechanical Engineering', value: 'mechanical_engineering' },
+        { label: 'Mechatronics Engineering', value: 'mechatronics_engineering' },
+        { label: 'Medicine and Surgery', value: 'medicine_and_surgery' },
+        { label: 'Metallurgical and Materials Engineering', value: 'metallurgical_and_materials_engineering' },
+        { label: 'Microbiology', value: 'microbiology' },
+        { label: 'Optometry', value: 'optometry' },
+        { label: 'Petroleum Engineering', value: 'petroleum_engineering' },
         { label: 'Physics', value: 'physics' },
-        { label: 'Business Admin', value: 'Business Admin' },
-        { label: 'Fisheries', value: 'Fisheries' },
-        { label: 'Electrical Engineering', value: 'elect_elect' },
-        
+        { label: 'Polymer and Textile Engineering', value: 'polymer_and_textile_engineering' },
+        { label: 'Prosthesis and Orthopaedic Technology', value: 'prosthesis_and_orthopaedic_technology' },
+        { label: 'Public Health Technology', value: 'public_health_technology' },
+        { label: 'Quantity Surveying', value: 'quantity_surveying' },
+        { label: 'Radiography Science', value: 'radiography_science' },
+        { label: 'Science Laboratory Technology', value: 'science_lab_technology' },
+        { label: 'Software Engineering', value: 'software_engineering' },
+        { label: 'Soil Science and Technology', value: 'soil_science_and_technology' },
+        { label: 'Statistics', value: 'statistics' },
+        { label: 'Supply Chain Management', value: 'supply_chain_management' },
+        { label: 'Surveying and Geo-Informatics', value: 'surveying_and_geo_informatics' },
+        { label: 'Urban and Regional Planning', value: 'urban_and_regional_planning' },
     ];
+
 
     return (
         <Modal
@@ -86,7 +132,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                 closeAfterSelecting={true}
                                 closeOnBackPressed={true}
                                 listItemContainerStyle={{
-                                  height: 40
+                                    height: 40
                                 }}
                                 setOpen={setOpen}
                                 setValue={setLevel}
@@ -113,7 +159,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                         </View>
 
                         {/* Course Picker */}
-                        <View style={[styles.pickerContainer, open && {zIndex: -20}]}>
+                        <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
                             <Text style={styles.thirdText}>Course</Text>
                             <DropDownPicker
                                 open={open2}
@@ -122,7 +168,7 @@ const CalculatorModal = ({ setModal, modal }: CalculatorModalProps) => {
                                 closeAfterSelecting={true}
                                 closeOnBackPressed={true}
                                 listItemContainerStyle={{
-                                  height: 40
+                                    height: 40
                                 }}
                                 setOpen={setOpen2}
                                 setValue={setCourse}

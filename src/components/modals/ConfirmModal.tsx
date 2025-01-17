@@ -1,71 +1,102 @@
 import { View, Text, Modal, StyleSheet, TouchableOpacity, Dimensions } from 'react-native';
-import React, { useState } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router'
-import TouchableOutside from './TouchableOutside'
+import React from 'react';
 import { InfoTriangle } from '../../../assets/svg';
+import TouchableOutside from './TouchableOutside';
 
+const { width, height } = Dimensions.get('window');
 
-
-const { width, height } = Dimensions.get('window')
 interface ConfirmModalProps {
-    setModal: (value: boolean) => void;
-    modal: boolean;
-
+  setModal: (value: boolean) => void;
+  modal: boolean;
+  courses: { course: string; unit: string; grade: string }[];
+  setTotalCGPA: (value: number) => void;
+  initialCourses: { course: string; unit: string; grade: string }[];
+  totalCGPA: number;
+  setCourses: (courses: { course: string; unit: string; grade: string }[]) => void;
 }
-const ConfirmModal = ({ setModal, modal }: ConfirmModalProps) => {
-    
-    return (
-        <Modal
-            animationType="slide"
-            transparent={true}
-            style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center' }}
-            visible={modal}
-            onRequestClose={() => {
-                setModal(!modal);
 
-            }}
-        >
-            <TouchableOutside onPress={() => setModal(false)}>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <View style={{
-                            flexDirection: "row",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            marginTop: 10
-                        }}>
-                            <View style={styles.roundedContainer}>
-                                <InfoTriangle />
-                            </View>
-                        </View>
-                        <Text style={styles.firstText}>Confirm</Text>
-                        <Text style={styles.secondText}>Are you done adding all the courses?</Text>
-                        <View style={{
-                            flexDirection: "row",
-                            justifyContent: "space-between",
-                            alignItems: "center",
-                            marginTop: 10,
-                            gap: 8
-                        }}>
-                            <TouchableOpacity style={styles.button} onPress={() => setModal(false)}>
-                                <Text style={styles.buttonText}>Yes </Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.button, {backgroundColor: "#FFFFFF", borderWidth: 1, borderColor: "#1A1A1A"}]} onPress={() => setModal(false)}>
-                                <Text style={[styles.buttonText, {color: "#000000"}]}>No</Text>
-                            </TouchableOpacity>
-                        </View>
+const ConfirmModal = ({ setModal, modal, courses, setTotalCGPA, initialCourses, totalCGPA, setCourses }: ConfirmModalProps) => {
+  const calculateCGPA = () => {
+    let totalUnits = 0;
+    let totalPoints = 0;
+    courses.forEach(course => {
+      if (course.unit && course.grade) {
+        const unit = parseFloat(course.unit);
+        const grade = course.grade;
+        let gradePoint = 0;
+        switch (grade) {
+          case 'A':
+            gradePoint = 5;
+            break;
+          case 'B':
+            gradePoint = 4;
+            break;
+          case 'C':
+            gradePoint = 3;
+            break;
+          case 'D':
+            gradePoint = 2;
+            break;
+          case 'E':
+            gradePoint = 1;
+            break;
+          default:
+            gradePoint = 0;
+            break;
+        }
+        totalUnits += unit;
+        totalPoints += unit * gradePoint;
+      }
+    });
+    const calculatedCGPA = totalPoints / totalUnits;
+    if (isNaN(calculatedCGPA)) {
+      return 0;
+    }
+    if (totalCGPA !== 0) {
+      const newCGPA = ((totalCGPA + calculatedCGPA) / 2).toFixed(2);
+      return parseFloat(newCGPA);
+    }
+    return parseFloat(calculatedCGPA.toFixed(2));
+  };
 
+  const handleConfirm = () => {
+    const calculatedCgpa = calculateCGPA();
+    setTotalCGPA(calculatedCgpa);
+    setCourses(initialCourses);
+    setModal(false);
+  };
 
-
-
-                    </View>
-                </View>
-            </TouchableOutside>
-        </Modal>
-    )
-}
+  return (
+    <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modal}
+      onRequestClose={() => setModal(!modal)}
+    >
+      <TouchableOutside onPress={() => setModal(false)}>
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', marginTop: 10 }}>
+              <View style={styles.roundedContainer}>
+                <InfoTriangle />
+              </View>
+            </View>
+            <Text style={styles.firstText}>Confirm</Text>
+            <Text style={styles.secondText}>Are you done adding all the courses?</Text>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 10, gap: 8 }}>
+              <TouchableOpacity style={styles.button} onPress={handleConfirm}>
+                <Text style={styles.buttonText}>Yes </Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={[styles.button, { backgroundColor: '#FFFFFF', borderWidth: 1, borderColor: '#1A1A1A' }]} onPress={() => setModal(false)}>
+                <Text style={[styles.buttonText, { color: '#000000' }]}>No</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </TouchableOutside>
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
 

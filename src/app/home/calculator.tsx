@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useState, useMemo } from 'react';
 import CalculatorModal from '../../components/modals/CalculatorModal';
 import { useSelector } from 'react-redux';
@@ -21,51 +21,54 @@ const calculator = () => {
     }, [cgpaRecords]);
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <View style={{ paddingHorizontal: 20 }}>
-                <Text style={styles.fourthText}>
-                    CGPA Calculator
-                </Text>
-                <Text style={styles.secondText}>
-                    Calculate and keep record of your grades
-                </Text>
-
-                <View style={styles.container}>
-                    <Text style={styles.firstText}>
-                        {totalCGPA}
+            <ScrollView showsHorizontalScrollIndicator={false}>
+                <View style={{ paddingHorizontal: 20 }}>
+                    <Text style={styles.fourthText}>
+                        CGPA Calculator
                     </Text>
-                    <Text style={styles.thirdText}>
-                        Total CGPA
+                    <Text style={styles.secondText}>
+                        Calculate and keep record of your grades
                     </Text>
-                </View>
-                <TouchableOpacity style={styles.button} onPress={() => setModal(true)}>
-                    <Text style={styles.buttonText}>Calculate CGPA</Text>
-                </TouchableOpacity>
 
-
-                <Text style={styles.fifthText}>Previous CGPA</Text>
-                <Text style={styles.sixthText}>View all your past CGPAs here</Text>
-                {cgpaRecords.map((record, index) => (
-                    <View key={index} style={styles.secondContainer}>
-                        <View style={{ justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-start" }}>
-                            <Text style={styles.seventhText}>{record.level.replace(/"/g, '')}</Text>
-                            <Text style={styles.seventhText}>{record.course.replace(/"/g, '')}</Text>
-                            <View style={{
-                                flexDirection: "row",
-                                justifyContent: "flex-start",
-                                alignItems: "center",
-                                gap: 4
-                            }}>
-                                <TouchableOpacity onPress={() => handleDelete(record.level, record.course)}>
-                                    <Text style={styles.eighthText}>Delete</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                        <View style={{ justifyContent: "center", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-end" }}>
-                            <Text style={styles.seventhText}>{record.value.toFixed(2)}</Text>
-                        </View>
+                    <View style={styles.container}>
+                        <Text style={styles.firstText}>
+                            {totalCGPA}
+                        </Text>
+                        <Text style={styles.thirdText}>
+                            Total CGPA
+                        </Text>
                     </View>
-                ))}
-                {/* <View style={styles.secondContainer}>
+                    <TouchableOpacity style={styles.button} onPress={() => setModal(true)}>
+                        <Text style={styles.buttonText}>Calculate CGPA</Text>
+                    </TouchableOpacity>
+
+
+                    <Text style={styles.fifthText}>Previous CGPA</Text>
+                    <Text style={styles.sixthText}>View all your past CGPAs here</Text>
+                    <View style={{ marginBottom: 20, }}>
+                        {cgpaRecords.map((record, index) => (
+                            <View key={index} style={styles.secondContainer}>
+                                <View style={{ justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-start" }}>
+                                    <Text style={styles.seventhText}>{record.level.replace(/"/g, '')}</Text>
+                                    <Text style={styles.seventhText}>{record.course.replace(/"/g, '')}</Text>
+                                    <View style={{
+                                        flexDirection: "row",
+                                        justifyContent: "flex-start",
+                                        alignItems: "center",
+                                        gap: 4
+                                    }}>
+                                        <TouchableOpacity onPress={() => handleDelete(record.level, record.course)}>
+                                            <Text style={styles.eighthText}>Delete</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View style={{ justifyContent: "center", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-end" }}>
+                                    <Text style={styles.seventhText}>{record.value.toFixed(2)}</Text>
+                                </View>
+                            </View>
+                        ))}
+                    </View>
+                    {/* <View style={styles.secondContainer}>
                     <View style={{ justifyContent: "space-between", paddingVertical: 15, paddingHorizontal: 10, alignItems: "flex-start" }}>
                         <Text style={styles.seventhText}>100L</Text>
                         <View style={{
@@ -83,7 +86,8 @@ const calculator = () => {
                         <Text style={styles.seventhText}>4.98</Text>
                     </View>
                 </View> */}
-            </View>
+                </View>
+            </ScrollView>
             {modal && <CalculatorModal modal={modal} setModal={setModal} />}
         </SafeAreaView>
     );
@@ -92,6 +96,7 @@ const calculator = () => {
 const styles = StyleSheet.create({
     bodyContainer: {
         paddingTop: 60,
+
         flex: 1,
         backgroundColor: '#FFFFFF',
     },

@@ -40,6 +40,10 @@ const More = () => {
                   name={celebrant.name}
                   image={celebrant.image_url}
                   note={celebrant.note}
+                  department={celebrant.department}
+                  level={celebrant.level}
+                  school={celebrant.school}
+                  dob={celebrant.dob}
                 />
               </View>
             ))

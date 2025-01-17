@@ -77,7 +77,7 @@ const activateSubscription = () => {
                         onChangeText={text => {
                             setPin(text);
                         }}
-                        keyboardType='numeric'
+                      
                         value={pin}
 
                     />

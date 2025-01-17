@@ -19,6 +19,7 @@ interface PastQuestionTopicComponentProps {
 
 const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({ title, id, free, year }) => {
     const router = useRouter();
+    console.log(id, 44)
     const [modal, setModal] = React.useState(false);
    
     const { data, error, isLoading } = useGetTopicPastQuestionQuery({ topic_id: id, year: Number(year) });
@@ -47,7 +48,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
         if (data) {
             // If successful, navigate to the note page with topic content
             router.push({
-                pathname: '/other/note',
+                pathname: '/other/pastQuestion',
                 params: { content: JSON.stringify(data) },
             });
         }

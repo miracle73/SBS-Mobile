@@ -98,8 +98,9 @@ const edu = () => {
       }).unwrap();
 
       if (result.status === 'successful') {
+
         router.push({
-          pathname: '/other/topics',
+          pathname: '/other/pastQuestionTopic',
           params: { topics: JSON.stringify(result.topics), year: JSON.stringify(year) },
         });
       } else {
@@ -111,7 +112,7 @@ const edu = () => {
         return;
       }
     } catch (error) {
-      // console.error(error.data.detail[0].msg)
+
       const errorMessage = (error as any)?.data?.detail[0]?.msg ||
         (error as any)?.data?.detail ||
         (error as any)?.data?.message ||
@@ -119,7 +120,7 @@ const edu = () => {
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: errorMessage.toString(), // Ensure the error message is a string
+        text2: 'An error occurred. Please try again.',
       });
       return;
     } finally {

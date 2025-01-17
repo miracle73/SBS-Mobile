@@ -20,18 +20,18 @@ export default function Page() {
     //     return () => clearTimeout(timer); // Cleanup the timer on component unmount
     // }, []);
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 50 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}>
             <View style={styles.container}>
                 <StatusBar style="dark" />
                 <View style={styles.main}>
-                    <TouchableOpacity style={styles.roundedContainer} onPress={() => router.push("/other/notification")}>
+                    {/* <TouchableOpacity style={styles.roundedContainer} onPress={() => router.push("/other/notification")}>
                         <Ionicons name="notifications-outline" size={20} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                 </View>
 
                 <Text style={styles.title}>Welcome to SBS App</Text>
                 <Text style={styles.subtitle}>Empowering Students, One student at a Time!</Text>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginTop: 10 }}>
+                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "flex-start", marginTop: 10 }}>
                     <View style={{ width: "48%", gap: 10 }}>
                         <TouchableOpacity onPress={() => router.push("/other/activation")}>
                             <HomeComponent
@@ -60,13 +60,7 @@ export default function Page() {
                             disabled={true}
                         />
 
-                        <HomeComponent
-                            Icon={PadlockIcon}
-                            firstText="Revision Questions"
-                            secondText="Join live sessions and learn with peers"
-                            backgroundColor="#B0BEC5"
-                            disabled={true}
-                        />
+                    
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
                         <TouchableOpacity  onPress={() => router.push("/home/calculator")}>
@@ -87,20 +81,8 @@ export default function Page() {
                                 disabled={true}
                             />
                
-                        <HomeComponent
-                            Icon={PadlockIcon}
-                            firstText="Educational content"
-                            secondText="Vidoes and articles available for you"
-                            backgroundColor="#B0BEC5"
-                            disabled={true}
-                        />
-                        <HomeComponent
-                            Icon={PadlockIcon}
-                            firstText="Question and solutions"
-                            secondText="Solve questions and get answers instantly"
-                            backgroundColor="#B0BEC5"
-                            disabled={true}
-                        />
+                     
+                    
                     </View>
                 </View>
             </View>

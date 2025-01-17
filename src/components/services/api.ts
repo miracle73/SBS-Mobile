@@ -1,1 +1,1 @@
-export const BaseUrl = "https://sbs-omjw.onrender.com"
+export const BaseUrl = "https://sbsapp.com.ng"

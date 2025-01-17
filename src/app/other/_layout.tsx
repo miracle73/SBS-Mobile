@@ -41,7 +41,7 @@ const OtherLayout = () => {
                 <Stack.Screen
                     name="pastQuestionTopic"
                     options={{
-                        title: "Topics",
+                        title: "Past Questions",
                     }}
                 />
                 <Stack.Screen

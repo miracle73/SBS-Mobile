@@ -5,13 +5,21 @@ interface BirthdayCardProps {
     name: string;
     image: string;
     note: string;
+    department: string;
+    level: string;
+    school: string;
+    dob: string;
 }
 
-const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note }) => {
+const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note, department, level, school, dob }) => {
     return (
         <View style={styles.outerContainer}>
             <Image source={{ uri: image }} style={styles.image} />
             <Text style={styles.firstText}>Happy Birthday, {name}!🎉</Text>
+            <Text style={styles.secondText}>School: {school}</Text>
+            <Text style={styles.secondText}>Department: {department}</Text>
+            <Text style={styles.secondText}>Level: {level}</Text>
+            <Text style={styles.secondText}>DOB: {dob}</Text>
             <Text style={styles.secondText}>{note}</Text>
         </View>
     )
@@ -19,7 +27,7 @@ const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note }) => {
 
 const styles = StyleSheet.create({
     outerContainer: {
-        height: 180,
+        height: 200,
         backgroundColor: "#F8F8F8",
         padding: 8,
         marginVertical: 7,
@@ -37,6 +45,11 @@ const styles = StyleSheet.create({
     },
     secondText: {
         fontSize: 8,
+        fontWeight: '400',
+        color: '#000000',
+    },
+    thirdText: {
+        fontSize: 10,
         fontWeight: '400',
         color: '#000000',
     }

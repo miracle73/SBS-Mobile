@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { MaterialIcons } from '@expo/vector-icons';
 import { useRouter, useLocalSearchParams } from 'expo-router'
 import NoteImage from "../../../assets/images/note-image.png"
+import Markdown from 'react-native-markdown-display';
 
 
 const note = () => {
@@ -36,9 +37,17 @@ const note = () => {
                 {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     <Image source={NoteImage} style={{ marginTop: 20 }} />
                 </View> */}
-                <Text style={styles.fourthText}>
+                <Markdown style={{
+                    text: {
+                        fontSize: 16,
+                        lineHeight: 24,
+                    }
+                }}>
                     {searchResults.content}
-                </Text>
+                </Markdown>
+                {/* <Text style={styles.fourthText}>
+                    {searchResults.content}
+                </Text> */}
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_3 && <Image source={{ uri: searchResults.image_3 }} style={styles.image} />}
                     {searchResults.image_4 && <Image source={{ uri: searchResults.image_4 }} style={styles.image} />}
@@ -60,6 +69,9 @@ const styles = StyleSheet.create({
         paddingTop: 50,
         flex: 1,
         backgroundColor: '#FFFFFF',
+    },
+    markdown: {
+
     },
     firstText: {
         fontSize: 16,

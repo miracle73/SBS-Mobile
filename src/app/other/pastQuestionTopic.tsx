@@ -9,7 +9,7 @@ const pastQuestionTopic = () => {
     const searchResults = typeof topics === 'string' ? JSON.parse(topics) : [];
     const yearString = year ? year.toString() : '';
 
-   
+
     const topicResults = searchResults.map((topic: any) => ({
         id: topic.id,
         title: topic.title,
@@ -20,9 +20,11 @@ const pastQuestionTopic = () => {
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
+                {topicResults.length == 0 ?
+                    <Text style={styles.firstText}> No past Question</Text> :
+                    <Text style={styles.firstText}> View the {topicResults.length} pastQuestion topics here</Text>}
 
-                <Text style={styles.firstText}>{topicResults.length} View all the topics here</Text>
-                   {topicResults.map((result: any, index: any) => (
+                {topicResults.map((result: any, index: any) => (
                     <PastQuestionTopicComponent
                         key={index}
                         id={result.id}

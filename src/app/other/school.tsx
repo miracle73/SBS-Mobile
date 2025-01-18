@@ -49,7 +49,8 @@ const school = () => {
         try {
             setLoading(true)
             if (schoolLevelsCoursesData?.id) {
-                // await AsyncStorage.setItem('isAuthenticated', 'true')
+                console.log("We are good, good")
+                await AsyncStorage.setItem('isAuthenticated', 'true')
                 router.replace(`/home`);
                 return;
             }

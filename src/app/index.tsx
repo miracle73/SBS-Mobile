@@ -8,15 +8,15 @@ import { useEffect } from "react";
 
 export default function Page() {
   const router = useRouter()
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
-  //     if (isAuthenticated) {
-  //       router.replace('/home');
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
+  useEffect(() => {
+    const checkAuth = async () => {
+      const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
+      if (isAuthenticated) {
+        router.replace('/home');
+      }
+    };
+    checkAuth();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91" }}>
       <StatusBar style="light" backgroundColor="#003F91" />

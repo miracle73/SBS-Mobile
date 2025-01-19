@@ -7,6 +7,8 @@ import DropDownPicker from 'react-native-dropdown-picker';
 import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from '../../components/services/userService';
 import * as Device from 'expo-device';
 import Toast from 'react-native-toast-message';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 
 const edu = () => {
   const [loading, setLoading] = useState(false)

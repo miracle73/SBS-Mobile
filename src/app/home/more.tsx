@@ -2,6 +2,8 @@ import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-n
 import React from 'react';
 import BirthdayCard from '../../components/BirthdayCard';
 import { useGetBirthdaysQuery } from '../../components/services/userService';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import NetInfo from '@react-native-community/netinfo';
 
 const More = () => {
   const { data, isSuccess, isLoading } = useGetBirthdaysQuery();

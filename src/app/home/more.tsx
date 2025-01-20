@@ -1,12 +1,12 @@
-import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator } from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
 import BirthdayCard from '../../components/BirthdayCard';
 import { useGetBirthdaysQuery } from '../../components/services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 
 const More = () => {
-  const [isConnected, setIsConnected] = React.useState(false);
+  const { data, isSuccess, isLoading } = useGetBirthdaysQuery();
   interface Birthday {
     name: string;
     image_url: string;
@@ -16,34 +16,32 @@ const More = () => {
     school: string;
     dob: string;
   }
-  
-  const [birthdays, setBirthdays] = React.useState<Birthday[]>([]);
-  const { data, isSuccess, isLoading } = useGetBirthdaysQuery();
+  const [birthdays, setBirthdays] = useState<Birthday[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  React.useEffect(() => {
-    NetInfo.fetch().then(async state => {
-      setIsConnected(state.isConnected ?? false);
-      if (state.isConnected) {
+  useEffect(() => {
+    const fetchData = async () => {
+      const netInfo = await NetInfo.fetch();
+      if (netInfo.isConnected) {
         if (isSuccess && data) {
           await AsyncStorage.setItem('birthdays', JSON.stringify(data));
           setBirthdays(data);
         }
       } else {
-        const storedBirthdays = await AsyncStorage.getItem('birthdays');
-        setBirthdays(storedBirthdays ? JSON.parse(storedBirthdays) : []);
+        const storedData = await AsyncStorage.getItem('birthdays');
+        if (storedData) {
+          setBirthdays(JSON.parse(storedData));
+        } else {
+          Alert.alert('No Internet', 'Please go online to download the latest data.');
+        }
       }
-    });
-  }, []);
+      setLoading(false);
+    };
 
-  
-  React.useEffect(() => {
-    if (!isConnected && !birthdays.length) {
-      // Prompt user to go online
-      alert('Please go online to download birthday data.');
-    }
-  }, [isConnected, birthdays]);
-  
-  if (isLoading) {
+    fetchData();
+  }, [isSuccess, data]);
+
+  if (loading) {
     return (
       <SafeAreaView style={styles.bodyContainer}>
         <ActivityIndicator size="large" color="#FF8C00" />
@@ -54,40 +52,25 @@ const More = () => {
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Text style={styles.fourthText}>
-          Birthday Celebration
-        </Text>
-        
-        {(data ?? []).length > 0 &&
-          <Text style={styles.secondText}>
-            View all celebrants
-          </Text>
-        }
-
-
-        {(data ?? []).length > 0 &&
-          <Text style={styles.firstText}>Today’s Birthday Stars</Text>
-        }
-
-        <View style={styles.layout}>
-          {(data ?? []).length > 0 ? (
-            (data ?? []).map((celebrant, index) => (
-              <View key={index} style={{ width: '47%', marginBottom: 20 }}>
-                <BirthdayCard
-                  name={celebrant.name}
-                  image={celebrant.image_url}
-                  note={celebrant.note}
-                  department={celebrant.department}
-                  level={celebrant.level}
-                  school={celebrant.school}
-                  dob={celebrant.dob}
-                />
-              </View>
-            ))
-          ) : (
-            <Text style={styles.secondText}>No birthdays today</Text>
-          )}
-        </View>
+        <Text style={styles.fourthText}>Birthday Celebration</Text>
+        {birthdays.length > 0 ? (
+          birthdays.map((birthday, index) => (
+            // <BirthdayCard key={index} birthday={birthday} />
+            <View key={index} style={{ width: '47%', marginBottom: 20 }}>
+            <BirthdayCard
+              name={birthday.name}
+              image={birthday.image_url}
+              note={birthday.note}
+              department={birthday.department}
+              level={birthday.level}
+              school={birthday.school}
+              dob={birthday.dob}
+            />
+          </View>
+          ))
+        ) : (
+          <Text style={styles.noBirthdaysText}>No Birthdays Today</Text>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -95,27 +78,9 @@ const More = () => {
 
 const styles = StyleSheet.create({
   bodyContainer: {
-    paddingTop: 70,
+    paddingTop: 10,
     flex: 1,
     backgroundColor: '#FFFFFF',
-  },
-  firstText: {
-    fontSize: 16,
-    color: '#000000',
-    fontWeight: '600',
-    marginBottom: 5,
-    marginTop: 30,
-  },
-  secondText: {
-    fontSize: 14,
-    color: '#000000',
-    fontWeight: '400',
-  },
-  thirdText: {
-    fontSize: 10,
-    color: '#1A1A1A',
-    fontWeight: '400',
-    marginBottom: 5,
   },
   fourthText: {
     fontSize: 24,
@@ -123,28 +88,11 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     marginBottom: 5,
   },
-  pickerContainer: {
+  noBirthdaysText: {
+    fontSize: 16,
+    color: '#000000',
+    fontWeight: '400',
     marginTop: 20,
-  },
-  button: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: '#FF8C00',
-    paddingVertical: 15,
-    marginTop: 20,
-  },
-  buttonText: {
-    fontSize: 14,
-    fontWeight: '600',
-    color: '#FFFFFF',
-  },
-  layout: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    flexWrap: 'wrap', // Ensure the items wrap to the next line if needed
   },
 });
 

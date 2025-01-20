@@ -6,12 +6,21 @@ import { useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
 import SubscriptionModal from "../../components/modals/SubscriptionModal";
-
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Page() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
 
+    useEffect(() => {
+        const fetchStoredBirthdays = async () => {
+            const storedBirthdays = await AsyncStorage.getItem('birthdays');
+            if (storedBirthdays) {
+                console.log(JSON.parse(storedBirthdays), 46);
+            }
+        };
+        fetchStoredBirthdays();
+    }, []);
     // useEffect(() => {
     //     const timer = setTimeout(() => {
     //         setModalVisible(true);

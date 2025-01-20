@@ -6,8 +6,43 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
 
 const More = () => {
+  const [isConnected, setIsConnected] = React.useState(false);
+  interface Birthday {
+    name: string;
+    image_url: string;
+    note: string;
+    department: string;
+    level: string;
+    school: string;
+    dob: string;
+  }
+  
+  const [birthdays, setBirthdays] = React.useState<Birthday[]>([]);
   const { data, isSuccess, isLoading } = useGetBirthdaysQuery();
 
+  React.useEffect(() => {
+    NetInfo.fetch().then(async state => {
+      setIsConnected(state.isConnected ?? false);
+      if (state.isConnected) {
+        if (isSuccess && data) {
+          await AsyncStorage.setItem('birthdays', JSON.stringify(data));
+          setBirthdays(data);
+        }
+      } else {
+        const storedBirthdays = await AsyncStorage.getItem('birthdays');
+        setBirthdays(storedBirthdays ? JSON.parse(storedBirthdays) : []);
+      }
+    });
+  }, []);
+
+  
+  React.useEffect(() => {
+    if (!isConnected && !birthdays.length) {
+      // Prompt user to go online
+      alert('Please go online to download birthday data.');
+    }
+  }, [isConnected, birthdays]);
+  
   if (isLoading) {
     return (
       <SafeAreaView style={styles.bodyContainer}>

@@ -56,7 +56,7 @@ const More = () => {
         {birthdays.length > 0 ? (
           birthdays.map((birthday, index) => (
             // <BirthdayCard key={index} birthday={birthday} />
-            <View key={index} style={{ width: '47%', marginBottom: 20 }}>
+            <View key={index} style={{ width: '47%', marginBottom: 20, }}>
             <BirthdayCard
               name={birthday.name}
               image={birthday.image_url}
@@ -78,7 +78,7 @@ const More = () => {
 
 const styles = StyleSheet.create({
   bodyContainer: {
-    paddingTop: 10,
+    paddingTop: 50,
     flex: 1,
     backgroundColor: '#FFFFFF',
   },

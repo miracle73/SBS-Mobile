@@ -4,10 +4,15 @@ import { useRouter } from 'expo-router'
 import { StatusBar } from 'expo-status-bar';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect } from "react";
-
+import { setUserContents } from "../components/redux/slices/userContentSlice";
+import { useGetUserContentsQuery } from "../components/services/userService";
+import { useAppDispatch } from "../components/redux/store";
 
 export default function Page() {
-  const router = useRouter()
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const { data: userContents } = useGetUserContentsQuery();
+
   useEffect(() => {
     const checkAuth = async () => {
       const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
@@ -17,6 +22,12 @@ export default function Page() {
     };
     checkAuth();
   }, []);
+
+  useEffect(() => {
+    if (userContents) {
+      dispatch(setUserContents(userContents));
+    }
+  }, [userContents, dispatch]);
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91" }}>
       <StatusBar style="light" backgroundColor="#003F91" />

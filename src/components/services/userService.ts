@@ -89,6 +89,21 @@ interface TopicPastQuestionResponse {
   image_4: string | null;
 }
 
+export interface ContentTopic {
+  topic_title: string;
+  topic_content: string;
+  topic_free: boolean;
+  past_questions: {
+    year: number;
+    content: string;
+    images: (string | null)[];
+  }[];
+}
+
+export interface ContentResponse {
+  course_name: string;
+  topics: ContentTopic[];
+}
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -140,6 +155,9 @@ export const userApi = createApi({
         return url;
       },
     }),
+    getUserContents: builder.query<ContentResponse[], void>({
+      query: () => '/user/contents',
+    }),
   }),
 });
 
@@ -152,6 +170,7 @@ export const {
   useSearchTopicsInCoursesMutation,
   useGetTopicContentMutation,
   useGetTopicPastQuestionQuery,
+  useGetUserContentsQuery,
 } = userApi;
 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';

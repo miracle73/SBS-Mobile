@@ -24,56 +24,62 @@ const edu = () => {
   const [schoolItems, setSchoolItems] = useState<{ label: string; value: string }[]>([]);
   const [levelItems, setLevelItems] = useState<{ label: string; value: string }[]>([]);
   const [courseItems, setCourseItems] = useState<{ label: string; value: string }[]>([]);
-
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
+  const [isConnected, setIsConnected] = useState(true);
+  // 
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId});
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
 
+ 
+
   useEffect(() => {
-    if (isSuccess && data) {
-      const formattedSchools = {
-        label: data.name,
-        value: data.id.toString(),
-      };
-      setSchoolItems([formattedSchools]);
-    }
+    const fetchStoredContents = async () => {
+      const netInfo = await NetInfo.fetch();
+      setIsConnected(netInfo.isConnected ?? false);
+      if (netInfo.isConnected && isSuccess && data) {
+        const formattedSchools = {
+          label: data.name,
+          value: data.id.toString(),
+        };
+        setSchoolItems([formattedSchools]);
+
+        const formattedLevels = data.levels.map((level) => ({
+          label: level.name,
+          value: level.id,
+        }));
+        setLevelItems(formattedLevels);
+
+        const formattedCourses = data.courses.map((course) => ({
+          label: course.name,
+          value: course.id,
+        }));
+        setCourseItems(formattedCourses);
+      } else {
+        // Offline mode: fetch data from the Redux store or AsyncStorage
+        const storedContents = await AsyncStorage.getItem('userContents');
+        if (storedContents) {
+          setIsConnected(false);
+          console.log(isConnected)
+          const parsedContents = JSON.parse(storedContents);
+
+          const uniqueLevels = Array.from(new Set(parsedContents.map((content: any) => content.course_level)));
+          const uniqueCourses = Array.from(new Set(parsedContents.map((content: any) => content.course_name)));
+
+          const offlineLevels = uniqueLevels.map((level: any) => ({
+            label: level,
+            value: level,
+          }));
+          setLevelItems(offlineLevels);
+
+          const offlineCourses = uniqueCourses.map((course: any) => ({
+            label: course,
+            value: course,
+          }));
+          setCourseItems(offlineCourses);
+        }
+      }
+    };
+    fetchStoredContents();
   }, [data, isSuccess]);
-
-  useEffect(() => {
-    if (isSuccess && data) {
-
-
-      const formattedLevels = data.levels.map((level) => ({
-        label: level.name,
-        value: level.id,
-      }));
-      setLevelItems(formattedLevels);
-
-      const formattedCourses = data.courses.map((course) => ({
-        label: course.name,
-        value: course.id,
-      }));
-      setCourseItems(formattedCourses);
-
-    }
-  }, [school, data]);
-
-  // const schoolItems = [
-  //   { label: 'School of Engineering', value: 'engineering' },
-  //   { label: 'School of Medicine', value: 'medicine' },
-  //   { label: 'School of Law', value: 'law' },
-  //   { label: 'School of Business', value: 'business' },
-  //   { label: 'School of Arts', value: 'arts' },
-  // ];
-
-  // Define Subject Categories (example)
-  const subjectItems = [
-    { label: 'Engineering', value: 'engineering' },
-    { label: 'Medicine', value: 'medicine' },
-    { label: 'Law', value: 'law' },
-    { label: 'Business', value: 'business' },
-    { label: 'Arts & Humanities', value: 'arts_humanities' },
-  ];
-
 
 
 
@@ -90,50 +96,131 @@ const edu = () => {
 
   ];
 
+
+
+  // const handleSubmit = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const result = await searchTopicsInCourses({
+  //       course_id: parseInt(course),
+  //       level_id: parseInt(level),
+  //       school_id: parseInt(school),
+  //     }).unwrap();
+
+  //     if (result.status === 'successful') {
+
+  //       router.push({
+  //         pathname: '/other/pastQuestionTopic',
+  //         params: { topics: JSON.stringify(result.topics), year: JSON.stringify(year) },
+  //       });
+  //     } else {
+  //       Toast.show({
+  //         type: 'error',
+  //         text1: 'Error',
+  //         text2: 'Failed to fetch topics. Please try again.',
+  //       });
+  //       return;
+  //     }
+  //   } catch (error) {
+
+  //     const errorMessage = (error as any)?.data?.detail[0]?.msg ||
+  //       (error as any)?.data?.detail ||
+  //       (error as any)?.data?.message ||
+  //       'An error occurred. Please try again.';
+  //     Toast.show({
+  //       type: 'error',
+  //       text1: 'Error',
+  //       text2: 'An error occurred. Please try again.',
+  //     });
+  //     return;
+  //   } finally {
+  //     setSchool("");
+  //     setLevel("");
+  //     setCourse("");
+  //     setYear("");
+  //     setLoading(false);
+  //   }
+  // };
+
+
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      const result = await searchTopicsInCourses({
-        course_id: parseInt(course),
-        level_id: parseInt(level),
-        school_id: parseInt(school),
-      }).unwrap();
+      const netInfo = await NetInfo.fetch();
 
-      if (result.status === 'successful') {
+      if (netInfo.isConnected) {
+        console.log(level)
+        const result = await searchTopicsInCourses({
+          course_id: parseInt(course),
+          level_id: parseInt(level),
+          school_id: parseInt(school),
+        }).unwrap();
 
-        router.push({
-          pathname: '/other/pastQuestionTopic',
-          params: { topics: JSON.stringify(result.topics), year: JSON.stringify(year) },
-        });
+        if (result.status === 'successful') {
+          router.push({
+            pathname: '/other/pastQuestionTopic',
+            params: { topics: JSON.stringify(result.topics), year: JSON.stringify(year), level: JSON.stringify(level), },
+          });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to fetch topics. Please try again.',
+          });
+          return;
+        }
       } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to fetch topics. Please try again.',
-        });
-        return;
+      // Offline mode: fetch data from the Redux store
+      const storedContents = await AsyncStorage.getItem('userContents');
+      if (storedContents) {
+        console.log(1)
+        const parsedContents = JSON.parse(storedContents);
+
+        const selectedCourse = parsedContents.find(
+          (content: any) =>
+            content.course_level == level &&
+            content.course_name == course &&
+            content.topics.length > 0
+        );
+
+
+        console.log(2, selectedCourse)
+        if (selectedCourse) {
+          const offlineTopics = selectedCourse.topics.map((topic: any, index: any) => ({
+            id: index + 1,
+            title: topic.topic_title,
+            free: topic.topic_free,
+            courseName: course,
+          }));
+          console.log(3)
+          router.push({
+            pathname: '/other/pastQuestionTopic',
+            params: { topics: JSON.stringify(offlineTopics), year: JSON.stringify(year),  level: JSON.stringify(level) },
+          });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'No offline data available for selected course. Please try again.',
+          });
+        }
+
+        }
       }
     } catch (error) {
-
-      const errorMessage = (error as any)?.data?.detail[0]?.msg ||
-        (error as any)?.data?.detail ||
-        (error as any)?.data?.message ||
-        'An error occurred. Please try again.';
       Toast.show({
         type: 'error',
         text1: 'Error',
         text2: 'An error occurred. Please try again.',
       });
-      return;
     } finally {
       setSchool("");
       setLevel("");
       setCourse("");
-      setYear("");
+      setYear("")
       setLoading(false);
     }
   };
-
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
@@ -143,28 +230,29 @@ const edu = () => {
         <Text style={styles.secondText}>
           Select a course and topic you wish to study
         </Text>
+        {isConnected &&
+          <View style={styles.pickerContainer}>
+            <Text style={styles.thirdText}>School</Text>
+            <DropDownPicker
+              open={open}
+              value={school}
+              items={schoolItems}
+              setItems={setSchoolItems}
+              closeAfterSelecting={true}
+              closeOnBackPressed={true}
+              listItemContainerStyle={{
+                height: 40
+              }}
+              setOpen={setOpen}
+              setValue={setSchool}
+              placeholder="Choose Your School"
+              style={pickerSelectStyles.inputIOS}
+              dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            />
 
+          </View>
+        }
         {/* School Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>School</Text>
-          <DropDownPicker
-            open={open}
-            value={school}
-            items={schoolItems}
-            setItems={setSchoolItems}
-            closeAfterSelecting={true}
-            closeOnBackPressed={true}
-            listItemContainerStyle={{
-              height: 40
-            }}
-            setOpen={setOpen}
-            setValue={setSchool}
-            placeholder="Choose Your School"
-            style={pickerSelectStyles.inputIOS}
-            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-          />
-
-        </View>
 
         {/* Subject Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>

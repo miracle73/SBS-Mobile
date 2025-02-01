@@ -7,10 +7,16 @@ import { Ionicons } from '@expo/vector-icons';
 import HomeComponent from "../../components/HomeComponent";
 import SubscriptionModal from "../../components/modals/SubscriptionModal";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useGetUserContentsQuery } from "../../components/services/userService";
+import { setUserContents } from "../../components/redux/slices/userContentSlice";
+import { useAppDispatch } from "../../components/redux/store";
 
 export default function Page() {
     const router = useRouter();
     const [modalVisible, setModalVisible] = useState(false);
+    const dispatch = useAppDispatch();
+    const { data: userContents } = useGetUserContentsQuery();
+    
 
     useEffect(() => {
         const fetchStoredBirthdays = async () => {
@@ -28,6 +34,13 @@ export default function Page() {
 
     //     return () => clearTimeout(timer); // Cleanup the timer on component unmount
     // }, []);
+    useEffect(() => {
+        if (userContents) {
+          dispatch(setUserContents(userContents));
+          // Store the data in AsyncStorage for offline use
+          AsyncStorage.setItem('userContents', JSON.stringify(userContents));
+        }
+      }, [userContents, dispatch]);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}>
             <View style={styles.container}>

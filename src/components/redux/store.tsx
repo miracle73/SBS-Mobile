@@ -15,6 +15,7 @@ import { useDispatch, useSelector, TypedUseSelectorHook } from 'react-redux'
 import userReducer from './slices/userSlice'
 import authReducer from './slices/authSlice'
 import adminReducer from './slices/adminSlice'
+import userContentsReducer from './slices/userContentSlice'
 import { userApi } from '../services/userService'
 import { adminApi } from '../services/adminService'
 // import { tutorauthApi } from '../services/tutorauthApi'
@@ -31,9 +32,10 @@ const rootReducer = combineReducers({
   user: userReducer,
   admin: adminReducer, 
   auth: authReducer,
+  userContent: userContentsReducer,
   [userApi.reducerPath]: userApi.reducer,
   [adminApi.reducerPath]: adminApi.reducer,
-//   [studentauthApi.reducerPath]: studentauthApi.reducer,
+//   [studentauthApi.reducerPath]:studentauthApi.reducer,
 //   [locationApi.reducerPath]: locationApi.reducer,
 //   [materialApi.reducerPath]: materialApi.reducer,
 //   [profileApi.reducerPath]: profileApi.reducer,

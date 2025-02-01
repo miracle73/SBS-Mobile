@@ -5,15 +5,21 @@ import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 
 const pastQuestionTopic = () => {
-    const { topics, year } = useLocalSearchParams() || {};
+    const { topics, year, level } = useLocalSearchParams() || {};
     const searchResults = typeof topics === 'string' ? JSON.parse(topics) : [];
     const yearString = year ? year.toString() : '';
-
+    let levelString = typeof level  === 'string' ?  JSON.parse(level) : '';
+    const levelNumber = parseInt(levelString);
+    if ([1, 2, 3, 4, 5].includes(levelNumber)) {
+        levelString = (levelNumber * 100).toString();
+    }
+   
 
     const topicResults = searchResults.map((topic: any) => ({
         id: topic.id,
         title: topic.title,
         free: topic.free,
+        courseName: topic.courseName,
     }));
 
 
@@ -22,7 +28,7 @@ const pastQuestionTopic = () => {
             <ScrollView style={{ paddingHorizontal: 20 }}>
                 {topicResults.length == 0 ?
                     <Text style={styles.firstText}> No past Question</Text> :
-                    <Text style={styles.firstText}> View the {topicResults.length} pastQuestion topics here</Text>}
+                    <Text style={styles.firstText}> View the {topicResults.length} pastQuestion  {topicResults.length == 1? "topic" : "topics"} here</Text>}
 
                 {topicResults.map((result: any, index: any) => (
                     <PastQuestionTopicComponent
@@ -31,6 +37,8 @@ const pastQuestionTopic = () => {
                         title={result.title}
                         free={result.free}
                         year={yearString}
+                        courseName={result.courseName}
+                        level={levelString}
                     />
                 ))}
 

@@ -102,8 +102,21 @@ export interface ContentTopic {
 
 export interface ContentResponse {
   course_name: string;
+  course_level: string;
   topics: ContentTopic[];
 }
+
+interface UserActivatedStatusResponse {
+  status: string;
+  message: {
+    semester: string;
+    level: number;
+    user_id: number;
+    id: number;
+    is_activated: boolean;
+  }[];
+}
+
 
 export const userApi = createApi({
   reducerPath: 'userApi',
@@ -158,6 +171,12 @@ export const userApi = createApi({
     getUserContents: builder.query<ContentResponse[], void>({
       query: () => '/user/contents',
     }),
+    userActivatedStatus: builder.mutation<UserActivatedStatusResponse, { phone_imei: string }>({
+      query: ({ phone_imei }) => ({
+        url: `/user/auser?phone_imei=${phone_imei}`,
+        method: 'POST',
+      }),
+    }),
   }),
 });
 
@@ -171,6 +190,7 @@ export const {
   useGetTopicContentMutation,
   useGetTopicPastQuestionQuery,
   useGetUserContentsQuery,
+  useUserActivatedStatusMutation,
 } = userApi;
 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';

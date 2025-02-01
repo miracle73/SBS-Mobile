@@ -5,28 +5,39 @@ import { useRouter } from 'expo-router';
 import { useLocalSearchParams } from 'expo-router';
 
 const topics = () => {
-    const { topics } = useLocalSearchParams();
+    const { topics, level } = useLocalSearchParams();
     const searchResults = typeof topics === 'string' ? JSON.parse(topics) : [];
+    let levelString = typeof level  === 'string' ?  JSON.parse(level) : '';
+    const levelNumber = parseInt(levelString);
+    if ([1, 2, 3, 4, 5].includes(levelNumber)) {
+        levelString = (levelNumber * 100).toString();
+    }
 
-   
+
+
     const topicResults = searchResults.map((topic: any) => ({
         id: topic.id,
         title: topic.title,
         free: topic.free,
+        courseName: topic.courseName,
     }));
 
-
+    console.log(topicResults, "really")
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
+                {topicResults.length == 0 ?
+                    <Text style={styles.firstText}> No Topic</Text> :
+                    <Text style={styles.firstText}> View all the {topicResults.length == 1 ? "topic" : "topics"} here</Text>}
 
-                <Text style={styles.firstText}>{topicResults.length} View all the topics here</Text>
-                   {topicResults.map((result: any, index: any) => (
+                {topicResults.map((result: any, index: any) => (
                     <TopicComponent
                         key={index}
                         id={result.id}
                         title={result.title}
                         free={result.free}
+                        courseName={result.courseName}
+                        level={levelString}
                     />
                 ))}
 

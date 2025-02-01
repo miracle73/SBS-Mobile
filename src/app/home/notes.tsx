@@ -9,6 +9,9 @@ import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from
 import DropDownPicker from 'react-native-dropdown-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import NetInfo from '@react-native-community/netinfo';
+import { useAppSelector } from '../../components/redux/store';
+import { useSelector } from 'react-redux';
+import { RootState, AppDispatch } from '../../components/redux/store';
 
 const Notes = () => {
   const [institution, setInstitution] = useState("");
@@ -23,66 +26,130 @@ const Notes = () => {
   const [levelItems, setLevelItems] = useState<{ label: string; value: string }[]>([]);
   const [courseItems, setCourseItems] = useState<{ label: string; value: string }[]>([]);
   const router = useRouter();
-
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
+  const userContents = useSelector((state: RootState) => state.userContent.contents)
+  // 
+  const userContents2 = useAppSelector((state) => state.userContent.contents);
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId  });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
-
-  console.log(data, 56, schoolItems)
+  const [isConnected, setIsConnected] = useState(true);
 
 
   useEffect(() => {
-    if (isSuccess && data) {
-      const formattedSchools = {
-        label: data.name,
-        value: data.id.toString(),
-      };
-      setSchoolItems([formattedSchools]);
-    }
+    const fetchStoredContents = async () => {
+      const netInfo = await NetInfo.fetch();
+      setIsConnected(netInfo.isConnected ?? false);
+      if (netInfo.isConnected && isSuccess && data) {
+        const formattedSchools = {
+          label: data.name,
+          value: data.id.toString(),
+        };
+        setSchoolItems([formattedSchools]);
+
+        const formattedLevels = data.levels.map((level) => ({
+          label: level.name,
+          value: level.id,
+        }));
+        setLevelItems(formattedLevels);
+
+        const formattedCourses = data.courses.map((course) => ({
+          label: course.name,
+          value: course.id,
+        }));
+        setCourseItems(formattedCourses);
+      } else {
+        // Offline mode: fetch data from the Redux store or AsyncStorage
+        const storedContents = await AsyncStorage.getItem('userContents');
+        if (storedContents) {
+          setIsConnected(false);
+          console.log(isConnected)
+          const parsedContents = JSON.parse(storedContents);
+
+          const uniqueLevels = Array.from(new Set(parsedContents.map((content: any) => content.course_level)));
+          const uniqueCourses = Array.from(new Set(parsedContents.map((content: any) => content.course_name)));
+
+          const offlineLevels = uniqueLevels.map((level: any) => ({
+            label: level,
+            value: level,
+          }));
+          setLevelItems(offlineLevels);
+
+          const offlineCourses = uniqueCourses.map((course: any) => ({
+            label: course,
+            value: course,
+          }));
+          setCourseItems(offlineCourses);
+        }
+      }
+    };
+    fetchStoredContents();
   }, [data, isSuccess]);
 
-  useEffect(() => {
-    if (isSuccess && data) {
 
 
-      const formattedLevels = data.levels.map((level) => ({
-        label: level.name,
-        value: level.id,
-      }));
-      setLevelItems(formattedLevels);
-
-      const formattedCourses = data.courses.map((course) => ({
-        label: course.name,
-        value: course.id,
-      }));
-      setCourseItems(formattedCourses);
-
-    }
-  }, [school, data]);
 
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
-      console.log(level)
-      const result = await searchTopicsInCourses({
-       
-        course_id: parseInt(course),
-        level_id: parseInt(level),
-        school_id: parseInt(school),
-      }).unwrap();
+      const netInfo = await NetInfo.fetch();
 
-      if (result.status === 'successful') {
-        router.push({
-          pathname: '/other/topics',
-          params: { topics: JSON.stringify(result.topics) },
-        });
+      if (netInfo.isConnected) {
+        console.log(level)
+        const result = await searchTopicsInCourses({
+          course_id: parseInt(course),
+          level_id: parseInt(level),
+          school_id: parseInt(school),
+        }).unwrap();
+
+        if (result.status === 'successful') {
+          router.push({
+            pathname: '/other/topics',
+            params: { topics: JSON.stringify(result.topics),  level: JSON.stringify(level) },
+          });
+        } else {
+          Toast.show({
+            type: 'error',
+            text1: 'Error',
+            text2: 'Failed to fetch topics. Please try again.',
+          });
+          return;
+        }
       } else {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Failed to fetch topics. Please try again.',
-        });
-        return;
+      // Offline mode: fetch data from the Redux store
+      const storedContents = await AsyncStorage.getItem('userContents');
+      if (storedContents) {
+        console.log(1)
+        const parsedContents = JSON.parse(storedContents);
+
+        const selectedCourse = parsedContents.find(
+          (content: any) =>
+            content.course_level == level &&
+            content.course_name == course &&
+            content.topics.length > 0
+        );
+
+
+        console.log(200, level)
+        if (selectedCourse) {
+          const offlineTopics = selectedCourse.topics.map((topic: any, index: any) => ({
+            id: index + 1,
+            title: topic.topic_title,
+            free: topic.topic_free,
+            courseName: course,
+          }));
+          console.log(3)
+          router.push({
+            pathname: '/other/topics',
+            params: { topics: JSON.stringify(offlineTopics),  level: JSON.stringify(level) },
+          });
+          } else {
+            Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: 'No offline data available for selected course. Please try again.',
+            });
+          }
+        }
       }
     } catch (error) {
       Toast.show({
@@ -90,8 +157,6 @@ const Notes = () => {
         text1: 'Error',
         text2: 'An error occurred. Please try again.',
       });
-      
-      return;
     } finally {
       setSchool("");
       setLevel("");
@@ -99,6 +164,7 @@ const Notes = () => {
       setLoading(false);
     }
   };
+
 
   if (isLoading) {
     return (
@@ -115,44 +181,32 @@ const Notes = () => {
         <Text style={styles.secondText}>
           Get access to unlimited notes from your lecturers and learn easily.
         </Text>
-
-
+        
         {/* School Picker */}
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>School</Text>
-          <DropDownPicker
-            open={open}
-            value={school}
-            items={schoolItems}
-            setOpen={setOpen}
-            closeAfterSelecting={true}
-            closeOnBackPressed={true}
-            listItemContainerStyle={{
-              height: 40
-            }}
-            setValue={setSchool}
-            setItems={setSchoolItems}
-            placeholder="Select School"
-            style={pickerSelectStyles.inputIOS}
-            dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-          />
-          {/* <RNPickerSelect
-            onValueChange={(value) => setSchool(value)}
-            items={schoolItems}
-            placeholder={{ label: 'Select School', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={school}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
-        </View>
+        {isConnected &&
+
+          < View style={styles.pickerContainer}>
+            <Text style={styles.thirdText}>School</Text>
+            <DropDownPicker
+              open={open}
+              value={school}
+              items={schoolItems}
+              setOpen={setOpen}
+              closeAfterSelecting={true}
+              closeOnBackPressed={true}
+              listItemContainerStyle={{
+                height: 40
+              }}
+              setValue={setSchool}
+              setItems={setSchoolItems}
+              placeholder="Select School"
+              style={pickerSelectStyles.inputIOS}
+              dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            />
+
+          </View>
+        }
+
 
         {/* Level Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
@@ -175,22 +229,6 @@ const Notes = () => {
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
 
-          {/* <RNPickerSelect
-            onValueChange={(value) => setLevel(value)}
-            items={levelItems}
-            placeholder={{ label: 'Select Level', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={level}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
         </View>
 
         {/* Course Picker */}
@@ -214,22 +252,7 @@ const Notes = () => {
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
 
-          {/* <RNPickerSelect
-            onValueChange={(value) => setCourse(value)}
-            items={courseItems}
-            placeholder={{ label: 'Select Course', value: null }}
-            useNativeAndroidPickerStyle={false}
-            style={pickerSelectStyles}
-            value={course}
-            Icon={() => (
-              <MaterialIcons
-                name="keyboard-arrow-down"
-                size={24}
-                color="#B0BEC5"
-                style={{ alignSelf: 'center' }}
-              />
-            )}
-          /> */}
+
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
@@ -237,7 +260,7 @@ const Notes = () => {
 
         </TouchableOpacity>
       </View>
-    </SafeAreaView>
+    </SafeAreaView >
   );
 };
 

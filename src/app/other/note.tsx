@@ -11,7 +11,8 @@ const note = () => {
 
     const router = useRouter()
     const { content } = useLocalSearchParams();
-    const searchResults = typeof content === 'string' ? JSON.parse(content) : [];
+
+    const searchResults = typeof content === 'string' ? JSON.parse(content) : content;
 
 
     const noteItems = [

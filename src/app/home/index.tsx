@@ -16,7 +16,7 @@ export default function Page() {
     const [modalVisible, setModalVisible] = useState(false);
     const dispatch = useAppDispatch();
     const { data: userContents } = useGetUserContentsQuery();
-    
+
 
     useEffect(() => {
         const fetchStoredBirthdays = async () => {
@@ -36,11 +36,11 @@ export default function Page() {
     // }, []);
     useEffect(() => {
         if (userContents) {
-          dispatch(setUserContents(userContents));
-          // Store the data in AsyncStorage for offline use
-          AsyncStorage.setItem('userContents', JSON.stringify(userContents));
+            dispatch(setUserContents(userContents));
+            // Store the data in AsyncStorage for offline use
+            AsyncStorage.setItem('userContents', JSON.stringify(userContents));
         }
-      }, [userContents, dispatch]);
+    }, [userContents, dispatch]);
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}>
             <View style={styles.container}>
@@ -73,19 +73,19 @@ export default function Page() {
                                 disabled={false}
                             />
                         </TouchableOpacity>
+                        <TouchableOpacity onPress={() => router.push("/home/edu")}>
+                            <HomeComponent
+                                Icon={PadlockIcon}
+                                firstText="Past Questions"
+                                secondText="Questions from previous exams"
+                                backgroundColor="#B0BEC5"
+                                disabled={false}
+                            />
+                        </TouchableOpacity>
 
-                        <HomeComponent
-                            Icon={PadlockIcon}
-                            firstText="Past Questions"
-                            secondText="Questions from previous exams"
-                            backgroundColor="#B0BEC5"
-                            disabled={true}
-                        />
-
-                    
                     </View>
                     <View style={{ width: "48%", gap: 10 }}>
-                        <TouchableOpacity  onPress={() => router.push("/home/calculator")}>
+                        <TouchableOpacity onPress={() => router.push("/home/calculator")}>
                             <HomeComponent
                                 Icon={SearchIcon}
                                 firstText="CGPA Calculator"
@@ -94,17 +94,17 @@ export default function Page() {
                                 disabled={false}
                             />
                         </TouchableOpacity>
-         
+                        <TouchableOpacity onPress={() => router.push("/home/notes")}>
                             <HomeComponent
                                 Icon={PadlockIcon}
                                 firstText="Lecture Notes"
                                 secondText="Stay ahead with our lecture notes"
                                 backgroundColor="#B0BEC5"
-                                disabled={true}
+                                disabled={false}
                             />
-               
-                     
-                    
+                        </TouchableOpacity>
+
+
                     </View>
                 </View>
             </View>

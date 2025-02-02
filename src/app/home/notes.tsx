@@ -29,7 +29,7 @@ const Notes = () => {
   const userContents = useSelector((state: RootState) => state.userContent.contents)
   // 
   const userContents2 = useAppSelector((state) => state.userContent.contents);
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId  });
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
   const [isConnected, setIsConnected] = useState(true);
 
@@ -104,7 +104,7 @@ const Notes = () => {
         if (result.status === 'successful') {
           router.push({
             pathname: '/other/topics',
-            params: { topics: JSON.stringify(result.topics),  level: JSON.stringify(level) },
+            params: { topics: JSON.stringify(result.topics), level: JSON.stringify(level) },
           });
         } else {
           Toast.show({
@@ -115,33 +115,33 @@ const Notes = () => {
           return;
         }
       } else {
-      // Offline mode: fetch data from the Redux store
-      const storedContents = await AsyncStorage.getItem('userContents');
-      if (storedContents) {
-        console.log(1)
-        const parsedContents = JSON.parse(storedContents);
+        // Offline mode: fetch data from the Redux store
+        const storedContents = await AsyncStorage.getItem('userContents');
+        if (storedContents) {
+          console.log(1)
+          const parsedContents = JSON.parse(storedContents);
 
-        const selectedCourse = parsedContents.find(
-          (content: any) =>
-            content.course_level == level &&
-            content.course_name == course &&
-            content.topics.length > 0
-        );
+          const selectedCourse = parsedContents.find(
+            (content: any) =>
+              content.course_level == level &&
+              content.course_name == course &&
+              content.topics.length > 0
+          );
 
 
-        console.log(200, level)
-        if (selectedCourse) {
-          const offlineTopics = selectedCourse.topics.map((topic: any, index: any) => ({
-            id: index + 1,
-            title: topic.topic_title,
-            free: topic.topic_free,
-            courseName: course,
-          }));
-          console.log(3)
-          router.push({
-            pathname: '/other/topics',
-            params: { topics: JSON.stringify(offlineTopics),  level: JSON.stringify(level) },
-          });
+          console.log(200, level)
+          if (selectedCourse) {
+            const offlineTopics = selectedCourse.topics.map((topic: any, index: any) => ({
+              id: index + 1,
+              title: topic.topic_title,
+              free: topic.topic_free,
+              courseName: course,
+            }));
+            console.log(3)
+            router.push({
+              pathname: '/other/topics',
+              params: { topics: JSON.stringify(offlineTopics), level: JSON.stringify(level) },
+            });
           } else {
             Toast.show({
               type: 'error',
@@ -181,7 +181,7 @@ const Notes = () => {
         <Text style={styles.secondText}>
           Get access to unlimited notes from your lecturers and learn easily.
         </Text>
-        
+
         {/* School Picker */}
         {isConnected &&
 

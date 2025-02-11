@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Alert } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, ActivityIndicator, Alert, ScrollView } from 'react-native';
 import BirthdayCard from '../../components/BirthdayCard';
 import { useGetBirthdaysQuery } from '../../components/services/userService';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -51,27 +51,28 @@ const More = () => {
 
   return (
     <SafeAreaView style={styles.bodyContainer}>
-      <View style={{ paddingHorizontal: 20 }}>
+      <ScrollView style={{ paddingHorizontal: 20 }} showsHorizontalScrollIndicator={false}>
         <Text style={styles.fourthText}>Birthday Celebration</Text>
-        {birthdays.length > 0 ? (
-          birthdays.map((birthday, index) => (
-            // <BirthdayCard key={index} birthday={birthday} />
-            <View key={index} style={{ width: '47%', marginBottom: 20, }}>
-            <BirthdayCard
-              name={birthday.name}
-              image={birthday.image_url}
-              note={birthday.note}
-              department={birthday.department}
-              level={birthday.level}
-              school={birthday.school}
-              dob={birthday.dob}
-            />
-          </View>
-          ))
-        ) : (
-          <Text style={styles.noBirthdaysText}>No Birthdays Today</Text>
-        )}
-      </View>
+        <View style={styles.cardsContainer}>
+          {birthdays.length > 0 ? (
+            birthdays.map((birthday, index) => (
+              <View key={index} style={styles.cardWrapper}>
+                <BirthdayCard
+                  name={birthday.name}
+                  image={birthday.image_url}
+                  note={birthday.note}
+                  department={birthday.department}
+                  level={birthday.level}
+                  school={birthday.school}
+                  dob={birthday.dob}
+                />
+              </View>
+            ))
+          ) : (
+            <Text style={styles.noBirthdaysText}>No Birthdays Today</Text>
+          )}
+        </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
@@ -93,6 +94,16 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: '400',
     marginTop: 20,
+  },
+  cardsContainer: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardWrapper: {
+    width: '49%',
+    marginBottom: 20,
+   
   },
 });
 

@@ -29,11 +29,11 @@ const note = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20, }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_1 && <Image source={{ uri: searchResults.image_1 }} style={styles.image} />}
+                    {searchResults.image_1 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_1}` }} style={styles.image} />}
                 </View>
                 <Text style={styles.firstText}>{searchResults.title}</Text>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_2 && <Image source={{ uri: searchResults.image_2 }} style={styles.image} />}
+                    {searchResults.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_2}` }} style={styles.image} />}
                 </View>
                 {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     <Image source={NoteImage} style={{ marginTop: 20 }} />
@@ -50,9 +50,9 @@ const note = () => {
                     {searchResults.content}
                 </Text> */}
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_3 && <Image source={{ uri: searchResults.image_3 }} style={styles.image} />}
-                    {searchResults.image_4 && <Image source={{ uri: searchResults.image_4 }} style={styles.image} />}
-                    {searchResults.image_5 && <Image source={{ uri: searchResults.image_5 }} style={styles.image} />}
+                    {searchResults.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_3}` }} style={styles.image} />}
+                    {searchResults.image_4 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_4}` }} style={styles.image} />}
+                    {searchResults.image_5 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_5}` }} style={styles.image} />}
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -91,9 +91,8 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 200,
+        height: 500,
         marginTop: 10,
-        borderRadius: 10,
     },
     thirdText: {
         fontSize: 10,

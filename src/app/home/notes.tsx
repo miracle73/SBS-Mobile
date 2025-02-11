@@ -44,7 +44,7 @@ const Notes = () => {
           value: data.id.toString(),
         };
         setSchoolItems([formattedSchools]);
-
+      
         const formattedLevels = data.levels.map((level) => ({
           label: level.name,
           value: level.id,
@@ -55,7 +55,9 @@ const Notes = () => {
           label: course.name,
           value: course.id,
         }));
+     
         setCourseItems(formattedCourses);
+        console.log(formattedCourses,65);
       } else {
         // Offline mode: fetch data from the Redux store or AsyncStorage
         const storedContents = await AsyncStorage.getItem('userContents');

@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, Image } from 'react-native'
-import React from 'react'
+import { View, Text, StyleSheet, Image } from 'react-native';
+import React from 'react';
 
 interface BirthdayCardProps {
     name: string;
@@ -12,9 +12,10 @@ interface BirthdayCardProps {
 }
 
 const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note, department, level, school, dob }) => {
+    const fullImageUrl = `https://sbsapp.com.ng/${image}`;
     return (
         <View style={styles.outerContainer}>
-            <Image source={{ uri: image }} style={styles.image} />
+            <Image source={{ uri: fullImageUrl }} style={styles.image} />
             <Text style={styles.firstText}>Happy Birthday, {name}!🎉</Text>
             <Text style={styles.secondText}>School: {school}</Text>
             <Text style={styles.secondText}>Department: {department}</Text>
@@ -22,16 +23,17 @@ const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note, departme
             <Text style={styles.secondText}>DOB: {dob}</Text>
             <Text style={styles.secondText}>{note}</Text>
         </View>
-    )
-}
+    );
+};
 
 const styles = StyleSheet.create({
     outerContainer: {
-        height: 200,
+        height: 300,
         backgroundColor: "#F8F8F8",
         padding: 8,
         marginVertical: 7,
         justifyContent: "space-between",
+        borderRadius: 10
     },
     image: {
         width: '100%',
@@ -53,6 +55,6 @@ const styles = StyleSheet.create({
         fontWeight: '400',
         color: '#000000',
     }
-})
+});
 
-export default BirthdayCard
+export default BirthdayCard;

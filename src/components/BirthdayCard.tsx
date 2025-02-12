@@ -28,7 +28,7 @@ const BirthdayCard: React.FC<BirthdayCardProps> = ({ name, image, note, departme
 
 const styles = StyleSheet.create({
     outerContainer: {
-        height: 300,
+        height: 350,
         backgroundColor: "#F8F8F8",
         padding: 8,
         marginVertical: 7,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
     },
     image: {
         width: '100%',
-        height: 80,
+        height: 170,
         resizeMode: 'cover',
     },
     firstText: {

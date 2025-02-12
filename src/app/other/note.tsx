@@ -1,33 +1,39 @@
-import { View, Text, SafeAreaView, Image, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useState } from 'react';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter, useLocalSearchParams } from 'expo-router'
-import NoteImage from "../../../assets/images/note-image.png"
+import { View, Text, SafeAreaView, Image, StyleSheet, ScrollView } from 'react-native';
+import { useRouter, useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
+import { WebView } from 'react-native-webview';
+
 
 
 const note = () => {
     const [note, setNote] = useState("");
-
-    const router = useRouter()
+    const router = useRouter();
     const { content } = useLocalSearchParams();
 
     const searchResults = typeof content === 'string' ? JSON.parse(content) : content;
 
-
-    const noteItems = [
-        { label: 'Harvard University', value: 'harvard' },
-        { label: 'Stanford University', value: 'stanford' },
-        { label: 'MIT', value: 'mit' },
-        { label: 'University of Oxford', value: 'oxford' },
-        { label: 'University of Cambridge', value: 'cambridge' },
-    ];
-
-
-
+    const mathJaxScript = `
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+<script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+</head>
+<body>
+<div id="math"></div>
+<script>
+  document.getElementById('math').innerHTML = \`
+  ${searchResults.content}
+  \`;
+  MathJax.typeset();
+</script>
+</body>
+</html>
+`;
     return (
         <SafeAreaView style={styles.bodyContainer}>
-            <ScrollView style={{ paddingHorizontal: 20, }}>
+            <ScrollView style={{ paddingHorizontal: 20 }}>
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_1 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_1}` }} style={styles.image} />}
                 </View>
@@ -35,9 +41,6 @@ const note = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_2}` }} style={styles.image} />}
                 </View>
-                {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    <Image source={NoteImage} style={{ marginTop: 20 }} />
-                </View> */}
                 <Markdown style={{
                     text: {
                         fontSize: 16,
@@ -46,9 +49,11 @@ const note = () => {
                 }}>
                     {searchResults.content}
                 </Markdown>
-                {/* <Text style={styles.fourthText}>
-                    {searchResults.content}
-                </Text> */}
+                <WebView
+                    originWhitelist={['*']}
+                    source={{ html: mathJaxScript }}
+                    style={{ height: 500 }}
+                />
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_3}` }} style={styles.image} />}
                     {searchResults.image_4 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_4}` }} style={styles.image} />}

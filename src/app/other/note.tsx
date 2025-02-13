@@ -12,7 +12,7 @@ const note = () => {
     const { content } = useLocalSearchParams();
 
     const searchResults = typeof content === 'string' ? JSON.parse(content) : content;
-
+    const isSingleImage = typeof searchResults === 'string';
     const mathJaxScript = `
 <!DOCTYPE html>
 <html>
@@ -24,13 +24,22 @@ const note = () => {
 <div id="math"></div>
 <script>
   document.getElementById('math').innerHTML = \`
-  ${searchResults.content}
+  ${searchResults.content.replace(/\\/g, '\\\\')}
   \`;
   MathJax.typeset();
 </script>
 </body>
 </html>
 `;
+
+    if (isSingleImage) {
+        console.log(4)
+        return (
+            <View style={{ alignItems: "center", justifyContent: "center" }}>
+                <Image source={{ uri: `https://sbsapp.com.ng/${searchResults}` }} style={styles.image} />
+            </View>
+        )
+    }
     return (
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
@@ -47,12 +56,12 @@ const note = () => {
                         lineHeight: 24,
                     }
                 }}>
-                    {searchResults.content}
+                    {searchResults.content || 'No content available'}
                 </Markdown>
                 <WebView
                     originWhitelist={['*']}
                     source={{ html: mathJaxScript }}
-                    style={{ height: 500 }}
+                    style={{ height: 1000 }}
                 />
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_3}` }} style={styles.image} />}

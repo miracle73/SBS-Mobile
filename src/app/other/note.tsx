@@ -3,6 +3,8 @@ import { View, Text, SafeAreaView, Image, StyleSheet, ScrollView } from 'react-n
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
 import { WebView } from 'react-native-webview';
+import MDLatextText from '../../components/MDLatexComponent'
+
 
 
 
@@ -54,27 +56,9 @@ const note = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_2}` }} style={styles.image} />}
                 </View>
-                {searchResults.latex ?
-                    <WebView
-                        originWhitelist={['*']}
-                        source={{ html: mathJaxScript }}
-                        scalesPageToFit={true}
-                        javaScriptEnabled={true}
-                        style={{ height: 1000 }}
-                        setSupportZoom={true}
-                        useWebKit={true}
-
-                    />
-                    :
-                    <Markdown style={{
-                        text: {
-                            fontSize: 16,
-                            lineHeight: 24,
-                        }
-                    }}>
-                        {searchResults.content || ''}
-                    </Markdown>
-                }
+                <MDLatextText className="markdown-content" widthsub={20} fontSize={16}>
+                    {searchResults.content || ''}
+                </MDLatextText>
 
 
                 <View style={{ alignItems: "center", justifyContent: "center" }}>

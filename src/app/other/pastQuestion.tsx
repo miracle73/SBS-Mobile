@@ -35,6 +35,11 @@ const pastQuestion = () => {
                                     originWhitelist={['*']}
                                     source={{ html: createMathJaxScript(result.content) }}
                                     style={{ height: 1000 }}
+                                    setSupportZoom={true}
+                                    useWebKit={true}
+                                    scalesPageToFit={true}
+                                    javaScriptEnabled={true}
+
                                 />
                             ) : (
                                 <Markdown style={{

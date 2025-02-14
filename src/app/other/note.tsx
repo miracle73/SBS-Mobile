@@ -13,6 +13,15 @@ const note = () => {
 
     const searchResults = typeof content === 'string' ? JSON.parse(content) : content;
     const isSingleImage = typeof searchResults === 'string';
+
+    const ZOOMABLE_WEBVIEW_SCRIPT = `
+const meta = document.createElement('meta');
+meta.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=1');
+meta.setAttribute('name', 'viewport');
+document.getElementsByTagName('head')[0].appendChild(meta);
+`;
+
+
     const mathJaxScript = `
 <!DOCTYPE html>
 <html>
@@ -54,7 +63,12 @@ const note = () => {
                     <WebView
                         originWhitelist={['*']}
                         source={{ html: mathJaxScript }}
+                        scalesPageToFit={true}
+                        javaScriptEnabled={true}
                         style={{ height: 1000 }}
+                        setSupportZoom={true}
+                        useWebKit={true}
+
                     />
                     :
                     <Markdown style={{

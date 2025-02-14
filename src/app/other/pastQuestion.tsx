@@ -2,6 +2,7 @@ import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ScrollView, Ima
 import React from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
+import { WebView } from 'react-native-webview';
 
 const pastQuestion = () => {
     const router = useRouter();
@@ -13,33 +14,7 @@ const pastQuestion = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
 
-                {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_1 && <Image source={{ uri: searchResults.image_1 }} style={styles.image} />}
-                </View>
-                <Text style={styles.firstText}>{searchResults.title}</Text>
-                <Text style={styles.firstText}>Year: {searchResults.year}</Text>
-                <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_2 && <Image source={{ uri: searchResults.image_2 }} style={styles.image} />}
-                </View> */}
-                {/* <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
-                                    <Image source={NoteImage} style={{ marginTop: 20 }} />
-                                </View> */}
-                {/* <Markdown style={{
-                    text: {
-                        fontSize: 16,
-                        lineHeight: 24,
-                    }
-                }}>
-                    {searchResults.content}
-                </Markdown> */}
-                {/* <Text style={styles.fourthText}>
-                                    {searchResults.content}
-                                </Text> */}
-                {/* <View style={{ alignItems: "center", justifyContent: "center" }}>
-                    {searchResults.image_3 && <Image source={{ uri: searchResults.image_3 }} style={styles.image} />}
-                    {searchResults.image_4 && <Image source={{ uri: searchResults.image_4 }} style={styles.image} />}
-                    {searchResults.image_5 && <Image source={{ uri: searchResults.image_5 }} style={styles.image} />}
-                </View> */}
+               
                 {isSingleImage ? (
                     <View style={{ alignItems: "center", justifyContent: "center" }}>
                         <Image source={{ uri: `https://sbsapp.com.ng/${searchResults}` }} style={styles.image} />
@@ -55,15 +30,23 @@ const pastQuestion = () => {
                         <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                             {result.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${result.image_2}` }} style={styles.image} />}
                         </View>
-
-                        <Markdown style={{
-                            text: {
-                                fontSize: 16,
-                                lineHeight: 24,
-                            }
-                        }}>
-                            {result.content || 'No content available'}
-                        </Markdown>
+                        {result.latex ? (
+                                <WebView
+                                    originWhitelist={['*']}
+                                    source={{ html: createMathJaxScript(result.content) }}
+                                    style={{ height: 1000 }}
+                                />
+                            ) : (
+                                <Markdown style={{
+                                    text: {
+                                        fontSize: 16,
+                                        lineHeight: 24,
+                                    }
+                                }}>
+                                    {result.content || ''}
+                                </Markdown>
+                            )}
+                        
 
                         <View style={{ alignItems: "center", justifyContent: "center" }}>
                             {result.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${result.image_3}` }} style={styles.image} />}
@@ -75,6 +58,25 @@ const pastQuestion = () => {
             </ScrollView>
         </SafeAreaView>
     );
+};
+
+const createMathJaxScript = (content: any) => {
+    return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    </head>
+    <body>
+    <div id="math"></div>
+    <script>
+        document.getElementById('math').innerHTML = \`${content.replace(/\\/g, '\\\\')}\`;
+        MathJax.typeset();
+    </script>
+    </body>
+    </html>
+    `;
 };
 
 const styles = StyleSheet.create({
@@ -105,7 +107,7 @@ const styles = StyleSheet.create({
         width: '100%',
         height: 500,
         marginTop: 10,
-      
+
     },
 });
 

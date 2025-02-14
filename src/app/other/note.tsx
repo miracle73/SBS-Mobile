@@ -50,19 +50,24 @@ const note = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_2}` }} style={styles.image} />}
                 </View>
-                <Markdown style={{
-                    text: {
-                        fontSize: 16,
-                        lineHeight: 24,
-                    }
-                }}>
-                    {searchResults.content || 'No content available'}
-                </Markdown>
-                <WebView
-                    originWhitelist={['*']}
-                    source={{ html: mathJaxScript }}
-                    style={{ height: 1000 }}
-                />
+                {searchResults.latex ?
+                    <WebView
+                        originWhitelist={['*']}
+                        source={{ html: mathJaxScript }}
+                        style={{ height: 1000 }}
+                    />
+                    :
+                    <Markdown style={{
+                        text: {
+                            fontSize: 16,
+                            lineHeight: 24,
+                        }
+                    }}>
+                        {searchResults.content || ''}
+                    </Markdown>
+                }
+
+
                 <View style={{ alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_3}` }} style={styles.image} />}
                     {searchResults.image_4 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_4}` }} style={styles.image} />}

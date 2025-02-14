@@ -123,7 +123,8 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
                                 image_5: pq.images[4],
                                 file: null,
                                 topic_id: null,
-                                id: null
+                                id: null,
+                                latex: pq.latex,
                             }));
 
                             router.push({

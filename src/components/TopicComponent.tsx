@@ -116,7 +116,8 @@ const TopicComponent: React.FC<TopicComponentProps> = ({ title, id, free, course
                                     image_4: null,
                                     image_5: null,
                                     id: null,
-                                    course_id: null
+                                    course_id: null,
+                                    latex: selectedTopic.topic_latex
                                 })
                             },
                         });

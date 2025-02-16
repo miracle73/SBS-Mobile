@@ -3,8 +3,17 @@ import { View, Text, SafeAreaView, Image, StyleSheet, ScrollView } from 'react-n
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
 import { WebView } from 'react-native-webview';
+import { InlineMath, BlockMath } from 'react-katex';
+import 'katex/dist/katex.min.css';
+import MarkdownLatexViewer from '../../components/MDLatexComponent';
 
+import MarkdownIt from 'markdown-it';
 
+const md = new MarkdownIt();
+
+const cleanMarkdown = (markdown: any) => {
+    return md.render(markdown);
+}
 
 
 
@@ -15,7 +24,6 @@ const note = () => {
 
     const searchResults = typeof content === 'string' ? JSON.parse(content) : content;
     const isSingleImage = typeof searchResults === 'string';
-
 
 
 
@@ -56,17 +64,36 @@ const note = () => {
                 <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center" }}>
                     {searchResults.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${searchResults.image_2}` }} style={styles.image} />}
                 </View>
+                {/* <Markdown
+                    rules={{
+                        inline_math: (node) => <MathJaxRenderer equation={node.content} />,
+                        math: (node) => <MathJaxRenderer equation={node.content} />,
+                    }}
+                >
+                    {searchResults.content || ""}
+                </Markdown> */}
                 {searchResults.latex ? (
-                    <WebView
-                        originWhitelist={['*']}
-                        source={{ html: mathJaxScript }}
-                        style={{ height: 1000 }}
-                        setSupportZoom={true}
-                        useWebKit={true}
-                        scalesPageToFit={true}
-                        javaScriptEnabled={true}
-
-                    />
+                    <MarkdownLatexViewer content={searchResults.content} />
+                ) : (
+                    <Markdown style={{
+                        text: {
+                            fontSize: 16,
+                            lineHeight: 24,
+                        }
+                    }}>
+                        
+                        {searchResults.content || ''}
+                    </Markdown>
+                )}
+                {/* {searchResults.latex ? (
+                     <WebView
+                     originWhitelist={['*']}
+                     source={{ html: mathJaxScript }}
+                     style={{ flex: 1, minHeight: 600 }} // Ensure minimum height
+                     javaScriptEnabled={true}
+                     domStorageEnabled={true}
+                     useWebKit={true}
+                 />
                 ) : (
                     <Markdown style={{
                         text: {
@@ -76,7 +103,7 @@ const note = () => {
                     }}>
                         {searchResults.content || ''}
                     </Markdown>
-                )}
+                )} */}
 
 
                 <View style={{ alignItems: "center", justifyContent: "center" }}>

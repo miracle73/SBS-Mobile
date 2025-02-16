@@ -3,6 +3,7 @@ import React from 'react';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import Markdown from 'react-native-markdown-display';
 import { WebView } from 'react-native-webview';
+import MarkdownLatexViewer from '../../components/MDLatexComponent';
 
 const pastQuestion = () => {
     const router = useRouter();
@@ -14,7 +15,7 @@ const pastQuestion = () => {
         <SafeAreaView style={styles.bodyContainer}>
             <ScrollView style={{ paddingHorizontal: 20 }}>
 
-               
+
                 {isSingleImage ? (
                     <View style={{ alignItems: "center", justifyContent: "center" }}>
                         <Image source={{ uri: `https://sbsapp.com.ng/${searchResults}` }} style={styles.image} />
@@ -31,6 +32,19 @@ const pastQuestion = () => {
                             {result.image_2 && <Image source={{ uri: `https://sbsapp.com.ng/${result.image_2}` }} style={styles.image} />}
                         </View>
                         {result.latex ? (
+                            <MarkdownLatexViewer content={result.content} />
+                        ) : (
+                            <Markdown style={{
+                                text: {
+                                    fontSize: 16,
+                                    lineHeight: 24,
+                                }
+                            }}>
+
+                                {result.content || ''}
+                            </Markdown>
+                        )}
+                        {/* {result.latex ? (
                                 <WebView
                                     originWhitelist={['*']}
                                     source={{ html: createMathJaxScript(result.content) }}
@@ -50,8 +64,8 @@ const pastQuestion = () => {
                                 }}>
                                     {result.content || ''}
                                 </Markdown>
-                            )}
-                        
+                            )} */}
+
 
                         <View style={{ alignItems: "center", justifyContent: "center" }}>
                             {result.image_3 && <Image source={{ uri: `https://sbsapp.com.ng/${result.image_3}` }} style={styles.image} />}

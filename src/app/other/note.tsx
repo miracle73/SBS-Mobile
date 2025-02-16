@@ -7,13 +7,6 @@ import { InlineMath, BlockMath } from 'react-katex';
 import 'katex/dist/katex.min.css';
 import MarkdownLatexViewer from '../../components/MDLatexComponent';
 
-import MarkdownIt from 'markdown-it';
-
-const md = new MarkdownIt();
-
-const cleanMarkdown = (markdown: any) => {
-    return md.render(markdown);
-}
 
 
 

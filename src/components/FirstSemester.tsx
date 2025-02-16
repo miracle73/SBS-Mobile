@@ -12,7 +12,7 @@ interface FirstSemesterProps {
 const FirstSemester: React.FC<FirstSemesterProps> = ({ setTotalCGPA, totalCGPA }) => {
   const [open, setOpen] = useState(false);
   const [modal, setModal] = useState(false);
-  const initialCourses = Array.from({ length: 7 }, () => ({ course: '', unit: '', grade: '' }));
+  const initialCourses = Array.from({ length: 12 }, () => ({ course: '', unit: '', grade: '' }));
   const [courses, setCourses] = useState(initialCourses);
   const [currentIndex, setCurrentIndex] = useState(-1);
 

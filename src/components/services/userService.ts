@@ -1,5 +1,5 @@
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { BaseUrl } from './api';
+import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { BaseUrl } from "./api";
 
 interface School {
   name: string;
@@ -52,7 +52,7 @@ interface ActivateRequestBody {
   phone_imei: string | null;
   pin: string;
 }
-// Flexible interface to handle unknown keys 
+// Flexible interface to handle unknown keys
 interface ActivateResponse {
   [key: string]: string;
 }
@@ -84,6 +84,7 @@ interface TopicPastQuestionResponse {
   image_5: string | null;
   topic_id: number;
   id: number;
+  pdf_content: string;
   image_1: string | null;
   image_2: string | null;
   image_4: string | null;
@@ -117,64 +118,79 @@ interface UserActivatedStatusResponse {
   }[];
 }
 
-
 export const userApi = createApi({
-  reducerPath: 'userApi',
+  reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
     baseUrl: BaseUrl,
   }),
   endpoints: (builder) => ({
     getSchools: builder.query<SchoolsResponse, void>({
-      query: () => '/user/schools',
+      query: () => "/user/schools",
     }),
     rectifyUser: builder.mutation<RectifyResponse, RectifyRequestBody>({
       query: (body) => ({
-        url: '/user/rectify',
-        method: 'POST',
+        url: "/user/rectify",
+        method: "POST",
         body,
       }),
     }),
-    getSchoolLevelsCourses: builder.query<SchoolsLevelsCoursesResponse, { phone_imei: string | null }>({
-      query: ({ phone_imei }) => `/user/schools-levels-courses?phone_imei=${phone_imei}`,
+    getSchoolLevelsCourses: builder.query<
+      SchoolsLevelsCoursesResponse,
+      { phone_imei: string | null }
+    >({
+      query: ({ phone_imei }) =>
+        `/user/schools-levels-courses?phone_imei=${phone_imei}`,
     }),
     getBirthdays: builder.query<Birthday[], void>({
-      query: () => '/user/birthdays',
+      query: () => "/user/birthdays",
     }),
     activateUser: builder.mutation<ActivateResponse, ActivateRequestBody>({
       query: (body) => ({
-        url: '/useractivate',
-        method: 'POST',
+        url: "/useractivate",
+        method: "POST",
         body,
       }),
     }),
-    searchTopicsInCourses: builder.mutation<SearchTopicsInCoursesResponse, SearchTopicsInCoursesRequestBody>({
+    searchTopicsInCourses: builder.mutation<
+      SearchTopicsInCoursesResponse,
+      SearchTopicsInCoursesRequestBody
+    >({
       query: (body) => ({
-        url: '/user/search-topics-in-courses',
-        method: 'POST',
+        url: "/user/search-topics-in-courses",
+        method: "POST",
         body,
       }),
     }),
-    getTopicContent: builder.mutation<TopicContentResponse, { phone_imei: string | null; topic_id: number }>({
+    getTopicContent: builder.mutation<
+      TopicContentResponse,
+      { phone_imei: string | null; topic_id: number }
+    >({
       query: ({ phone_imei, topic_id }) => ({
         url: `/user/get-topic-content?phone_imei=${phone_imei}&topic_id=${topic_id}`,
-        method: 'POST',
+        method: "POST",
       }),
     }),
-    getTopicPastQuestion: builder.query<TopicPastQuestionResponse[], { topic_id: number; year?: number }>({
+    getTopicPastQuestion: builder.query<
+      TopicPastQuestionResponse[],
+      { topic_id: number; year?: number }
+    >({
       query: ({ topic_id, year }) => {
-        const url = year 
+        const url = year
           ? `/user/topic-pq?topic_id=${topic_id}&year=${year}`
           : `/user/topic-pq?topic_id=${topic_id}`;
         return url;
       },
     }),
     getUserContents: builder.query<ContentResponse[], void>({
-      query: () => '/user/contents',
+      query: () => "/user/contents",
     }),
-    userActivatedStatus: builder.mutation<UserActivatedStatusResponse, { phone_imei: string }>({
+    userActivatedStatus: builder.mutation<
+      UserActivatedStatusResponse,
+      { phone_imei: string }
+    >({
       query: ({ phone_imei }) => ({
         url: `/user/auser?phone_imei=${phone_imei}`,
-        method: 'POST',
+        method: "POST",
       }),
     }),
   }),

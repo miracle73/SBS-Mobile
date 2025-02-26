@@ -1,48 +1,45 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
 import React from "react";
-import PastQuestionTopicComponent from "../../components/PastQuestionTopicComponent";
+import TopicComponent from "../../components/TopicComponent";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import PastQuestionYearComponent from "../../components/PastQuestionYearComponent";
 
-const pastQuestionTopic = () => {
-  const { topics, year, level } = useLocalSearchParams() || {};
-  const searchResults = typeof topics === "string" ? JSON.parse(topics) : [];
-  const yearString = year ? year.toString() : "";
-  let levelString = typeof level === "string" ? JSON.parse(level) : "";
-  const levelNumber = parseInt(levelString);
-  if ([1, 2, 3, 4, 5].includes(levelNumber)) {
-    levelString = (levelNumber * 100).toString();
-  }
+const pastQuestionYear = () => {
+  const { content } = useLocalSearchParams();
+  const searchResults = typeof content === "string" ? JSON.parse(content) : [];
 
   const topicResults = searchResults.map((topic: any) => ({
+    year: topic.year,
+    topic_id: topic.topic_id,
+    latex: topic.latex,
+    pdf_content: topic.pdf_content,
     id: topic.id,
-    title: topic.title,
-    free: topic.free,
-    courseName: topic.courseName,
   }));
 
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <ScrollView style={{ paddingHorizontal: 20 }}>
-        {topicResults.length == 0 ? (
-          <Text style={styles.firstText}> No past Question</Text>
+        {searchResults.length == 0 ? (
+          <Text style={styles.firstText}> No PastQuestion </Text>
         ) : (
           <Text style={styles.firstText}>
             {" "}
-            View the {topicResults.length > 1 && topicResults.length}{" "}
-            pastQuestion {topicResults.length == 1 ? "topic" : "topics"} here
+            View the different {searchResults.length == 1
+              ? "year"
+              : "years"}{" "}
+            for this past question
           </Text>
         )}
 
-        {topicResults.map((result: any, index: any) => (
-          <PastQuestionTopicComponent
+        {searchResults.map((result: any, index: any) => (
+          <PastQuestionYearComponent
             key={index}
+            year={result.year}
+            topic_id={result.topic_id}
+            latex={result.latex}
+            pdf_content={result.pdf_content}
             id={result.id}
-            title={result.title}
-            free={result.free}
-            year={yearString}
-            courseName={result.courseName}
-            level={levelString}
           />
         ))}
       </ScrollView>
@@ -86,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default pastQuestionTopic;
+export default pastQuestionYear;

@@ -27,7 +27,8 @@ import { useGetUserContentsQuery } from "../../components/services/userService";
 import { setUserContents } from "../../components/redux/slices/userContentSlice";
 import { useAppDispatch } from "../../components/redux/store";
 import * as Device from "expo-device";
-import { WebView } from "react-native-webview";
+import Pdf from "react-native-pdf";
+import PdfComponent from "../../components/PdfComponent";
 
 export default function Page() {
   const router = useRouter();
@@ -35,9 +36,11 @@ export default function Page() {
   const dispatch = useAppDispatch();
   const { data: userContents } = useGetUserContentsQuery();
   const [isLoading, setIsLoading] = useState(true);
-
-  const pdfUrl =
-    "https://sbsapp.com.ng/static/CHAPTER_THREE_SOLUTION_OF_A_DIFFERENTIAL_EQUATION.pdf";
+  const [modal, setModal] = useState(false);
+  const pdfUrl = {
+    uri: "https://sbsapp.com.ng/static/CHAPTER_THREE_SOLUTION_OF_A_DIFFERENTIAL_EQUATION.pdf",
+    cache: true,
+  };
 
   console.log("Device ID:", Device.osBuildId);
 
@@ -65,15 +68,6 @@ export default function Page() {
     }
   }, [userContents, dispatch]);
 
-  const handlePress = async () => {
-    const supported = await Linking.canOpenURL(pdfUrl);
-
-    if (supported) {
-      await Linking.openURL(pdfUrl);
-    } else {
-      console.log(`Don't know how to open this URL: ${pdfUrl}`);
-    }
-  };
   return (
     <SafeAreaView
       style={{ flex: 1, backgroundColor: "#FFFFFF", paddingTop: 70 }}
@@ -140,24 +134,20 @@ export default function Page() {
               <HomeComponent
                 Icon={PadlockIcon}
                 firstText="Lecture Notes"
-                secondText="Stay ahead with our lecture notes"
+                secondText="Stay ahead with our lecture note"
                 backgroundColor="#B0BEC5"
                 disabled={false}
               />
             </TouchableOpacity>
           </View>
         </View>
-        <Button title="Open PDF" onPress={handlePress} />;
-        {/* <View style={{ flex: 1, height: 500 }}>
-          {isLoading && (
-            <View style={styles.loader}>
-              <ActivityIndicator size="large" color="#0000ff" />
-            </View>
-          )}
-
-          <WebView originWhitelist={["*"]} source={{ uri: pdfUrl }} />
-        </View> */}
+        {/* <TouchableOpacity onPress={() => setModal(true)}>
+          <Text>Open PDF</Text>
+        </TouchableOpacity> */}
       </View>
+      {modal && (
+        <PdfComponent modal={modal} setModal={setModal} pdfUrl={pdfUrl} />
+      )}
       {/* <SubscriptionModal modal={modalVisible} setModal={setModalVisible} /> */}
     </SafeAreaView>
   );

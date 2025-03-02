@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, Modal } from "react-native";
-import React from "react";
+import { View, Text, SafeAreaView, Modal, StyleSheet } from "react-native";
+import React, { useState } from "react";
 import Pdf from "react-native-pdf";
 
 interface PDF {
@@ -13,6 +13,7 @@ interface PdfComponentModalProps {
 }
 
 const PdfComponent = ({ setModal, modal, pdfUrl }: PdfComponentModalProps) => {
+  const [secondModal, setSecondModal] = useState(false);
   //   const pdfUrl = {
   //     uri: "https://sbsapp.com.ng/static/CHAPTER_THREE_SOLUTION_OF_A_DIFFERENTIAL_EQUATION.pdf",
   //     cache: true,
@@ -43,15 +44,35 @@ const PdfComponent = ({ setModal, modal, pdfUrl }: PdfComponentModalProps) => {
           }}
           onError={(error) => {
             console.log(error);
+            setSecondModal(true);
           }}
           onPressLink={(uri) => {
             console.log(`Link pressed: ${uri}`);
           }}
           style={{ flex: 1, alignSelf: "stretch" }}
         />
+        {secondModal && (
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>File not in PDF format or corrupted</Text>
+          </View>
+        )}
       </SafeAreaView>
     </Modal>
   );
 };
+
+const styles = StyleSheet.create({
+  textContainer: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(255, 255, 255, 0.8)", // Slightly transparent background
+  },
+  text: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});
 
 export default PdfComponent;

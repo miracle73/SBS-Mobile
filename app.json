@@ -5,11 +5,11 @@
     "scheme": "SBSMobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/SBSMOBILE1.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/SBSMOBILE1.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -18,7 +18,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/SBSMOBILE1.png",
         "backgroundColor": "#ffffff"
       },
       "package": "com.mirack.SBSMobile"
@@ -34,6 +34,18 @@
         "expo-dev-client",
         {
           "developmentClient": true
+        }
+      ],
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#232323",
+          "image": "./assets/SBSMOBILE1.png",
+          "dark": {
+            "image": "./assets/SBSMOBILE1.png",
+            "backgroundColor": "#000000"
+          },
+          "imageWidth": 200
         }
       ]
     ],

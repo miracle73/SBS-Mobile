@@ -118,6 +118,15 @@ interface UserActivatedStatusResponse {
   }[];
 }
 
+interface TopicByLevel {
+  id: number;
+  short_name: string;
+  level_id: number;
+  name: string;
+  school_id: number;
+  semester: string;
+}
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -193,6 +202,15 @@ export const userApi = createApi({
         method: "POST",
       }),
     }),
+    getTopicsByLevel: builder.mutation<
+      TopicByLevel[],
+      { phone_imei: string | null; level: number }
+    >({
+      query: ({ phone_imei, level }) => ({
+        url: `/user/topics-by-level?phone_imei=${phone_imei}&level=${level}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -207,6 +225,7 @@ export const {
   useGetTopicPastQuestionQuery,
   useGetUserContentsQuery,
   useUserActivatedStatusMutation,
+  useGetTopicsByLevelMutation,
 } = userApi;
 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';

@@ -38,7 +38,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     useGetTopicContentMutation();
   const [selectedTopic, setSelectedTopic] = React.useState<any>(null);
   const [userActivatedStatus] = useUserActivatedStatusMutation();
-  console.log(title, id, free, "really");
+
   const handlePress = async () => {
     if (!free) {
       try {
@@ -48,7 +48,10 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           const activationStatus = await userActivatedStatus({
             phone_imei: phoneImei,
           }).unwrap();
-          console.log("Activation status:", activationStatus);
+          console.log(
+            "Activation status:",
+            activationStatus.message.map((msg) => msg.level)
+          );
 
           await AsyncStorage.setItem(
             "activationMessage",
@@ -56,9 +59,14 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           );
 
           const filteredMessage = activationStatus.message.find(
-            (msg) => msg.level === parseInt(level)
+            (msg) => msg.level == parseInt(level)
           );
-          console.log("Filtered message:", filteredMessage);
+          console.log(
+            "Filtered message:",
+            filteredMessage,
+            parseInt(level),
+            67
+          );
 
           if (!filteredMessage || !filteredMessage.is_activated) {
             Toast.show({
@@ -108,7 +116,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           phone_imei: Device.osBuildId,
           topic_id: id,
         }).unwrap();
-        console.log(result, 1000);
+
         // If successful, navigate to the note page with topic content
         const topicContent = result.topic_content;
         if (topicContent?.pdf_content) {
@@ -116,7 +124,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           return;
         } else {
           // If successful, navigate to the note page with topic content
-          console.log(result.topic_content);
+
           router.push({
             pathname: "/other/note",
             params: { content: JSON.stringify(result.topic_content) },
@@ -136,7 +144,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
             const selectedTopic = selectedCourse.topics.find(
               (topic: any) => topic.topic_title === title
             );
-            console.log(selectedTopic, 6000);
+
             if (selectedTopic) {
               if (selectedTopic.topic_content) {
                 setSelectedTopic(selectedTopic);
@@ -161,7 +169,6 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
                   }),
                 },
               });
-              console.log("I did it");
             } else {
               throw new Error("Offline topic content not found.");
             }

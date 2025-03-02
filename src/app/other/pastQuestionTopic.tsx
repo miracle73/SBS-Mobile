@@ -9,10 +9,10 @@ const pastQuestionTopic = () => {
   const searchResults = typeof topics === "string" ? JSON.parse(topics) : [];
   const yearString = year ? year.toString() : "";
   let levelString = typeof level === "string" ? JSON.parse(level) : "";
-  const levelNumber = parseInt(levelString);
-  if ([1, 2, 3, 4, 5].includes(levelNumber)) {
-    levelString = (levelNumber * 100).toString();
-  }
+  // const levelNumber = parseInt(levelString);
+  // if ([1, 2, 3, 4, 5].includes(levelNumber)) {
+  //   levelString = (levelNumber * 100).toString();
+  // }
 
   const topicResults = searchResults.map((topic: any) => ({
     id: topic.id,

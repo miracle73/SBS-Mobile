@@ -1,17 +1,28 @@
-import { View, Text, SafeAreaView, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
-import React, { useState, useEffect } from 'react';
-import RNPickerSelect from 'react-native-picker-select';
-import { MaterialIcons } from '@expo/vector-icons';
-import { useRouter } from 'expo-router';
-import * as Device from 'expo-device';
-import Toast from 'react-native-toast-message';
-import { useGetSchoolLevelsCoursesQuery, useSearchTopicsInCoursesMutation } from '../../components/services/userService';
-import DropDownPicker from 'react-native-dropdown-picker';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import NetInfo from '@react-native-community/netinfo';
-import { useAppSelector } from '../../components/redux/store';
-import { useSelector } from 'react-redux';
-import { RootState, AppDispatch } from '../../components/redux/store';
+import {
+  View,
+  Text,
+  SafeAreaView,
+  StyleSheet,
+  TouchableOpacity,
+  ActivityIndicator,
+} from "react-native";
+import React, { useState, useEffect } from "react";
+import RNPickerSelect from "react-native-picker-select";
+import { MaterialIcons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import * as Device from "expo-device";
+import Toast from "react-native-toast-message";
+import {
+  useGetSchoolLevelsCoursesQuery,
+  useSearchTopicsInCoursesMutation,
+  useGetTopicsByLevelMutation,
+} from "../../components/services/userService";
+import DropDownPicker from "react-native-dropdown-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import NetInfo from "@react-native-community/netinfo";
+import { useAppSelector } from "../../components/redux/store";
+import { useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../components/redux/store";
 
 const Notes = () => {
   const [institution, setInstitution] = useState("");
@@ -22,17 +33,27 @@ const Notes = () => {
   const [level, setLevel] = useState("");
   const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
-  const [schoolItems, setSchoolItems] = useState<{ label: string; value: string }[]>([]);
-  const [levelItems, setLevelItems] = useState<{ label: string; value: string }[]>([]);
-  const [courseItems, setCourseItems] = useState<{ label: string; value: string }[]>([]);
+  const [schoolItems, setSchoolItems] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [levelItems, setLevelItems] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [courseItems, setCourseItems] = useState<
+    { label: string; value: string }[]
+  >([]);
   const router = useRouter();
-  const userContents = useSelector((state: RootState) => state.userContent.contents)
-  // 
+  const userContents = useSelector(
+    (state: RootState) => state.userContent.contents
+  );
+  const [getTopicsByLevel] = useGetTopicsByLevelMutation();
+  //
   const userContents2 = useAppSelector((state) => state.userContent.contents);
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({ phone_imei: Device.osBuildId });
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
+    phone_imei: Device.osBuildId,
+  });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
   const [isConnected, setIsConnected] = useState(true);
-
 
   useEffect(() => {
     const fetchStoredContents = async () => {
@@ -44,30 +65,34 @@ const Notes = () => {
           value: data.id.toString(),
         };
         setSchoolItems([formattedSchools]);
-      
+
         const formattedLevels = data.levels.map((level) => ({
           label: level.name,
           value: level.id,
         }));
         setLevelItems(formattedLevels);
 
-        const formattedCourses = data.courses.map((course) => ({
-          label: course.name,
-          value: course.id,
-        }));
-     
-        setCourseItems(formattedCourses);
-        console.log(formattedCourses,65);
+        // const formattedCourses = data.courses.map((course) => ({
+        //   label: course.name,
+        //   value: course.id,
+        // }));
+
+        // setCourseItems(formattedCourses);
+        // console.log(formattedCourses, 65);
       } else {
         // Offline mode: fetch data from the Redux store or AsyncStorage
-        const storedContents = await AsyncStorage.getItem('userContents');
+        const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
-          console.log(isConnected)
+          console.log(isConnected);
           const parsedContents = JSON.parse(storedContents);
 
-          const uniqueLevels = Array.from(new Set(parsedContents.map((content: any) => content.course_level)));
-          const uniqueCourses = Array.from(new Set(parsedContents.map((content: any) => content.course_name)));
+          const uniqueLevels = Array.from(
+            new Set(parsedContents.map((content: any) => content.course_level))
+          );
+          const uniqueCourses = Array.from(
+            new Set(parsedContents.map((content: any) => content.course_name))
+          );
 
           const offlineLevels = uniqueLevels.map((level: any) => ({
             label: level,
@@ -86,9 +111,33 @@ const Notes = () => {
     fetchStoredContents();
   }, [data, isSuccess]);
 
+  useEffect(() => {
+    const fetchTopicsByLevel = async () => {
+      const selectedLevel = levelItems.find(
+        (item) => item.value === level
+      )?.label;
+      const { data: topicsByLevelData } = await getTopicsByLevel({
+        phone_imei: Device.osBuildId,
+        level: selectedLevel ? parseInt(selectedLevel) : 0,
+      });
 
+      if (topicsByLevelData) {
+        const formattedCourses = topicsByLevelData.map((course) => ({
+          label: course.name,
+          value: course.id.toString(),
+        }));
+        setCourseItems(formattedCourses);
+      }
+      console.log(
+        topicsByLevelData,
+        selectedLevel ? parseInt(selectedLevel) : 0,
+        Device.osBuildId,
+        4000
+      );
+    };
 
-
+    fetchTopicsByLevel();
+  }, [level, getTopicsByLevel, Device.osBuildId]);
 
   const handleSubmit = async () => {
     try {
@@ -96,31 +145,37 @@ const Notes = () => {
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
-        console.log(level)
+        console.log(level);
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
           school_id: parseInt(school),
         }).unwrap();
 
-        if (result.status === 'successful') {
+        if (result.status === "successful") {
+          const selectedLevel = levelItems.find(
+            (item) => item.value === level
+          )?.label;
           router.push({
-            pathname: '/other/topics',
-            params: { topics: JSON.stringify(result.topics), level: JSON.stringify(level) },
+            pathname: "/other/topics",
+            params: {
+              topics: JSON.stringify(result.topics),
+              level: JSON.stringify(selectedLevel),
+            },
           });
         } else {
           Toast.show({
-            type: 'error',
-            text1: 'Error',
-            text2: 'Failed to fetch topics. Please try again.',
+            type: "error",
+            text1: "Error",
+            text2: "Failed to fetch topics. Please try again.",
           });
           return;
         }
       } else {
         // Offline mode: fetch data from the Redux store
-        const storedContents = await AsyncStorage.getItem('userContents');
+        const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
-          console.log(1)
+          console.log(1);
           const parsedContents = JSON.parse(storedContents);
 
           const selectedCourse = parsedContents.find(
@@ -130,34 +185,42 @@ const Notes = () => {
               content.topics.length > 0
           );
 
-
-          console.log(200, level)
+          console.log(200, level);
           if (selectedCourse) {
-            const offlineTopics = selectedCourse.topics.map((topic: any, index: any) => ({
-              id: index + 1,
-              title: topic.topic_title,
-              free: topic.topic_free,
-              courseName: course,
-            }));
-            console.log(3)
+            const offlineTopics = selectedCourse.topics.map(
+              (topic: any, index: any) => ({
+                id: index + 1,
+                title: topic.topic_title,
+                free: topic.topic_free,
+                courseName: course,
+              })
+            );
+            const selectedLevel = levelItems.find(
+              (item) => item.value === level
+            )?.label;
             router.push({
-              pathname: '/other/topics',
-              params: { topics: JSON.stringify(offlineTopics), level: JSON.stringify(level) },
+              pathname: "/other/topics",
+              params: {
+                topics: JSON.stringify(offlineTopics),
+
+                level: JSON.stringify(selectedLevel),
+              },
             });
           } else {
             Toast.show({
-              type: 'error',
-              text1: 'Error',
-              text2: 'No offline data available for selected course. Please try again.',
+              type: "error",
+              text1: "Error",
+              text2:
+                "No offline data available for selected course. Please try again.",
             });
           }
         }
       }
     } catch (error) {
       Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: 'An error occurred. Please try again.',
+        type: "error",
+        text1: "Error",
+        text2: "An error occurred. Please try again.",
       });
     } finally {
       setSchool("");
@@ -166,7 +229,6 @@ const Notes = () => {
       setLoading(false);
     }
   };
-
 
   if (isLoading) {
     return (
@@ -185,9 +247,8 @@ const Notes = () => {
         </Text>
 
         {/* School Picker */}
-        {isConnected &&
-
-          < View style={styles.pickerContainer}>
+        {isConnected && (
+          <View style={styles.pickerContainer}>
             <Text style={styles.thirdText}>School</Text>
             <DropDownPicker
               open={open}
@@ -197,7 +258,7 @@ const Notes = () => {
               closeAfterSelecting={true}
               closeOnBackPressed={true}
               listItemContainerStyle={{
-                height: 40
+                height: 40,
               }}
               setValue={setSchool}
               setItems={setSchoolItems}
@@ -205,14 +266,11 @@ const Notes = () => {
               style={pickerSelectStyles.inputIOS}
               dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
             />
-
           </View>
-        }
-
+        )}
 
         {/* Level Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
-
           <Text style={styles.thirdText}>Level</Text>
           <DropDownPicker
             open={open2}
@@ -221,7 +279,7 @@ const Notes = () => {
             closeAfterSelecting={true}
             closeOnBackPressed={true}
             listItemContainerStyle={{
-              height: 40
+              height: 40,
             }}
             setOpen={setOpen2}
             setValue={setLevel}
@@ -230,12 +288,12 @@ const Notes = () => {
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-
         </View>
 
         {/* Course Picker */}
-        <View style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}>
-
+        <View
+          style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}
+        >
           <Text style={styles.thirdText}>Course</Text>
           <DropDownPicker
             open={open3}
@@ -244,7 +302,7 @@ const Notes = () => {
             closeAfterSelecting={true}
             closeOnBackPressed={true}
             listItemContainerStyle={{
-              height: 40
+              height: 40,
             }}
             setOpen={setOpen3}
             setValue={setCourse}
@@ -253,16 +311,17 @@ const Notes = () => {
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-
-
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleSubmit}>
-          {loading ? <ActivityIndicator size="small" color="#FFFFFF" /> : <Text style={styles.buttonText}>Search Note</Text>}
-
+          {loading ? (
+            <ActivityIndicator size="small" color="#FFFFFF" />
+          ) : (
+            <Text style={styles.buttonText}>Search Note</Text>
+          )}
         </TouchableOpacity>
       </View>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
@@ -270,23 +329,23 @@ const styles = StyleSheet.create({
   bodyContainer: {
     paddingTop: 70,
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
   },
   firstText: {
     fontSize: 24,
-    color: '#000000',
-    fontWeight: '700',
+    color: "#000000",
+    fontWeight: "700",
     marginBottom: 5,
   },
   secondText: {
     fontSize: 14,
-    color: '#000000',
-    fontWeight: '400',
+    color: "#000000",
+    fontWeight: "400",
   },
   thirdText: {
     fontSize: 10,
-    color: '#1A1A1A',
-    fontWeight: '400',
+    color: "#1A1A1A",
+    fontWeight: "400",
     marginBottom: 5,
   },
   pickerContainer: {
@@ -299,13 +358,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: "#FF8C00",
     paddingVertical: 15,
-    marginTop: 20
+    marginTop: 20,
   },
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#FFFFFF"
-  }
+    color: "#FFFFFF",
+  },
 });
 
 const pickerSelectStyles = StyleSheet.create({
@@ -314,30 +373,30 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: '#B0BEC5',
-    color: '#000000',
+    borderColor: "#B0BEC5",
+    color: "#000000",
     paddingRight: 30,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   inputAndroid: {
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 1,
-    borderColor: '#B0BEC5',
-    color: '#000000',
+    borderColor: "#B0BEC5",
+    color: "#000000",
     paddingRight: 30,
-    alignSelf: 'stretch',
+    alignSelf: "stretch",
   },
   dropDownContainer: {
-    borderColor: '#B0BEC5',
+    borderColor: "#B0BEC5",
   },
   iconContainer: {
-    top: '50%',
+    top: "50%",
     right: 10,
     transform: [{ translateY: -12 }],
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
 

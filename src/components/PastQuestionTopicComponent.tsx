@@ -58,7 +58,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           const filteredMessage = activationStatus.message.find(
             (msg) => msg.level === parseInt(level)
           );
-          console.log("Filtered message:", filteredMessage);
+          console.log("Filtered message:", filteredMessage, parseInt(level));
 
           if (!filteredMessage || !filteredMessage.is_activated) {
             Toast.show({

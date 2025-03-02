@@ -1,8 +1,15 @@
-import { Image, StyleSheet, Text, TouchableOpacity, View, SafeAreaView } from "react-native";
-import BackgroundImage from "../../assets/images/firstBackgroundImage.png"
-import { useRouter } from 'expo-router'
-import { StatusBar } from 'expo-status-bar';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  SafeAreaView,
+} from "react-native";
+import BackgroundImage from "../../assets/images/firstBackgroundImage.png";
+import { useRouter } from "expo-router";
+import { StatusBar } from "expo-status-bar";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect } from "react";
 import { setUserContents } from "../components/redux/slices/userContentSlice";
 import { useGetUserContentsQuery } from "../components/services/userService";
@@ -15,9 +22,9 @@ export default function Page() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const isAuthenticated = await AsyncStorage.getItem('isAuthenticated');
+      const isAuthenticated = await AsyncStorage.getItem("isAuthenticated");
       if (isAuthenticated) {
-        router.replace('/home');
+        router.replace("/home");
       }
     };
     checkAuth();
@@ -32,9 +39,14 @@ export default function Page() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#003F91" }}>
       <StatusBar style="light" backgroundColor="#003F91" />
       <View style={styles.container}>
-
         <View style={styles.main}>
-          <View style={{ flexDirection: "row", justifyContent: "center", alignItems: "center" }}>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
             <Image source={BackgroundImage} />
           </View>
 
@@ -43,10 +55,14 @@ export default function Page() {
           {/* //   <TouchableOpacity style={[styles.button, {backgroundColor: "white", marginBottom: 30}]} onPress={() => { router.replace(`/admin/login`) }}>
        <Text style={[styles.buttonText, {color: "black"}]}>Login as an Admin</Text> */}
           {/* </TouchableOpacity> */}
-          <TouchableOpacity style={styles.button} onPress={() => { router.replace(`/other/school`) }}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => {
+              router.replace(`/other/school`);
+            }}
+          >
             <Text style={styles.buttonText}>Get Started as a User</Text>
           </TouchableOpacity>
-
         </View>
       </View>
     </SafeAreaView>
@@ -69,9 +85,7 @@ const styles = StyleSheet.create({
     color: "#F5F5F5",
     fontWeight: "700",
     marginBottom: 10,
-    paddingHorizontal: 20
-
-
+    paddingHorizontal: 20,
   },
   subtitle: {
     fontSize: 16,
@@ -79,8 +93,7 @@ const styles = StyleSheet.create({
     color: "#B0BEC5",
     marginBottom: 20,
     textAlign: "center",
-    paddingHorizontal: 20
-
+    paddingHorizontal: 20,
   },
   button: {
     flexDirection: "row",
@@ -88,13 +101,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#FF8C00",
-    paddingVertical: 15
-
-  }
-  ,
+    paddingVertical: 15,
+  },
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
-    color: "#FFFFFF"
-  }
+    color: "#FFFFFF",
+  },
 });

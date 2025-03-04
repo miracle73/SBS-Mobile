@@ -29,8 +29,10 @@ import { useAppDispatch } from "../../components/redux/store";
 import * as Device from "expo-device";
 import Pdf from "react-native-pdf";
 import PdfComponent from "../../components/PdfComponent";
+import { usePreventScreenCapture } from "expo-screen-capture";
 
 export default function Page() {
+  usePreventScreenCapture();
   const router = useRouter();
   const [modalVisible, setModalVisible] = useState(false);
   const dispatch = useAppDispatch();

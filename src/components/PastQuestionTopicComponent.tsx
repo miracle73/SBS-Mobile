@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
 import SubscriptionModal from "./modals/SubscriptionModal";
@@ -38,6 +38,16 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
     topic_id: id,
     year: Number(year),
   });
+  interface ActivationMessage {
+    semester: string;
+    level: number;
+    user_id: number;
+    id: number;
+    is_activated: boolean;
+  }
+
+  const [filteredMessage, setFilteredMessage] =
+    React.useState<ActivationMessage | null>(null);
 
   const handlePress = async () => {
     if (!free) {
@@ -77,6 +87,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
               (msg: any) => msg.level === parseInt(level)
             );
             if (!filteredMessage || !filteredMessage.is_activated) {
+              setFilteredMessage(null);
               Toast.show({
                 type: "error",
                 text1: "Error",
@@ -84,6 +95,8 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
               });
               setModal(true);
               return;
+            } else {
+              setFilteredMessage(filteredMessage);
             }
           } else {
             throw new Error("Activation status not found in storage.");
@@ -210,7 +223,13 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
       <View>
         <Text style={styles.firstText}>{title}</Text>
       </View>
-      {!free && <SecondPadlockIcon />}
+      {!free ? (
+        filteredMessage ? (
+          <EvilIcons name="unlock" size={15} />
+        ) : (
+          <SecondPadlockIcon />
+        )
+      ) : null}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
     </TouchableOpacity>
   );

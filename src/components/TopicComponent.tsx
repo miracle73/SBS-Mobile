@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React from "react";
-import { MaterialIcons } from "@expo/vector-icons";
+import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
 import SubscriptionModal from "./modals/SubscriptionModal";
@@ -38,6 +38,16 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     useGetTopicContentMutation();
   const [selectedTopic, setSelectedTopic] = React.useState<any>(null);
   const [userActivatedStatus] = useUserActivatedStatusMutation();
+  interface ActivationMessage {
+    semester: string;
+    level: number;
+    user_id: number;
+    id: number;
+    is_activated: boolean;
+  }
+
+  const [filteredMessage, setFilteredMessage] =
+    React.useState<ActivationMessage | null>(null);
 
   const handlePress = async () => {
     if (!free) {
@@ -69,6 +79,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           );
 
           if (!filteredMessage || !filteredMessage.is_activated) {
+            setFilteredMessage(null);
             Toast.show({
               type: "error",
               text1: "Error",
@@ -76,6 +87,8 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
             });
             setModal(true);
             return;
+          } else {
+            setFilteredMessage(filteredMessage);
           }
         } else {
           const storedMessage = await AsyncStorage.getItem("activationMessage");
@@ -209,7 +222,13 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
         <Text style={styles.firstText}>{title}</Text>
         {/* <Text style={styles.secondText}>Topic {topics}</Text> */}
       </View>
-      {!free && <SecondPadlockIcon />}
+      {!free ? (
+        filteredMessage ? (
+          <EvilIcons name="unlock" size={15} />
+        ) : (
+          <SecondPadlockIcon />
+        )
+      ) : null}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
       {secondModal && data?.topic_content && (
         <PdfComponent

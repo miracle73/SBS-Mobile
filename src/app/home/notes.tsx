@@ -91,7 +91,15 @@ const Notes = () => {
             new Set(parsedContents.map((content: any) => content.course_level))
           );
           const uniqueCourses = Array.from(
-            new Set(parsedContents.map((content: any) => content.course_name))
+            new Set(
+              parsedContents.map((content: any) => {
+                const selectedLevel = levelItems.find(
+                  (item) => item.value === level
+                )?.label;
+                if (content.course_level == selectedLevel)
+                  return content.course_name;
+              })
+            )
           );
 
           const offlineLevels = uniqueLevels.map((level: any) => ({
@@ -109,7 +117,7 @@ const Notes = () => {
       }
     };
     fetchStoredContents();
-  }, [data, isSuccess]);
+  }, [data, isSuccess, level]);
 
   useEffect(() => {
     const fetchTopicsByLevel = async () => {

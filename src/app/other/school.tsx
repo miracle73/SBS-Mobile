@@ -60,10 +60,7 @@ const school = () => {
   console.log("OS Name:", Device.osName);
   console.log("OS Version:", Device.osVersion);
   console.log("Brand:", Device.brand);
-  const allSchools = [
-    { label: "FUTO", value: "1" },
-    { label: "NEKEDE", value: "2" },
-  ];
+
   useEffect(() => {
     if (isSuccess && data?.result) {
       const formattedSchools = data.result.map((school: any) => ({

@@ -165,7 +165,7 @@ const edu = () => {
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
-          school_id: parseInt(school),
+          school_id: parseInt(schoolItems[0].value),
         }).unwrap();
 
         if (result.status === "successful") {
@@ -262,7 +262,7 @@ const edu = () => {
         <Text style={styles.secondText}>
           Select a course and topic you wish to study
         </Text>
-        {isConnected && (
+        {/* {isConnected && (
           <View style={styles.pickerContainer}>
             <Text style={styles.thirdText}>School</Text>
             <DropDownPicker
@@ -282,7 +282,7 @@ const edu = () => {
               dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
             />
           </View>
-        )}
+        )} */}
 
         {/* Year Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>

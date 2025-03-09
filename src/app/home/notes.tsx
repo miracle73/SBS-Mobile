@@ -33,6 +33,7 @@ const Notes = () => {
   const [level, setLevel] = useState("");
   const [course, setCourse] = useState("");
   const [loading, setLoading] = useState(false);
+  const [uuid, setUuid] = useState("");
   const [schoolItems, setSchoolItems] = useState<
     { label: string; value: string }[]
   >([]);
@@ -50,11 +51,27 @@ const Notes = () => {
   //
   const userContents2 = useAppSelector((state) => state.userContent.contents);
   const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
-    phone_imei: Device.osBuildId,
+    phone_imei: uuid,
   });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
   const [isConnected, setIsConnected] = useState(true);
 
+  useEffect(() => {
+    const fetchStoredUuid = async () => {
+      try {
+        let storedUuid = await AsyncStorage.getItem("device_uuid");
+
+        if (storedUuid) {
+          console.log("Stored UUID:", storedUuid);
+          setUuid(storedUuid);
+        }
+      } catch (error) {
+        console.error("Error fetching UUID:", error);
+      }
+    };
+
+    fetchStoredUuid();
+  }, []);
   useEffect(() => {
     const fetchStoredContents = async () => {
       const netInfo = await NetInfo.fetch();
@@ -125,7 +142,7 @@ const Notes = () => {
         (item) => item.value === level
       )?.label;
       const { data: topicsByLevelData } = await getTopicsByLevel({
-        phone_imei: Device.osBuildId,
+        phone_imei: uuid,
         level: selectedLevel ? parseInt(selectedLevel) : 0,
       });
 
@@ -139,13 +156,13 @@ const Notes = () => {
       console.log(
         topicsByLevelData,
         selectedLevel ? parseInt(selectedLevel) : 0,
-        Device.osBuildId,
+        uuid,
         4000
       );
     };
 
     fetchTopicsByLevel();
-  }, [level, getTopicsByLevel, Device.osBuildId]);
+  }, [level, getTopicsByLevel, uuid]);
 
   const handleSubmit = async () => {
     try {
@@ -238,7 +255,7 @@ const Notes = () => {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || !uuid || uuid == "") {
     return (
       <SafeAreaView style={styles.bodyContainer}>
         <ActivityIndicator size="large" color="#FF8C00" />

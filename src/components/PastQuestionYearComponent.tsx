@@ -1,16 +1,11 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
-import { MaterialIcons } from "@expo/vector-icons";
-import { SecondPadlockIcon } from "../../assets/svg";
+import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import SubscriptionModal from "./modals/SubscriptionModal";
-import * as Device from "expo-device";
 import {
   useGetTopicContentMutation,
   useUserActivatedStatusMutation,
 } from "../components/services/userService";
 import Toast from "react-native-toast-message";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import PdfComponent from "./PdfComponent";
 
@@ -29,13 +24,8 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
   pdf_content,
   id,
 }) => {
-  const phoneImei = Device.osBuildId || "";
   const router = useRouter();
   const [secondModal, setSecondModal] = React.useState(false);
-  const [modal, setModal] = React.useState(false);
-  const [getTopicContent, { data, error, isLoading }] =
-    useGetTopicContentMutation();
-  const [userActivatedStatus] = useUserActivatedStatusMutation();
 
   const handlePress = async () => {
     try {
@@ -75,7 +65,6 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
     >
       <View>
         <Text style={styles.firstText}>{year}</Text>
-        {/* <Text style={styles.secondText}>Topic {topics}</Text> */}
       </View>
 
       {secondModal && pdf_content && (

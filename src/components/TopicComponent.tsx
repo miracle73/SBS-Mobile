@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
@@ -29,11 +29,29 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   courseName,
   level,
 }) => {
-  const phoneImei = Device.osBuildId || "";
+  const [uuid, setUuid] = useState("");
+  useEffect(() => {
+    const fetchStoredUuid = async () => {
+      try {
+        let storedUuid = await AsyncStorage.getItem("device_uuid");
+
+        if (storedUuid) {
+          console.log("Stored UUID:", storedUuid);
+          setUuid(storedUuid);
+        }
+      } catch (error) {
+        console.error("Error fetching UUID:", error);
+      }
+    };
+
+    fetchStoredUuid();
+  }, []);
+  const phoneImei = uuid;
   const router = useRouter();
   const [secondModal, setSecondModal] = React.useState(false);
   const [thirdModal, setThirdModal] = React.useState(false);
   const [modal, setModal] = React.useState(false);
+
   const [getTopicContent, { data, error, isLoading }] =
     useGetTopicContentMutation();
   const [selectedTopic, setSelectedTopic] = React.useState<any>(null);
@@ -71,12 +89,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           const filteredMessage = activationStatus.message.find(
             (msg) => msg.level == parseInt(level)
           );
-          console.log(
-            "Filtered message:",
-            filteredMessage,
-            parseInt(level),
-            67
-          );
+          console.log("Filtered message:", filteredMessage, parseInt(level));
 
           if (!filteredMessage || !filteredMessage.is_activated) {
             setFilteredMessage(null);
@@ -126,12 +139,13 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 
       if (netInfo.isConnected) {
         const result = await getTopicContent({
-          phone_imei: Device.osBuildId,
+          phone_imei: uuid,
           topic_id: id,
         }).unwrap();
 
         // If successful, navigate to the note page with topic content
         const topicContent = result.topic_content;
+
         if (topicContent?.pdf_content) {
           setSecondModal(true);
           return;

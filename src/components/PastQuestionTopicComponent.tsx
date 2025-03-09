@@ -1,5 +1,5 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
@@ -32,8 +32,25 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
 }) => {
   const router = useRouter();
   const [modal, setModal] = React.useState(false);
+  const [uuid, setUuid] = useState("");
+  useEffect(() => {
+    const fetchStoredUuid = async () => {
+      try {
+        let storedUuid = await AsyncStorage.getItem("device_uuid");
+
+        if (storedUuid) {
+          console.log("Stored UUID:", storedUuid);
+          setUuid(storedUuid);
+        }
+      } catch (error) {
+        console.error("Error fetching UUID:", error);
+      }
+    };
+
+    fetchStoredUuid();
+  }, []);
   const [userActivatedStatus] = useUserActivatedStatusMutation();
-  const phoneImei = Device.osBuildId || "";
+  const phoneImei = uuid;
   const { data, error, isLoading } = useGetTopicPastQuestionQuery({
     topic_id: id,
     year: Number(year),

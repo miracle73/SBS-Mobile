@@ -30,8 +30,24 @@ const edu = () => {
   const [open, setOpen] = useState(false);
   const [open2, setOpen2] = useState(false);
   const [open3, setOpen3] = useState(false);
+  const [uuid, setUuid] = useState("");
   const router = useRouter();
+  useEffect(() => {
+    const fetchStoredUuid = async () => {
+      try {
+        let storedUuid = await AsyncStorage.getItem("device_uuid");
 
+        if (storedUuid) {
+          console.log("Stored UUID:", storedUuid);
+          setUuid(storedUuid);
+        }
+      } catch (error) {
+        console.error("Error fetching UUID:", error);
+      }
+    };
+
+    fetchStoredUuid();
+  }, []);
   const [schoolItems, setSchoolItems] = useState<
     { label: string; value: string }[]
   >([]);
@@ -44,7 +60,7 @@ const edu = () => {
   const [isConnected, setIsConnected] = useState(true);
   //
   const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
-    phone_imei: Device.osBuildId,
+    phone_imei: uuid,
   });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
   const [getTopicsByLevel] = useGetTopicsByLevelMutation();
@@ -117,7 +133,7 @@ const edu = () => {
         (item) => item.value === level
       )?.label;
       const { data: topicsByLevelData } = await getTopicsByLevel({
-        phone_imei: Device.osBuildId,
+        phone_imei: uuid,
         level: selectedLevel ? parseInt(selectedLevel) : 0,
       });
 
@@ -131,13 +147,13 @@ const edu = () => {
       console.log(
         topicsByLevelData,
         selectedLevel ? parseInt(selectedLevel) : 0,
-        Device.osBuildId,
+        uuid,
         4000
       );
     };
 
     fetchTopicsByLevel();
-  }, [level, getTopicsByLevel, Device.osBuildId]);
+  }, [level, getTopicsByLevel, uuid]);
 
   const handleSubmit = async () => {
     try {
@@ -231,6 +247,14 @@ const edu = () => {
       setLoading(false);
     }
   };
+
+  if (!uuid || uuid == "") {
+    return (
+      <SafeAreaView style={styles.bodyContainer}>
+        <ActivityIndicator size="large" color="#FF8C00" />
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
@@ -278,11 +302,11 @@ const edu = () => {
               setLevel(value);
               const fetchTopicsByLevel = async () => {
                 const topicsByLevelData = await getTopicsByLevel({
-                  phone_imei: Device.osBuildId,
+                  phone_imei: uuid,
                   level: 1,
                 });
 
-                console.log(topicsByLevelData, value, Device.osBuildId, 4000);
+                console.log(topicsByLevelData, value, uuid, 4000);
               };
               fetchTopicsByLevel();
             }}

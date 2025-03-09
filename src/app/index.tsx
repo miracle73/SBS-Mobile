@@ -22,7 +22,7 @@ export default function Page() {
 
   useEffect(() => {
     const checkAuth = async () => {
-      const isAuthenticated = await AsyncStorage.getItem("isAuthenticated");
+      const isAuthenticated = await AsyncStorage.getItem("device_uuid");
       if (isAuthenticated) {
         router.replace("/home");
       }

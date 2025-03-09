@@ -44,8 +44,6 @@ export default function Page() {
     cache: true,
   };
 
-  console.log("Device ID:", Device.osBuildId);
-
   useEffect(() => {
     const fetchStoredBirthdays = async () => {
       const storedBirthdays = await AsyncStorage.getItem("birthdays");

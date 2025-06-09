@@ -88,14 +88,6 @@ const Notes = () => {
           value: level.id,
         }));
         setLevelItems(formattedLevels);
-
-        // const formattedCourses = data.courses.map((course) => ({
-        //   label: course.name,
-        //   value: course.id,
-        // }));
-
-        // setCourseItems(formattedCourses);
-        // console.log(formattedCourses, 65);
       } else {
         // Offline mode: fetch data from the Redux store or AsyncStorage
         const storedContents = await AsyncStorage.getItem("userContents");
@@ -176,6 +168,7 @@ const Notes = () => {
           level_id: parseInt(level),
           school_id: parseInt(schoolItems[0].value),
         }).unwrap();
+        console.log(result, "result");
 
         if (result.status === "successful") {
           const selectedLevel = levelItems.find(
@@ -192,7 +185,7 @@ const Notes = () => {
           Toast.show({
             type: "error",
             text1: "Error",
-            text2: "Failed to fetch topics. Please try again.",
+            text2: "Failed to fetch topics. Please try again123.",
           });
           return;
         }
@@ -236,7 +229,7 @@ const Notes = () => {
               type: "error",
               text1: "Error",
               text2:
-                "No offline data available for selected course. Please try again.",
+                "No offline data available for selected course. Please try again456.",
             });
           }
         }
@@ -245,7 +238,7 @@ const Notes = () => {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "An error occurred. Please try again.",
+        text2: "An error occurred. Please try again789.",
       });
     } finally {
       setSchool("");
@@ -270,29 +263,6 @@ const Notes = () => {
         <Text style={styles.secondText}>
           Get access to unlimited notes from your lecturers and learn easily.
         </Text>
-
-        {/* School Picker */}
-        {/* {isConnected && (
-          <View style={styles.pickerContainer}>
-            <Text style={styles.thirdText}>School</Text>
-            <DropDownPicker
-              open={open}
-              value={school}
-              items={schoolItems}
-              setOpen={setOpen}
-              closeAfterSelecting={true}
-              closeOnBackPressed={true}
-              listItemContainerStyle={{
-                height: 40,
-              }}
-              setValue={setSchool}
-              setItems={setSchoolItems}
-              placeholder="Select School"
-              style={pickerSelectStyles.inputIOS}
-              dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            />
-          </View>
-        )} */}
 
         {/* Level Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>

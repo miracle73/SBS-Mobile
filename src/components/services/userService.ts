@@ -127,6 +127,9 @@ interface TopicByLevel {
   semester: string;
 }
 
+interface TodayNotifications {
+  detail: string;
+}
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -211,6 +214,12 @@ export const userApi = createApi({
         method: "GET",
       }),
     }),
+    getTodayNotifications: builder.mutation<TodayNotifications, {}>({
+      query: () => ({
+        url: `user/notification/today`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -226,32 +235,5 @@ export const {
   useGetUserContentsQuery,
   useUserActivatedStatusMutation,
   useGetTopicsByLevelMutation,
+  useGetTodayNotificationsMutation,
 } = userApi;
-
-// import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-// import { BaseUrl } from './api';
-
-// interface School {
-//   name: string;
-//   id: number;
-//   short_name: string;
-// }
-
-// interface SchoolsResponse {
-//   status: string;
-//   result: School[];
-// }
-
-// export const userApi = createApi({
-//   reducerPath: 'userApi',
-//   baseQuery: fetchBaseQuery({
-//     baseUrl: BaseUrl,
-//   }),
-//   endpoints: (builder) => ({
-//     getSchools: builder.query<SchoolsResponse, void>({
-//       query: () => '/user/schools',
-//     }),
-//   }),
-// });
-
-// export const { useGetSchoolsQuery } = userApi;

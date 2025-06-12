@@ -62,7 +62,6 @@ const Notes = () => {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
 
         if (storedUuid) {
-          console.log("Stored UUID:", storedUuid);
           setUuid(storedUuid);
         }
       } catch (error) {
@@ -93,7 +92,7 @@ const Notes = () => {
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
-          console.log(isConnected);
+          console.log(isConnected, "rr");
           const parsedContents = JSON.parse(storedContents);
 
           const uniqueLevels = Array.from(
@@ -157,17 +156,20 @@ const Notes = () => {
   }, [level, getTopicsByLevel, uuid]);
 
   const handleSubmit = async () => {
+    console.log(33);
     try {
       setLoading(true);
+      console.log(44);
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
-        console.log(level);
+        console.log(55);
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
           school_id: parseInt(schoolItems[0].value),
         }).unwrap();
+        console.log(66);
         console.log(result, "result");
 
         if (result.status === "successful") {
@@ -191,9 +193,9 @@ const Notes = () => {
         }
       } else {
         // Offline mode: fetch data from the Redux store
+        console.log(45);
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
-          console.log(1);
           const parsedContents = JSON.parse(storedContents);
 
           const selectedCourse = parsedContents.find(
@@ -203,7 +205,6 @@ const Notes = () => {
               content.topics.length > 0
           );
 
-          console.log(200, level);
           if (selectedCourse) {
             const offlineTopics = selectedCourse.topics.map(
               (topic: any, index: any) => ({

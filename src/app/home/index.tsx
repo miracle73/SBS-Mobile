@@ -139,11 +139,17 @@ export default function Page() {
                 disabled={false}
               />
             </TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push("/other/videoscreen")}>
+              <HomeComponent
+                Icon={PadlockIcon}
+                firstText="Videos"
+                secondText="Watch educational videos"
+                backgroundColor="#B0BEC5"
+                disabled={false}
+              />
+            </TouchableOpacity>
           </View>
         </View>
-        {/* <TouchableOpacity onPress={() => setModal(true)}>
-          <Text>Open PDF</Text>
-        </TouchableOpacity> */}
       </View>
       {modal && (
         <PdfComponent modal={modal} setModal={setModal} pdfUrl={pdfUrl} />

@@ -88,6 +88,12 @@ const OtherLayout = () => {
           }}
         />
         <Stack.Screen
+          name="videoscreen"
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
           name="activateSubscription"
           options={{
             headerShown: false,

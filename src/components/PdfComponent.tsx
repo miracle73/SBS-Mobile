@@ -66,7 +66,7 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)", // Slightly transparent background
+    backgroundColor: "rgba(255, 255, 255, 0.8)",
   },
   text: {
     color: "#000",

@@ -14,6 +14,7 @@ import { useEffect } from "react";
 import { setUserContents } from "../components/redux/slices/userContentSlice";
 import { useGetUserContentsQuery } from "../components/services/userService";
 import { useAppDispatch } from "../components/redux/store";
+import NotificationTest from "../components/NotificationTest";
 
 export default function Page() {
   const router = useRouter();
@@ -64,6 +65,7 @@ export default function Page() {
             <Text style={styles.buttonText}>Get Started as a User</Text>
           </TouchableOpacity>
         </View>
+        <NotificationTest />
       </View>
     </SafeAreaView>
   );

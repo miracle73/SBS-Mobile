@@ -127,9 +127,20 @@ interface TopicByLevel {
   semester: string;
 }
 
-interface TodayNotifications {
-  detail: string;
+interface TodayNotificationItem {
+  title: string;
+  message: string;
+  created_at: string;
 }
+
+interface TodayNotificationResponse {
+  detail?: string;
+}
+
+type GetTodayNotificationsResponse =
+  | TodayNotificationItem[]
+  | TodayNotificationResponse;
+
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({
@@ -214,7 +225,7 @@ export const userApi = createApi({
         method: "GET",
       }),
     }),
-    getTodayNotifications: builder.mutation<TodayNotifications, {}>({
+    getTodayNotifications: builder.mutation<GetTodayNotificationsResponse, {}>({
       query: () => ({
         url: `user/notification/today`,
         method: "GET",

@@ -5,7 +5,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
 const OtherLayout = () => {
-  const router = useRouter(); // Hook for navigation
+  const router = useRouter();
 
   return (
     <>
@@ -14,14 +14,14 @@ const OtherLayout = () => {
         screenOptions={{
           headerStyle: { backgroundColor: "#FFFFFF" },
           headerTintColor: "#000000",
-          headerTitleStyle: { fontWeight: "bold" }, // Centers the header title
+          headerTitleStyle: { fontWeight: "bold" },
           headerLeft: () => (
             <MaterialIcons
               name="arrow-back-ios"
               size={24}
               color="black"
               style={{ marginLeft: 10 }}
-              onPress={() => router.back()} // Custom back button functionality
+              onPress={() => router.back()}
             />
           ),
         }}
@@ -99,6 +99,7 @@ const OtherLayout = () => {
             headerShown: false,
           }}
         />
+
         <Stack.Screen
           name="school"
           options={{

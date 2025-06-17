@@ -7,8 +7,6 @@ import {
   ActivityIndicator,
 } from "react-native";
 import React, { useState, useEffect } from "react";
-import RNPickerSelect from "react-native-picker-select";
-import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import * as Device from "expo-device";
 import Toast from "react-native-toast-message";
@@ -156,21 +154,17 @@ const Notes = () => {
   }, [level, getTopicsByLevel, uuid]);
 
   const handleSubmit = async () => {
-    console.log(33);
     try {
       setLoading(true);
-      console.log(44);
+
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
-        console.log(55);
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
           school_id: parseInt(schoolItems[0].value),
         }).unwrap();
-        console.log(66);
-        console.log(result, "result");
 
         if (result.status === "successful") {
           const selectedLevel = levelItems.find(

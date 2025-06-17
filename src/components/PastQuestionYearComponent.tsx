@@ -71,6 +71,7 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
         <PdfComponent
           setModal={setSecondModal}
           modal={secondModal}
+          video=""
           pdfUrl={{
             uri: `https://sbsapp.com.ng/static/${pdf_content}`,
             cache: true,

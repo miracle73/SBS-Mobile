@@ -152,7 +152,12 @@ export default function Page() {
         </View>
       </View>
       {modal && (
-        <PdfComponent modal={modal} setModal={setModal} pdfUrl={pdfUrl} />
+        <PdfComponent
+          modal={modal}
+          setModal={setModal}
+          pdfUrl={pdfUrl}
+          video=""
+        />
       )}
       {/* <SubscriptionModal modal={modalVisible} setModal={setModalVisible} /> */}
     </SafeAreaView>

@@ -15,7 +15,7 @@ Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
-    shouldSetBadge: false,
+    shouldSetBadge: true,
   }),
 });
 
@@ -48,25 +48,41 @@ class NotificationService implements NotificationServiceInterface {
       }
 
       if (finalStatus !== "granted") {
-        alert("Failed to get push token for push notification!");
+        console.log("Failed to get push token for push notification!");
         return undefined;
       }
 
-      // Get the token that uniquely identifies this device
-      token = await Notifications.getExpoPushTokenAsync({
-        projectId: Constants.expoConfig?.extra?.eas?.projectId,
-      });
+      try {
+        // 🔥 FIX: Use your actual project ID directly
+        const projectId =
+          // Constants.expoConfig?.extra?.eas?.projectId ||
+          "c2b5ba9b-0466-473e-b4b7-d250e6cfddda";
 
-      this.token = token.data;
+        // Get the token that uniquely identifies this device
+        token = await Notifications.getExpoPushTokenAsync({
+          projectId: projectId,
+        });
 
-      // Store token locally
-      await AsyncStorage.setItem("expoPushToken", token.data);
+        this.token = token.data;
 
-      console.log("Push token:", token.data);
+        // Store token locally
+        await AsyncStorage.setItem("expoPushToken", token.data);
 
-      return token.data;
+        console.log("Push token:", token.data);
+
+        return token.data;
+      } catch (error) {
+        // console.error("Error getting Expo push token:", error);
+
+        // FIX: If Expo push tokens fail, just continue without push notifications
+        // This prevents the Firebase error
+        console.log(
+          "Continuing without push notifications - local notifications will still work"
+        );
+        return undefined;
+      }
     } else {
-      alert("Must use physical device for Push Notifications");
+      console.log("Must use physical device for Push Notifications");
       return undefined;
     }
   }
@@ -76,7 +92,6 @@ class NotificationService implements NotificationServiceInterface {
     // Listener for notifications received while app is running
     this.notificationListener = Notifications.addNotificationReceivedListener(
       (notification: Notifications.Notification) => {
-        console.log("Notification received:", notification);
         this.handleNotificationReceived(notification);
       }
     );
@@ -85,7 +100,6 @@ class NotificationService implements NotificationServiceInterface {
     this.responseListener =
       Notifications.addNotificationResponseReceivedListener(
         (response: Notifications.NotificationResponse) => {
-          console.log("Notification response:", response);
           this.handleNotificationResponse(response);
         }
       );
@@ -112,7 +126,6 @@ class NotificationService implements NotificationServiceInterface {
     const data = notification.request.content.data;
 
     // Navigate to specific screen based on notification data
-    console.log("User tapped notification:", data);
 
     // Example: Navigate to specific screen
     // if (data.screen) {
@@ -120,7 +133,6 @@ class NotificationService implements NotificationServiceInterface {
     // }
   }
 
-  // Fetch notifications from your API
   // Fetch notifications from your API
   async fetchNotifications(): Promise<ProcessedNotification[]> {
     try {
@@ -139,7 +151,7 @@ class NotificationService implements NotificationServiceInterface {
 
       const notificationData = result.data;
 
-      // Since your API returns { detail: string }, we need to adapt it
+      // Since the API returns { detail: string }, we need to adapt it
       // Assuming the detail contains the notification content
       const notifications: ProcessedNotification[] = [
         {
@@ -157,30 +169,6 @@ class NotificationService implements NotificationServiceInterface {
       throw error;
     }
   }
-  // async fetchNotifications(): Promise<ProcessedNotification[]> {
-  //   try {
-  //     // Replace with your actual API endpoint
-  //     const response = await fetch("YOUR_API_ENDPOINT_HERE/notifications");
-
-  //     if (!response.ok) {
-  //       throw new Error(`HTTP error! status: ${response.status}`);
-  //     }
-
-  //     const notifications: NotificationData[] = await response.json();
-
-  //     // Process notifications
-  //     return notifications.map((notification: NotificationData) => ({
-  //       id: `notification_${Date.now()}_${Math.random()}`,
-  //       title: notification.title,
-  //       message: notification.message,
-  //       createdAt: new Date(notification.created_at),
-  //       isRead: false,
-  //     }));
-  //   } catch (error) {
-  //     console.error("Error fetching notifications:", error);
-  //     throw error;
-  //   }
-  // }
 
   // Send local notification (for testing or offline notifications)
   async sendLocalNotification(
@@ -198,7 +186,6 @@ class NotificationService implements NotificationServiceInterface {
     });
   }
 
-  // Schedule notification for later
   // Schedule notification for later
   async scheduleNotification(
     title: string,

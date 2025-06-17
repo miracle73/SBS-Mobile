@@ -248,6 +248,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
         <PdfComponent
           setModal={setSecondModal}
           modal={secondModal}
+          video={data.topic_content?.video}
           pdfUrl={{
             uri: `https://sbsapp.com.ng/static/${data.topic_content?.pdf_content}`,
             cache: true,
@@ -258,6 +259,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
         <PdfComponent
           setModal={setThirdModal}
           modal={thirdModal}
+          video={selectedTopic.topic_video}
           pdfUrl={{
             uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
             cache: true,

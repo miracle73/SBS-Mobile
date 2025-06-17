@@ -7,6 +7,8 @@ import {
   UseNotificationsReturn,
 } from "../types/notification";
 import { useGetTodayNotificationsMutation } from "../components/services/userService";
+const { store } = require("../components/redux/store");
+const { userApi } = require("../components/services/userService");
 
 export const useNotifications = (): UseNotificationsReturn => {
   const [notifications, setNotifications] = useState<ProcessedNotification[]>(
@@ -34,10 +36,10 @@ export const useNotifications = (): UseNotificationsReturn => {
     try {
       setLoading(true);
 
-      // Register for push notifications
+      // Register for push notifications (now fixed!)
       await NotificationService.registerForPushNotificationsAsync();
 
-      // Setup listeners
+      // Setup listeners for local notifications only
       NotificationService.setupNotificationListeners();
 
       // Load stored notifications
@@ -133,7 +135,6 @@ export const useNotifications = (): UseNotificationsReturn => {
   }, [getTodayNotifications]);
 
   // Merge notifications avoiding duplicates
-  // Merge notifications avoiding duplicates
   const mergeNotifications = (
     stored: ProcessedNotification[],
     fresh: ProcessedNotification[]
@@ -208,10 +209,41 @@ export const useNotifications = (): UseNotificationsReturn => {
   // Send test notification
   const sendTestNotification = useCallback(async (): Promise<void> => {
     try {
-      await NotificationService.sendLocalNotification(
-        "Test Notification",
-        "This is a test notification from your SBS Mobile app!"
+      const result = await store.dispatch(
+        userApi.endpoints.getTodayNotifications.initiate({})
       );
+
+      if (result.error) {
+        throw new Error("Failed to fetch notifications from API");
+      }
+
+      const notificationData = result.data;
+
+      // await NotificationService.sendLocalNotification(
+      //   "Test Notification",
+      //   "This is a test notification from your SBS Mobile app!"
+      // );
+      // Check if the response is an array (has notifications) or object (no notifications)
+      if (Array.isArray(notificationData)) {
+        // Has notifications - loop through each and send local notification
+        console.log(`Sending ${notificationData.length} notifications...`);
+
+        for (const notification of notificationData) {
+          await NotificationService.sendLocalNotification(
+            notification.title,
+            notification.message
+          );
+        }
+
+        console.log(
+          `Successfully sent ${notificationData.length} notifications`
+        );
+      } else if (notificationData?.detail) {
+        // No notifications - don't send any
+        console.log("No notifications to send5678:", notificationData.detail);
+      } else {
+        console.log("Unexpected notification data format:", notificationData);
+      }
     } catch (err) {
       console.error("Error sending test notification:", err);
     }

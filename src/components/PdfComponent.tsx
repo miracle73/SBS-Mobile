@@ -11,7 +11,7 @@ import {
 import React, { useState, useCallback } from "react";
 import Pdf from "react-native-pdf";
 import YoutubePlayer from "react-native-youtube-iframe";
-import Toast from "react-native-toast-message";
+// import Toast from "react-native-toast-message";
 
 interface PDF {
   uri: string;
@@ -65,11 +65,11 @@ const PdfComponent = ({
   const onStateChange = useCallback((state: string) => {
     if (state === "ended") {
       setPlaying(false);
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "Video Ended, The video has finished playing!",
-      });
+      // Toast.show({
+      //   type: "success",
+      //   text1: "Success",
+      //   text2: "Video Ended, The video has finished playing!",
+      // });
       // Alert.alert("Video Ended", "The video has finished playing!");
     }
   }, []);
@@ -80,11 +80,11 @@ const PdfComponent = ({
 
   const onError = useCallback((error: string) => {
     setLoading(false);
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: `Failed to load video: ${error}`,
-    });
+    // Toast.show({
+    //   type: "error",
+    //   text1: "Error",
+    //   text2: `Failed to load video: ${error}`,
+    // });
     // Alert.alert("Error", `Failed to load video: ${error}`);
   }, []);
 

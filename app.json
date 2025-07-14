@@ -2,12 +2,12 @@
   "expo": {
     "name": "SBSMobile",
     "slug": "SBSMobile",
-    "scheme": "SBSMobile",
+    "scheme": "sbsmobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/sbsicon.png",
     "userInterfaceStyle": "light",
-    "newArchEnabled": true,
+    "newArchEnabled": false,
     "splash": {
       "image": "./assets/sbsicon.png",
       "resizeMode": "contain",

@@ -137,6 +137,17 @@ interface TodayNotificationResponse {
   detail?: string;
 }
 
+interface GetUserID {
+  status: string;
+  message: {
+    phone_imei: string;
+    is_active: boolean;
+    school_id: number;
+    id: number;
+    role: string;
+  };
+}
+
 type GetTodayNotificationsResponse =
   | TodayNotificationItem[]
   | TodayNotificationResponse;
@@ -231,6 +242,12 @@ export const userApi = createApi({
         method: "GET",
       }),
     }),
+    getUserId: builder.mutation<GetUserID, { phone_imei: string }>({
+      query: ({ phone_imei }) => ({
+        url: `user/user-info-with-id-new?phone_imei=${phone_imei}`,
+        method: "POST",
+      }),
+    }),
   }),
 });
 
@@ -247,4 +264,5 @@ export const {
   useUserActivatedStatusMutation,
   useGetTopicsByLevelMutation,
   useGetTodayNotificationsMutation,
+  useGetUserIdMutation,
 } = userApi;

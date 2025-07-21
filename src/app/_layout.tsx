@@ -90,12 +90,6 @@ const RootLayout = () => {
             }}
           >
             <Stack.Screen
-              name="admin"
-              options={{
-                headerShown: false,
-              }}
-            />
-            <Stack.Screen
               name="home"
               options={{
                 headerShown: false,
@@ -115,6 +109,12 @@ const RootLayout = () => {
             />
             <Stack.Screen
               name="notifications"
+              options={{
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="admin"
               options={{
                 headerShown: false,
               }}

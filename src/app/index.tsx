@@ -35,15 +35,15 @@ export default function Page() {
     sendNotificationsOnMount();
   }, [sendTestNotification]);
 
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     const isAuthenticated = await AsyncStorage.getItem("device_uuid");
-  //     if (isAuthenticated) {
-  //       router.replace("/home");
-  //     }
-  //   };
-  //   checkAuth();
-  // }, []);
+  useEffect(() => {
+    const checkAuth = async () => {
+      const isAuthenticated = await AsyncStorage.getItem("device_uuid");
+      if (isAuthenticated) {
+        router.replace("/home");
+      }
+    };
+    checkAuth();
+  }, []);
 
   useEffect(() => {
     if (userContents) {

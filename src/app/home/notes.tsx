@@ -46,7 +46,6 @@ const Notes = () => {
     (state: RootState) => state.userContent.contents
   );
   const [getTopicsByLevel] = useGetTopicsByLevelMutation();
-  //
   const userContents2 = useAppSelector((state) => state.userContent.contents);
   const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
     phone_imei: uuid,
@@ -58,7 +57,6 @@ const Notes = () => {
     const fetchStoredUuid = async () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
-
         if (storedUuid) {
           setUuid(storedUuid);
         }
@@ -66,9 +64,9 @@ const Notes = () => {
         console.error("Error fetching UUID:", error);
       }
     };
-
     fetchStoredUuid();
   }, []);
+
   useEffect(() => {
     const fetchStoredContents = async () => {
       const netInfo = await NetInfo.fetch();
@@ -86,11 +84,9 @@ const Notes = () => {
         }));
         setLevelItems(formattedLevels);
       } else {
-        // Offline mode: fetch data from the Redux store or AsyncStorage
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
-          console.log(isConnected, "rr");
           const parsedContents = JSON.parse(storedContents);
 
           const uniqueLevels = Array.from(
@@ -142,12 +138,6 @@ const Notes = () => {
         }));
         setCourseItems(formattedCourses);
       }
-      console.log(
-        topicsByLevelData,
-        selectedLevel ? parseInt(selectedLevel) : 0,
-        uuid,
-        4000
-      );
     };
 
     fetchTopicsByLevel();
@@ -156,7 +146,6 @@ const Notes = () => {
   const handleSubmit = async () => {
     try {
       setLoading(true);
-
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
@@ -186,8 +175,6 @@ const Notes = () => {
           return;
         }
       } else {
-        // Offline mode: fetch data from the Redux store
-        console.log(45);
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           const parsedContents = JSON.parse(storedContents);
@@ -215,7 +202,6 @@ const Notes = () => {
               pathname: "/other/topics",
               params: {
                 topics: JSON.stringify(offlineTopics),
-
                 level: JSON.stringify(selectedLevel),
               },
             });
@@ -277,12 +263,16 @@ const Notes = () => {
             placeholder="Select Level"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            zIndex={open2 ? 1000 : 1} // Ensure level dropdown is above other elements when open
           />
         </View>
 
         {/* Course Picker */}
         <View
-          style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}
+          style={[
+            styles.pickerContainer,
+            open3 ? { zIndex: 2000 } : { zIndex: 1 },
+          ]}
         >
           <Text style={styles.thirdText}>Course</Text>
           <DropDownPicker
@@ -300,10 +290,14 @@ const Notes = () => {
             placeholder="Select Course"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            zIndex={open3 ? 2000 : 1} // Ensure course dropdown is above all elements when open
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        <TouchableOpacity
+          style={[styles.button, { zIndex: 0 }]}
+          onPress={handleSubmit}
+        >
           {loading ? (
             <ActivityIndicator size="small" color="#FFFFFF" />
           ) : (

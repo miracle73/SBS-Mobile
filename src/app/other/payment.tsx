@@ -6,11 +6,13 @@ import {
   TouchableOpacity,
   TextInput,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { FlutterwaveButton } from "react-native-flutterwave";
-// import { PayWithFlutterwave } from 'flutterwave-react-native';
+import { useGetUserIdMutation } from "../../components/services/userService";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { PayWithFlutterwave } from "flutterwave-react-native";
+import { FlutterwaveInitOptions, Currency } from "../../../flutterwave-types";
 
 // TypeScript interfaces for Flutterwave responses
 interface FlutterwaveResponse {
@@ -33,17 +35,63 @@ interface FlutterwaveError {
 }
 
 const payment = () => {
-  const [amount, setAmount] = useState("");
-  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [userId, setUserId] = useState<number | null>(null);
+  const [getUserId, { isLoading: isUserIdLoading }] = useGetUserIdMutation();
   const router = useRouter();
+  const [phoneImei, setPhoneImei] = useState("");
+  const [showPayment, setShowPayment] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState<Omit<
+    FlutterwaveInitOptions,
+    "redirect_url"
+  > | null>(null);
+
+  useEffect(() => {
+    const fetchPhoneImeiAndUserId = async () => {
+      try {
+        const storedPhoneImei = await AsyncStorage.getItem("device_uuid");
+        console.log(storedPhoneImei);
+        if (storedPhoneImei) {
+          setPhoneImei(storedPhoneImei);
+          const result = await getUserId({
+            phone_imei: storedPhoneImei,
+          }).unwrap();
+          console.log(result, 600);
+          if (result.status === "Info" && result.message.id) {
+            setUserId(result.message.id);
+          } else {
+            Toast.show({
+              type: "error",
+              text1: "Error",
+              text2: "Failed to fetch user ID. Please try again.",
+            });
+          }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: "Device identifier not found. Please try again.",
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching user ID:", error);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "An error occurred while fetching user ID.",
+        });
+      }
+    };
+
+    fetchPhoneImeiAndUserId();
+  }, [getUserId]);
 
   const handleProceed = () => {
-    if (!amount || !name || !email) {
+    if (!email || !userId) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Please fill out all fields before proceeding.",
+        text2: "Please fill out email and ensure user ID is loaded.",
       });
       return;
     }
@@ -59,91 +107,34 @@ const payment = () => {
       return;
     }
 
-    // Amount validation
-    const numericAmount = parseFloat(amount);
-    if (isNaN(numericAmount) || numericAmount <= 0) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please enter a valid amount.",
-      });
-      return;
-    }
-
     // Generate unique transaction reference
     const tx_ref = `txn_${Date.now()}_${Math.random()
       .toString(36)
       .substring(2, 15)}`;
 
     // Flutterwave payment configuration
-    const paymentData = {
+    const flutterwaveOptions: Omit<FlutterwaveInitOptions, "redirect_url"> = {
       public_key: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
       tx_ref: tx_ref,
-      amount: numericAmount,
-      currency: "NGN", // Change to your preferred currency
+      amount: 3000,
+      currency: "NGN" as Currency,
       customer: {
         email: email,
-        name: name,
+        name: "200",
+        phone_number: userId.toString(),
       },
       customizations: {
         title: "Premium Access Payment",
         description: "Payment for premium features",
-        logo: "", // Add your logo URL here if needed
+        logo: "",
       },
-      redirect_url: "", // Optional: Add redirect URL if needed
+      authorization: "redirect",
     };
-
-    // Handle successful payment
-    const handleOnRedirect = (data: FlutterwaveResponse) => {
-      console.log("Payment redirect data:", data);
-
-      if (data.status === "successful") {
-        Toast.show({
-          type: "success",
-          text1: "Payment Successful",
-          text2: "Your payment has been processed successfully!",
-        });
-
-        // Navigate to home or success page
-        router.push("/home");
-      } else if (data.status === "cancelled") {
-        Toast.show({
-          type: "info",
-          text1: "Payment Cancelled",
-          text2: "You cancelled the payment process.",
-        });
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Payment Failed",
-          text2: "Payment was not successful. Please try again.",
-        });
-      }
-    };
-
-    // Handle payment errors
-    const handlePaymentError = (error: FlutterwaveError) => {
-      console.log("Payment error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Payment Error",
-        text2: "An error occurred during payment. Please try again.",
-      });
-    };
-
-    // Initialize Flutterwave payment
-    FlutterwaveButton({
-      ...paymentData,
-      onRedirect: handleOnRedirect,
-      onAbort: () => {
-        Toast.show({
-          type: "info",
-          text1: "Payment Cancelled",
-          text2: "Payment process was cancelled.",
-        });
-      },
-      onError: handlePaymentError,
-    });
+    console.log(12);
+    // Set payment options and show payment component
+    setPaymentOptions(flutterwaveOptions);
+    setShowPayment(true);
+    console.log(14);
   };
 
   return (
@@ -156,29 +147,9 @@ const payment = () => {
 
         <View style={styles.pickerContainer}>
           <Text style={styles.thirdText}>Amount (NGN)</Text>
-          <TextInput
-            style={styles.secondInnerContainer}
-            placeholderTextColor="#98A2B3"
-            placeholder={" Enter amount"}
-            onChangeText={(text) => {
-              setAmount(text);
-            }}
-            keyboardType="numeric"
-            value={amount}
-          />
-        </View>
-
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Your name</Text>
-          <TextInput
-            style={styles.secondInnerContainer}
-            placeholderTextColor="#98A2B3"
-            placeholder={" Enter name"}
-            onChangeText={(text) => {
-              setName(text);
-            }}
-            value={name}
-          />
+          <View style={styles.secondInnerContainer}>
+            <Text style={styles.amountText}>₦3,000</Text>
+          </View>
         </View>
 
         <View style={styles.pickerContainer}>
@@ -199,6 +170,47 @@ const payment = () => {
         <TouchableOpacity style={styles.button} onPress={handleProceed}>
           <Text style={styles.buttonText}>Pay with Flutterwave</Text>
         </TouchableOpacity>
+
+        {showPayment && paymentOptions && (
+          <PayWithFlutterwave
+            onRedirect={(data: FlutterwaveResponse) => {
+              console.log("Payment response:", data);
+              setShowPayment(false);
+
+              if (data.status === "successful") {
+                Toast.show({
+                  type: "success",
+                  text1: "Success",
+                  text2: "Payment completed successfully!",
+                });
+                // Handle successful payment (e.g., navigate to success page)
+                router.push("/success"); // or wherever you want to redirect
+              } else if (data.status === "cancelled") {
+                Toast.show({
+                  type: "info",
+                  text1: "Cancelled",
+                  text2: "Payment was cancelled.",
+                });
+              } else {
+                Toast.show({
+                  type: "error",
+                  text1: "Failed",
+                  text2: "Payment failed. Please try again.",
+                });
+              }
+            }}
+            onAbort={() => {
+              console.log("Payment aborted");
+              setShowPayment(false);
+              Toast.show({
+                type: "info",
+                text1: "Aborted",
+                text2: "Payment was aborted.",
+              });
+            }}
+            options={paymentOptions}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
@@ -268,6 +280,12 @@ const styles = StyleSheet.create({
     color: "#000000",
     width: "100%",
     backgroundColor: "#FFFFFF",
+    justifyContent: "center",
+  },
+  amountText: {
+    fontSize: 16,
+    color: "#000000",
+    fontWeight: "600",
   },
 });
 

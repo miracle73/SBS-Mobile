@@ -32,11 +32,27 @@ const edu = () => {
   const [open3, setOpen3] = useState(false);
   const [uuid, setUuid] = useState("");
   const router = useRouter();
+  const [schoolItems, setSchoolItems] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [levelItems, setLevelItems] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [courseItems, setCourseItems] = useState<
+    { label: string; value: string }[]
+  >([]);
+  const [isConnected, setIsConnected] = useState(true);
+
+  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
+    phone_imei: uuid,
+  });
+  const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
+  const [getTopicsByLevel] = useGetTopicsByLevelMutation();
+
   useEffect(() => {
     const fetchStoredUuid = async () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
-
         if (storedUuid) {
           console.log("Stored UUID:", storedUuid);
           setUuid(storedUuid);
@@ -48,22 +64,6 @@ const edu = () => {
 
     fetchStoredUuid();
   }, []);
-  const [schoolItems, setSchoolItems] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [levelItems, setLevelItems] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [courseItems, setCourseItems] = useState<
-    { label: string; value: string }[]
-  >([]);
-  const [isConnected, setIsConnected] = useState(true);
-  //
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
-    phone_imei: uuid,
-  });
-  const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
-  const [getTopicsByLevel] = useGetTopicsByLevelMutation();
 
   useEffect(() => {
     const fetchStoredContents = async () => {
@@ -78,17 +78,10 @@ const edu = () => {
 
         const formattedLevels = data.levels.map((level) => ({
           label: level.name,
-          value: level.id,
+          value: level.id.toString(), // Ensure unique string value
         }));
         setLevelItems(formattedLevels);
-
-        // const formattedCourses = data.courses.map((course) => ({
-        //   label: course.name,
-        //   value: course.id,
-        // }));
-        // setCourseItems(formattedCourses);
       } else {
-        // Offline mode: fetch data from the Redux store or AsyncStorage
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
@@ -98,28 +91,27 @@ const edu = () => {
           const uniqueLevels = Array.from(
             new Set(parsedContents.map((content: any) => content.course_level))
           );
-          const uniqueCourses = Array.from(
-            new Set(
-              parsedContents.map((content: any) => {
-                const selectedLevel = levelItems.find(
-                  (item) => item.value === level
-                )?.label;
-                if (content.course_level == selectedLevel)
-                  return content.course_name;
-              })
-            )
+          const offlineLevels = uniqueLevels.map(
+            (level: any, index: number) => ({
+              label: level,
+              value: `${level}-${index}`, // Ensure unique value
+            })
           );
-
-          const offlineLevels = uniqueLevels.map((level: any) => ({
-            label: level,
-            value: level,
-          }));
           setLevelItems(offlineLevels);
 
-          const offlineCourses = uniqueCourses.map((course: any) => ({
-            label: course,
-            value: course,
-          }));
+          const uniqueCourses = Array.from(
+            new Set(
+              parsedContents
+                .filter((content: any) => content.course_level === level)
+                .map((content: any) => content.course_name)
+            )
+          );
+          const offlineCourses = uniqueCourses.map(
+            (course: any, index: number) => ({
+              label: course,
+              value: `${course}-${index}`, // Ensure unique value
+            })
+          );
           setCourseItems(offlineCourses);
         }
       }
@@ -138,9 +130,9 @@ const edu = () => {
       });
 
       if (topicsByLevelData) {
-        const formattedCourses = topicsByLevelData.map((course) => ({
+        const formattedCourses = topicsByLevelData.map((course, index) => ({
           label: course.name,
-          value: course.id.toString(),
+          value: course.id.toString() || `${course.name}-${index}`, // Ensure unique string value
         }));
         setCourseItems(formattedCourses);
       }
@@ -165,7 +157,7 @@ const edu = () => {
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
-          school_id: parseInt(schoolItems[0].value),
+          school_id: parseInt(schoolItems[0]?.value || "0"),
         }).unwrap();
 
         if (result.status === "successful") {
@@ -189,7 +181,6 @@ const edu = () => {
           return;
         }
       } else {
-        // Offline mode: fetch data from the Redux store
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           console.log(1);
@@ -197,8 +188,8 @@ const edu = () => {
 
           const selectedCourse = parsedContents.find(
             (content: any) =>
-              content.course_level == level &&
-              content.course_name == course &&
+              content.course_level === level &&
+              content.course_name === course &&
               content.topics.length > 0
           );
 
@@ -248,13 +239,14 @@ const edu = () => {
     }
   };
 
-  if (!uuid || uuid == "") {
+  if (!uuid || uuid === "") {
     return (
       <SafeAreaView style={styles.bodyContainer}>
         <ActivityIndicator size="large" color="#FF8C00" />
       </SafeAreaView>
     );
   }
+
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
@@ -262,29 +254,8 @@ const edu = () => {
         <Text style={styles.secondText}>
           Select a course and topic you wish to study
         </Text>
-        {/* {isConnected && (
-          <View style={styles.pickerContainer}>
-            <Text style={styles.thirdText}>School</Text>
-            <DropDownPicker
-              open={open}
-              value={school}
-              items={schoolItems}
-              setItems={setSchoolItems}
-              closeAfterSelecting={true}
-              closeOnBackPressed={true}
-              listItemContainerStyle={{
-                height: 40,
-              }}
-              setOpen={setOpen}
-              setValue={setSchool}
-              placeholder="Choose Your School"
-              style={pickerSelectStyles.inputIOS}
-              dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            />
-          </View>
-        )} */}
 
-        {/* Year Picker */}
+        {/* Level Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
           <Text style={styles.thirdText}>Level</Text>
           <DropDownPicker
@@ -305,7 +276,6 @@ const edu = () => {
                   phone_imei: uuid,
                   level: 1,
                 });
-
                 console.log(topicsByLevelData, value, uuid, 4000);
               };
               fetchTopicsByLevel();
@@ -313,11 +283,16 @@ const edu = () => {
             placeholder="Select Level"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            zIndex={open2 ? 1000 : 1} // Ensure level dropdown is above button when open
           />
         </View>
 
+        {/* Course Picker */}
         <View
-          style={[styles.pickerContainer, (open2 || open) && { zIndex: -20 }]}
+          style={[
+            styles.pickerContainer,
+            open3 ? { zIndex: 2000 } : { zIndex: 1 },
+          ]}
         >
           <Text style={styles.thirdText}>Subject</Text>
           <DropDownPicker
@@ -335,12 +310,15 @@ const edu = () => {
             placeholder="Select Subject"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
+            zIndex={open3 ? 2000 : 1} // Ensure course dropdown is above all when open
           />
         </View>
 
-        {/* Year Picker */}
-
-        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+        {/* Search Button */}
+        <TouchableOpacity
+          style={[styles.button, { zIndex: 0 }]}
+          onPress={handleSubmit}
+        >
           {loading ? (
             <ActivityIndicator color="#FFFFFF" size={14} />
           ) : (

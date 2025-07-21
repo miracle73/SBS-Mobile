@@ -11,8 +11,8 @@ import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import { useGetUserIdMutation } from "../../components/services/userService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { PayWithFlutterwave } from "flutterwave-react-native";
-import { FlutterwaveInitOptions, Currency } from "../../../flutterwave-types";
+import { PayWithFlutterwaveV2 } from "flutterwave-react-native";
+import { FlutterwaveInitV2Options, Currency } from "../../../flutterwave-types";
 
 // TypeScript interfaces for Flutterwave responses
 interface FlutterwaveResponse {
@@ -42,7 +42,7 @@ const payment = () => {
   const [phoneImei, setPhoneImei] = useState("");
   const [showPayment, setShowPayment] = useState(false);
   const [paymentOptions, setPaymentOptions] = useState<Omit<
-    FlutterwaveInitOptions,
+    FlutterwaveInitV2Options,
     "redirect_url"
   > | null>(null);
 
@@ -112,29 +112,61 @@ const payment = () => {
       .toString(36)
       .substring(2, 15)}`;
 
-    // Flutterwave payment configuration
-    const flutterwaveOptions: Omit<FlutterwaveInitOptions, "redirect_url"> = {
-      public_key: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
-      tx_ref: tx_ref,
+    // Fixed Flutterwave V2 payment configuration
+    const flutterwaveOptions: Omit<FlutterwaveInitV2Options, "redirect_url"> = {
+      PBFPubKey: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
+      txref: tx_ref,
       amount: 3000,
       currency: "NGN" as Currency,
-      customer: {
-        email: email,
-        name: "200",
-        phone_number: userId.toString(),
-      },
-      customizations: {
-        title: "Premium Access Payment",
-        description: "Payment for premium features",
-        logo: "",
-      },
-      authorization: "redirect",
+      customer_email: email,
+      customer_firstname: "Premium",
+      customer_lastname: "User",
+      customer_phone: userId.toString(),
+      custom_title: "Premium Access Payment",
+      custom_description: "Payment for premium features",
+      custom_logo: "",
+      payment_method: "card,account,banktransfer,mpesa,mobilemoney,ussd",
     };
-    console.log(12);
+
+    console.log("Payment options configured:", flutterwaveOptions);
+
     // Set payment options and show payment component
     setPaymentOptions(flutterwaveOptions);
     setShowPayment(true);
-    console.log(14);
+
+    console.log("Payment component should now be visible");
+  };
+
+  const handleOnRedirect = (data: any) => {
+    console.log("Payment redirect data:", data);
+
+    // Handle payment success/failure
+    if (data.status === "successful") {
+      Toast.show({
+        type: "success",
+        text1: "Payment Successful",
+        text2: "Your premium access has been activated!",
+      });
+
+      // Navigate to success screen or update user status
+      router.push("/payment-success");
+    } else if (data.status === "cancelled") {
+      Toast.show({
+        type: "info",
+        text1: "Payment Cancelled",
+        text2: "Payment was cancelled by user",
+      });
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Payment Failed",
+        text2: "Payment could not be completed. Please try again.",
+      });
+    }
+
+    // Reset payment state
+    setShowPayment(false);
+    setPaymentOptions(null);
   };
 
   return (
@@ -157,7 +189,7 @@ const payment = () => {
           <TextInput
             style={styles.secondInnerContainer}
             placeholderTextColor="#98A2B3"
-            placeholder={" Enter email address"}
+            placeholder="Enter email address"
             onChangeText={(text) => {
               setEmail(text);
             }}
@@ -167,47 +199,20 @@ const payment = () => {
           />
         </View>
 
-        <TouchableOpacity style={styles.button} onPress={handleProceed}>
-          <Text style={styles.buttonText}>Pay with Flutterwave</Text>
+        <TouchableOpacity
+          style={[styles.button, isUserIdLoading && { opacity: 0.6 }]}
+          onPress={handleProceed}
+          disabled={isUserIdLoading}
+        >
+          <Text style={styles.buttonText}>
+            {isUserIdLoading ? "Loading..." : "Pay with Flutterwave"}
+          </Text>
         </TouchableOpacity>
 
+        {/* Fixed PayWithFlutterwaveV2 implementation */}
         {showPayment && paymentOptions && (
-          <PayWithFlutterwave
-            onRedirect={(data: FlutterwaveResponse) => {
-              console.log("Payment response:", data);
-              setShowPayment(false);
-
-              if (data.status === "successful") {
-                Toast.show({
-                  type: "success",
-                  text1: "Success",
-                  text2: "Payment completed successfully!",
-                });
-                // Handle successful payment (e.g., navigate to success page)
-                router.push("/success"); // or wherever you want to redirect
-              } else if (data.status === "cancelled") {
-                Toast.show({
-                  type: "info",
-                  text1: "Cancelled",
-                  text2: "Payment was cancelled.",
-                });
-              } else {
-                Toast.show({
-                  type: "error",
-                  text1: "Failed",
-                  text2: "Payment failed. Please try again.",
-                });
-              }
-            }}
-            onAbort={() => {
-              console.log("Payment aborted");
-              setShowPayment(false);
-              Toast.show({
-                type: "info",
-                text1: "Aborted",
-                text2: "Payment was aborted.",
-              });
-            }}
+          <PayWithFlutterwaveV2
+            onRedirect={handleOnRedirect}
             options={paymentOptions}
           />
         )}
@@ -286,36 +291,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000000",
     fontWeight: "600",
-  },
-});
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#B0BEC5",
-    color: "#000000",
-    paddingRight: 30,
-    alignSelf: "stretch",
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#B0BEC5",
-    color: "#000000",
-    paddingRight: 30,
-    alignSelf: "stretch",
-  },
-  iconContainer: {
-    top: "50%",
-    right: 10,
-    transform: [{ translateY: -12 }],
-    justifyContent: "center",
-    alignItems: "center",
   },
 });
 

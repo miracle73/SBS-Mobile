@@ -13,6 +13,7 @@ import { useGetUserIdMutation } from "../../components/services/userService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PayWithFlutterwaveV2 } from "flutterwave-react-native";
 import { FlutterwaveInitV2Options, Currency } from "../../../flutterwave-types";
+import DropDownPicker from "react-native-dropdown-picker";
 
 // TypeScript interfaces for Flutterwave responses
 interface FlutterwaveResponse {
@@ -45,6 +46,15 @@ const payment = () => {
     FlutterwaveInitV2Options,
     "redirect_url"
   > | null>(null);
+  const [level, setLevel] = useState(null);
+  const [levelOpen, setLevelOpen] = useState(false);
+  const [levelItems, setLevelItems] = useState([
+    { label: "100Level", value: "100" },
+    { label: "200Level", value: "200" },
+    { label: "300Level", value: "300" },
+    { label: "400Level", value: "400" },
+    { label: "500Level", value: "500" },
+  ]);
 
   useEffect(() => {
     const fetchPhoneImeiAndUserId = async () => {
@@ -87,11 +97,11 @@ const payment = () => {
   }, [getUserId]);
 
   const handleProceed = () => {
-    if (!email || !userId) {
+    if (!email || !userId || !level) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Please fill out email and ensure user ID is loaded.",
+        text2: "Please fill out email and  user ID is valid.",
       });
       return;
     }
@@ -120,7 +130,7 @@ const payment = () => {
       currency: "NGN" as Currency,
       customer_email: email,
       customer_firstname: "Premium",
-      customer_lastname: "User",
+      customer_lastname: level,
       customer_phone: userId.toString(),
       custom_title: "Premium Access Payment",
       custom_description: "Payment for premium features",
@@ -177,44 +187,76 @@ const payment = () => {
           Secure your access to premium features. Complete your payment below.
         </Text>
 
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Amount (NGN)</Text>
-          <View style={styles.secondInnerContainer}>
-            <Text style={styles.amountText}>₦3,000</Text>
-          </View>
-        </View>
-
-        <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Email address</Text>
-          <TextInput
-            style={styles.secondInnerContainer}
-            placeholderTextColor="#98A2B3"
-            placeholder="Enter email address"
-            onChangeText={(text) => {
-              setEmail(text);
-            }}
-            value={email}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          />
-        </View>
-
-        <TouchableOpacity
-          style={[styles.button, isUserIdLoading && { opacity: 0.6 }]}
-          onPress={handleProceed}
-          disabled={isUserIdLoading}
-        >
-          <Text style={styles.buttonText}>
-            {isUserIdLoading ? "Loading..." : "Pay with Flutterwave"}
-          </Text>
-        </TouchableOpacity>
-
         {/* Fixed PayWithFlutterwaveV2 implementation */}
-        {showPayment && paymentOptions && (
-          <PayWithFlutterwaveV2
-            onRedirect={handleOnRedirect}
-            options={paymentOptions}
-          />
+        {showPayment && paymentOptions ? (
+          <View style={{ flex: 1, marginTop: 20 }}>
+            <PayWithFlutterwaveV2
+              onRedirect={handleOnRedirect}
+              options={paymentOptions}
+            />
+          </View>
+        ) : (
+          <>
+            <View style={styles.pickerContainer}>
+              <Text style={styles.thirdText}>Amount (NGN)</Text>
+              <View style={styles.secondInnerContainer}>
+                <Text style={styles.amountText}>₦3,000</Text>
+              </View>
+            </View>
+
+            <View style={styles.pickerContainer}>
+              <Text style={styles.thirdText}>Email address</Text>
+              <TextInput
+                style={styles.secondInnerContainer}
+                placeholderTextColor="#98A2B3"
+                placeholder="Enter email address"
+                onChangeText={(text) => {
+                  setEmail(text);
+                }}
+                value={email}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
+            </View>
+
+            <View style={styles.pickerContainer}>
+              <Text style={styles.thirdText}>Level</Text>
+              <DropDownPicker
+                open={levelOpen}
+                value={level}
+                items={levelItems}
+                setOpen={setLevelOpen}
+                setValue={setLevel}
+                setItems={setLevelItems}
+                placeholder="Select your level"
+                style={[styles.secondInnerContainer, { height: 50 }]}
+                dropDownContainerStyle={{
+                  borderColor: "#D0D5DD",
+                  backgroundColor: "#FFFFFF",
+                }}
+                textStyle={{
+                  color: "#000000",
+                  fontSize: 14,
+                }}
+                placeholderStyle={{
+                  color: "#98A2B3",
+                  fontSize: 14,
+                }}
+                zIndex={1000}
+                zIndexInverse={3000}
+              />
+            </View>
+
+            <TouchableOpacity
+              style={[styles.button, isUserIdLoading && { opacity: 0.6 }]}
+              onPress={handleProceed}
+              disabled={isUserIdLoading}
+            >
+              <Text style={styles.buttonText}>
+                {isUserIdLoading ? "Loading..." : "Pay with Flutterwave"}
+              </Text>
+            </TouchableOpacity>
+          </>
         )}
       </View>
     </SafeAreaView>
@@ -294,4 +336,36 @@ const styles = StyleSheet.create({
   },
 });
 
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#B0BEC5",
+    color: "#000000",
+    paddingRight: 30,
+    alignSelf: "stretch",
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#B0BEC5",
+    color: "#000000",
+    paddingRight: 30,
+    alignSelf: "stretch",
+  },
+  dropDownContainer: {
+    borderColor: "#B0BEC5",
+  },
+  iconContainer: {
+    top: "50%",
+    right: 10,
+    transform: [{ translateY: -12 }],
+    justifyContent: "center",
+    alignItems: "center",
+  },
+});
 export default payment;

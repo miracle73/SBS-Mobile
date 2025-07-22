@@ -76,7 +76,7 @@ const edu = () => {
 
         const formattedLevels = data.levels.map((level) => ({
           label: level.name,
-          value: level.id.toString(), // Ensure unique string value
+          value: level.id.toString(),
         }));
         setLevelItems(formattedLevels);
       } else {
@@ -92,7 +92,7 @@ const edu = () => {
           const offlineLevels = uniqueLevels.map(
             (level: any, index: number) => ({
               label: level,
-              value: `${level}-${index}`, // Ensure unique value
+              value: `${level}-${index}`,
             })
           );
           setLevelItems(offlineLevels);
@@ -107,7 +107,7 @@ const edu = () => {
           const offlineCourses = uniqueCourses.map(
             (course: any, index: number) => ({
               label: course,
-              value: `${course}-${index}`, // Ensure unique value
+              value: `${course}-${index}`,
             })
           );
           setCourseItems(offlineCourses);
@@ -130,7 +130,7 @@ const edu = () => {
       if (topicsByLevelData) {
         const formattedCourses = topicsByLevelData.map((course, index) => ({
           label: course.name,
-          value: course.id.toString() || `${course.name}-${index}`, // Ensure unique string value
+          value: course.id.toString() || `${course.name}-${index}`,
         }));
         setCourseItems(formattedCourses);
       }
@@ -281,7 +281,7 @@ const edu = () => {
             placeholder="Select Level"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            zIndex={open2 ? 1000 : 1} // Ensure level dropdown is above button when open
+            zIndex={open2 ? 1000 : 1}
           />
         </View>
 

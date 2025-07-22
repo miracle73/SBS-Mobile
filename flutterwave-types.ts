@@ -12,58 +12,46 @@ export type Currency =
   | string;
 
 export interface FlutterwaveInitV2Options {
-  // Required fields
-  PBFPubKey: string; // Your Flutterwave public key
-  txref: string; // Unique transaction reference
-  amount: number; // Payment amount
-  currency: Currency; // Payment currency
-  customer_email: string; // Customer's email address
+  PBFPubKey: string;
+  txref: string;
+  amount: number;
+  currency: Currency;
+  customer_email: string;
 
-  // Optional customer information
-  customer_firstname?: string; // Customer's first name
-  customer_lastname?: string; // Customer's last name
-  customer_phone?: string; // Customer's phone number
+  customer_firstname?: string;
+  customer_lastname?: string;
+  customer_phone?: string;
 
-  // Customization options
-  custom_title?: string; // Custom payment page title
-  custom_description?: string; // Custom payment description
-  custom_logo?: string; // URL to custom logo
+  custom_title?: string;
+  custom_description?: string;
+  custom_logo?: string;
 
-  // Payment methods (comma-separated string)
-  payment_method?: string; // e.g., "card,account,banktransfer,mpesa,mobilemoney,ussd"
+  payment_method?: string;
+  payment_options?: string;
 
-  // Redirect URL (this is what gets omitted in PayWithFlutterwaveV2)
-  redirect_url?: string; // URL to redirect after payment
+  redirect_url?: string;
 
-  // Optional fields for advanced configuration
-  country?: string; // Default payment country
-  payment_plan?: string; // Payment plan ID for subscriptions
+  country?: string;
+  payment_plan?: string;
   subaccounts?: Array<{
-    // For split payments
     id: string;
     transaction_split_ratio?: number;
     transaction_charge_type?: string;
     transaction_charge?: number;
   }>;
 
-  // Additional metadata
   meta?: Array<{
-    // Custom metadata
     metaname: string;
     metavalue: string;
   }>;
 
-  // Optional integrity hash for security
-  integrity_hash?: string; // Hash for payment verification
+  integrity_hash?: string;
 
-  // Optional callback configuration
-  callback?: (response: any) => void; // Callback function
+  callback?: (response: any) => void;
 
-  // Optional hosted payment options
-  hosted_payment?: boolean; // Use hosted payment page
+  hosted_payment?: boolean;
 }
 
-// Response interface for payment callbacks
 export interface FlutterwaveV2Response {
   status: "successful" | "cancelled" | "failed";
   transaction_id?: string;
@@ -96,7 +84,6 @@ export interface FlutterwaveV2Response {
   };
 }
 
-// Redirect params interface (for onRedirect callback)
 export interface RedirectParamsV2 {
   status: "successful" | "cancelled" | "failed";
   tx_ref: string;

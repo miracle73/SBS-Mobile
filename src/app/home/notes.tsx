@@ -263,7 +263,7 @@ const Notes = () => {
             placeholder="Select Level"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            zIndex={open2 ? 1000 : 1} // Ensure level dropdown is above other elements when open
+            zIndex={open2 ? 1000 : 1}
           />
         </View>
 
@@ -290,7 +290,7 @@ const Notes = () => {
             placeholder="Select Course"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            zIndex={open3 ? 2000 : 1} // Ensure course dropdown is above all elements when open
+            zIndex={open3 ? 2000 : 1}
           />
         </View>
 

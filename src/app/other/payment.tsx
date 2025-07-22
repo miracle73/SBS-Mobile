@@ -5,7 +5,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
-  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -16,7 +15,6 @@ import { PayWithFlutterwaveV2 } from "flutterwave-react-native";
 import { FlutterwaveInitV2Options, Currency } from "../../../flutterwave-types";
 import DropDownPicker from "react-native-dropdown-picker";
 
-// TypeScript interfaces for Flutterwave responses
 interface FlutterwaveResponse {
   status: "successful" | "cancelled" | "failed";
   transaction_id?: string;
@@ -36,17 +34,6 @@ interface FlutterwaveError {
   [key: string]: any;
 }
 
-// Payment methods configuration
-const PAYMENT_METHODS = [
-  { id: "card", label: "Credit/Debit Card", icon: "💳" },
-  { id: "account", label: "Bank Account", icon: "🏦" },
-  { id: "banktransfer", label: "Bank Transfer", icon: "💸" },
-  { id: "mpesa", label: "M-Pesa", icon: "📱" },
-  { id: "mobilemoney", label: "Mobile Money", icon: "💰" },
-  { id: "ussd", label: "USSD", icon: "#️⃣" },
-  { id: "qr", label: "QR Code", icon: "📷" },
-];
-
 const payment = () => {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
@@ -58,6 +45,7 @@ const payment = () => {
     FlutterwaveInitV2Options,
     "redirect_url"
   > | null>(null);
+
   const [level, setLevel] = useState(null);
   const [levelOpen, setLevelOpen] = useState(false);
   const [levelItems, setLevelItems] = useState([
@@ -68,10 +56,13 @@ const payment = () => {
     { label: "500Level", value: "500" },
   ]);
 
-  // New state for payment method selection
-  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
-    string[]
-  >(["card", "account"]);
+  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
+  const [paymentMethodItems, setPaymentMethodItems] = useState([
+    { label: "Card Payment", value: "card" },
+    { label: "Bank Transfer", value: "account" },
+    { label: "USSD", value: "ussd" },
+  ]);
 
   useEffect(() => {
     const fetchPhoneImeiAndUserId = async () => {
@@ -113,48 +104,16 @@ const payment = () => {
     fetchPhoneImeiAndUserId();
   }, [getUserId]);
 
-  // Function to toggle payment method selection
-  const togglePaymentMethod = (methodId: string) => {
-    setSelectedPaymentMethods((prev) => {
-      if (prev.includes(methodId)) {
-        // Remove if already selected (but keep at least one method)
-        if (prev.length > 1) {
-          return prev.filter((id) => id !== methodId);
-        } else {
-          Toast.show({
-            type: "info",
-            text1: "Notice",
-            text2: "At least one payment method must be selected.",
-          });
-          return prev;
-        }
-      } else {
-        // Add if not selected
-        return [...prev, methodId];
-      }
-    });
-  };
-
   const handleProceed = () => {
-    if (!email || !userId || !level) {
+    if (!email || !userId || !level || !paymentMethod) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Please fill out email and ensure user ID is valid.",
+        text2: "Please fill out all required fields.",
       });
       return;
     }
 
-    if (selectedPaymentMethods.length === 0) {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please select at least one payment method.",
-      });
-      return;
-    }
-
-    // Email validation regex
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Toast.show({
@@ -165,15 +124,10 @@ const payment = () => {
       return;
     }
 
-    // Generate unique transaction reference
     const tx_ref = `txn_${Date.now()}_${Math.random()
       .toString(36)
       .substring(2, 15)}`;
 
-    // Build payment methods string from selected methods
-    const paymentMethodsString = selectedPaymentMethods.join(",");
-
-    // Flutterwave V2 payment configuration with selected payment methods
     const flutterwaveOptions: Omit<FlutterwaveInitV2Options, "redirect_url"> = {
       PBFPubKey: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
       txref: tx_ref,
@@ -186,13 +140,12 @@ const payment = () => {
       custom_title: "Premium Access Payment",
       custom_description: "Payment for premium features",
       custom_logo: "",
-      payment_method: paymentMethodsString, // Dynamic payment methods
+      payment_method: paymentMethod,
+      payment_options: paymentMethod,
     };
 
     console.log("Payment options configured:", flutterwaveOptions);
-    console.log("Selected payment methods:", paymentMethodsString);
 
-    // Set payment options and show payment component
     setPaymentOptions(flutterwaveOptions);
     setShowPayment(true);
 
@@ -202,7 +155,6 @@ const payment = () => {
   const handleOnRedirect = (data: any) => {
     console.log("Payment redirect data:", data);
 
-    // Handle payment success/failure
     if (data.status === "successful") {
       Toast.show({
         type: "success",
@@ -210,7 +162,6 @@ const payment = () => {
         text2: "Your premium access has been activated!",
       });
 
-      // Navigate to success screen or update user status
       router.push("/other/paymentSuccess");
     } else if (data.status === "cancelled") {
       Toast.show({
@@ -218,11 +169,6 @@ const payment = () => {
         text1: "Payment Cancelled",
         text2: "Payment was cancelled by user",
       });
-
-      // Explicitly reset payment state for cancellation
-      setShowPayment(false);
-      setPaymentOptions(null);
-      return; // Early return to avoid duplicate reset
     } else {
       Toast.show({
         type: "error",
@@ -231,19 +177,18 @@ const payment = () => {
       });
     }
 
-    // Reset payment state for other cases
     setShowPayment(false);
     setPaymentOptions(null);
   };
+
   return (
     <SafeAreaView style={styles.bodyContainer}>
-      <ScrollView style={{ paddingHorizontal: 20 }}>
+      <View style={{ paddingHorizontal: 20 }}>
         <Text style={styles.fourthText}>Make payment</Text>
         <Text style={styles.secondText}>
           Secure your access to premium features. Complete your payment below.
         </Text>
 
-        {/* Fixed PayWithFlutterwaveV2 implementation */}
         {showPayment && paymentOptions ? (
           <View style={{ flex: 1, marginTop: 20 }}>
             <PayWithFlutterwaveV2
@@ -289,6 +234,7 @@ const payment = () => {
                 dropDownContainerStyle={{
                   borderColor: "#D0D5DD",
                   backgroundColor: "#FFFFFF",
+                  zIndex: 5000,
                 }}
                 textStyle={{
                   color: "#000000",
@@ -298,46 +244,38 @@ const payment = () => {
                   color: "#98A2B3",
                   fontSize: 14,
                 }}
-                zIndex={1000}
-                zIndexInverse={3000}
+                zIndex={5000}
+                zIndexInverse={1000}
               />
             </View>
 
-            {/* Payment Methods Selection */}
             <View style={styles.pickerContainer}>
-              <Text style={styles.thirdText}>Payment Methods</Text>
-              <Text style={styles.helperText}>
-                Select your preferred payment options (
-                {selectedPaymentMethods.length} selected)
-              </Text>
-
-              <View style={styles.paymentMethodsContainer}>
-                {PAYMENT_METHODS.map((method) => (
-                  <TouchableOpacity
-                    key={method.id}
-                    style={[
-                      styles.paymentMethodItem,
-                      selectedPaymentMethods.includes(method.id) &&
-                        styles.selectedPaymentMethod,
-                    ]}
-                    onPress={() => togglePaymentMethod(method.id)}
-                  >
-                    <Text style={styles.paymentMethodIcon}>{method.icon}</Text>
-                    <Text
-                      style={[
-                        styles.paymentMethodText,
-                        selectedPaymentMethods.includes(method.id) &&
-                          styles.selectedPaymentMethodText,
-                      ]}
-                    >
-                      {method.label}
-                    </Text>
-                    {selectedPaymentMethods.includes(method.id) && (
-                      <Text style={styles.checkmark}>✓</Text>
-                    )}
-                  </TouchableOpacity>
-                ))}
-              </View>
+              <Text style={styles.thirdText}>Payment Method</Text>
+              <DropDownPicker
+                open={paymentMethodOpen}
+                value={paymentMethod}
+                items={paymentMethodItems}
+                setOpen={setPaymentMethodOpen}
+                setValue={setPaymentMethod}
+                setItems={setPaymentMethodItems}
+                placeholder="Select payment method"
+                style={[styles.secondInnerContainer, { height: 50 }]}
+                dropDownContainerStyle={{
+                  borderColor: "#D0D5DD",
+                  backgroundColor: "#FFFFFF",
+                  zIndex: 3000,
+                }}
+                textStyle={{
+                  color: "#000000",
+                  fontSize: 14,
+                }}
+                placeholderStyle={{
+                  color: "#98A2B3",
+                  fontSize: 14,
+                }}
+                zIndex={3000}
+                zIndexInverse={3000}
+              />
             </View>
 
             <TouchableOpacity
@@ -351,12 +289,11 @@ const payment = () => {
             </TouchableOpacity>
           </>
         )}
-      </ScrollView>
+      </View>
     </SafeAreaView>
   );
 };
 
-// Updated styles with new payment method selection styles
 const styles = StyleSheet.create({
   bodyContainer: {
     paddingTop: 70,
@@ -386,11 +323,6 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 5,
   },
-  helperText: {
-    fontSize: 12,
-    color: "#667085",
-    marginBottom: 10,
-  },
   pickerContainer: {
     marginTop: 20,
   },
@@ -402,7 +334,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF8C00",
     paddingVertical: 15,
     marginTop: 70,
-    marginBottom: 30,
   },
   buttonText: {
     fontSize: 14,
@@ -432,46 +363,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000000",
     fontWeight: "600",
-  },
-  // New styles for payment method selection
-  paymentMethodsContainer: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    gap: 10,
-  },
-  paymentMethodItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderWidth: 1,
-    borderColor: "#D0D5DD",
-    borderRadius: 8,
-    backgroundColor: "#FFFFFF",
-    minWidth: "45%",
-    marginBottom: 8,
-  },
-  selectedPaymentMethod: {
-    borderColor: "#FF8C00",
-    backgroundColor: "#FFF4E6",
-  },
-  paymentMethodIcon: {
-    fontSize: 16,
-    marginRight: 8,
-  },
-  paymentMethodText: {
-    fontSize: 13,
-    color: "#344054",
-    flex: 1,
-  },
-  selectedPaymentMethodText: {
-    color: "#FF8C00",
-    fontWeight: "500",
-  },
-  checkmark: {
-    color: "#FF8C00",
-    fontSize: 14,
-    fontWeight: "bold",
   },
 });
 

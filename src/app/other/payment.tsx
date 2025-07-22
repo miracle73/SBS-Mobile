@@ -5,6 +5,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   TextInput,
+  ScrollView,
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
@@ -35,6 +36,17 @@ interface FlutterwaveError {
   [key: string]: any;
 }
 
+// Payment methods configuration
+const PAYMENT_METHODS = [
+  { id: "card", label: "Credit/Debit Card", icon: "💳" },
+  { id: "account", label: "Bank Account", icon: "🏦" },
+  { id: "banktransfer", label: "Bank Transfer", icon: "💸" },
+  { id: "mpesa", label: "M-Pesa", icon: "📱" },
+  { id: "mobilemoney", label: "Mobile Money", icon: "💰" },
+  { id: "ussd", label: "USSD", icon: "#️⃣" },
+  { id: "qr", label: "QR Code", icon: "📷" },
+];
+
 const payment = () => {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
@@ -55,6 +67,11 @@ const payment = () => {
     { label: "400Level", value: "400" },
     { label: "500Level", value: "500" },
   ]);
+
+  // New state for payment method selection
+  const [selectedPaymentMethods, setSelectedPaymentMethods] = useState<
+    string[]
+  >(["card", "account"]);
 
   useEffect(() => {
     const fetchPhoneImeiAndUserId = async () => {
@@ -96,12 +113,43 @@ const payment = () => {
     fetchPhoneImeiAndUserId();
   }, [getUserId]);
 
+  // Function to toggle payment method selection
+  const togglePaymentMethod = (methodId: string) => {
+    setSelectedPaymentMethods((prev) => {
+      if (prev.includes(methodId)) {
+        // Remove if already selected (but keep at least one method)
+        if (prev.length > 1) {
+          return prev.filter((id) => id !== methodId);
+        } else {
+          Toast.show({
+            type: "info",
+            text1: "Notice",
+            text2: "At least one payment method must be selected.",
+          });
+          return prev;
+        }
+      } else {
+        // Add if not selected
+        return [...prev, methodId];
+      }
+    });
+  };
+
   const handleProceed = () => {
     if (!email || !userId || !level) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Please fill out email and  user ID is valid.",
+        text2: "Please fill out email and ensure user ID is valid.",
+      });
+      return;
+    }
+
+    if (selectedPaymentMethods.length === 0) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please select at least one payment method.",
       });
       return;
     }
@@ -122,7 +170,10 @@ const payment = () => {
       .toString(36)
       .substring(2, 15)}`;
 
-    // Fixed Flutterwave V2 payment configuration
+    // Build payment methods string from selected methods
+    const paymentMethodsString = selectedPaymentMethods.join(",");
+
+    // Flutterwave V2 payment configuration with selected payment methods
     const flutterwaveOptions: Omit<FlutterwaveInitV2Options, "redirect_url"> = {
       PBFPubKey: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
       txref: tx_ref,
@@ -135,10 +186,11 @@ const payment = () => {
       custom_title: "Premium Access Payment",
       custom_description: "Payment for premium features",
       custom_logo: "",
-      payment_method: "card,account,banktransfer,mpesa,mobilemoney,ussd",
+      payment_method: paymentMethodsString, // Dynamic payment methods
     };
 
     console.log("Payment options configured:", flutterwaveOptions);
+    console.log("Selected payment methods:", paymentMethodsString);
 
     // Set payment options and show payment component
     setPaymentOptions(flutterwaveOptions);
@@ -159,13 +211,18 @@ const payment = () => {
       });
 
       // Navigate to success screen or update user status
-      router.push("/payment-success");
+      router.push("/other/paymentSuccess");
     } else if (data.status === "cancelled") {
       Toast.show({
         type: "info",
         text1: "Payment Cancelled",
         text2: "Payment was cancelled by user",
       });
+
+      // Explicitly reset payment state for cancellation
+      setShowPayment(false);
+      setPaymentOptions(null);
+      return; // Early return to avoid duplicate reset
     } else {
       Toast.show({
         type: "error",
@@ -174,14 +231,13 @@ const payment = () => {
       });
     }
 
-    // Reset payment state
+    // Reset payment state for other cases
     setShowPayment(false);
     setPaymentOptions(null);
   };
-
   return (
     <SafeAreaView style={styles.bodyContainer}>
-      <View style={{ paddingHorizontal: 20 }}>
+      <ScrollView style={{ paddingHorizontal: 20 }}>
         <Text style={styles.fourthText}>Make payment</Text>
         <Text style={styles.secondText}>
           Secure your access to premium features. Complete your payment below.
@@ -247,6 +303,43 @@ const payment = () => {
               />
             </View>
 
+            {/* Payment Methods Selection */}
+            <View style={styles.pickerContainer}>
+              <Text style={styles.thirdText}>Payment Methods</Text>
+              <Text style={styles.helperText}>
+                Select your preferred payment options (
+                {selectedPaymentMethods.length} selected)
+              </Text>
+
+              <View style={styles.paymentMethodsContainer}>
+                {PAYMENT_METHODS.map((method) => (
+                  <TouchableOpacity
+                    key={method.id}
+                    style={[
+                      styles.paymentMethodItem,
+                      selectedPaymentMethods.includes(method.id) &&
+                        styles.selectedPaymentMethod,
+                    ]}
+                    onPress={() => togglePaymentMethod(method.id)}
+                  >
+                    <Text style={styles.paymentMethodIcon}>{method.icon}</Text>
+                    <Text
+                      style={[
+                        styles.paymentMethodText,
+                        selectedPaymentMethods.includes(method.id) &&
+                          styles.selectedPaymentMethodText,
+                      ]}
+                    >
+                      {method.label}
+                    </Text>
+                    {selectedPaymentMethods.includes(method.id) && (
+                      <Text style={styles.checkmark}>✓</Text>
+                    )}
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+
             <TouchableOpacity
               style={[styles.button, isUserIdLoading && { opacity: 0.6 }]}
               onPress={handleProceed}
@@ -258,12 +351,12 @@ const payment = () => {
             </TouchableOpacity>
           </>
         )}
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 };
 
-// Styles remain the same
+// Updated styles with new payment method selection styles
 const styles = StyleSheet.create({
   bodyContainer: {
     paddingTop: 70,
@@ -293,6 +386,11 @@ const styles = StyleSheet.create({
     fontWeight: "700",
     marginBottom: 5,
   },
+  helperText: {
+    fontSize: 12,
+    color: "#667085",
+    marginBottom: 10,
+  },
   pickerContainer: {
     marginTop: 20,
   },
@@ -304,6 +402,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FF8C00",
     paddingVertical: 15,
     marginTop: 70,
+    marginBottom: 30,
   },
   buttonText: {
     fontSize: 14,
@@ -333,6 +432,46 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#000000",
     fontWeight: "600",
+  },
+  // New styles for payment method selection
+  paymentMethodsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    gap: 10,
+  },
+  paymentMethodItem: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: "#D0D5DD",
+    borderRadius: 8,
+    backgroundColor: "#FFFFFF",
+    minWidth: "45%",
+    marginBottom: 8,
+  },
+  selectedPaymentMethod: {
+    borderColor: "#FF8C00",
+    backgroundColor: "#FFF4E6",
+  },
+  paymentMethodIcon: {
+    fontSize: 16,
+    marginRight: 8,
+  },
+  paymentMethodText: {
+    fontSize: 13,
+    color: "#344054",
+    flex: 1,
+  },
+  selectedPaymentMethodText: {
+    color: "#FF8C00",
+    fontWeight: "500",
+  },
+  checkmark: {
+    color: "#FF8C00",
+    fontSize: 14,
+    fontWeight: "bold",
   },
 });
 
@@ -368,4 +507,5 @@ const pickerSelectStyles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
 export default payment;

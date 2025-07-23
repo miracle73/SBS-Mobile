@@ -9,7 +9,10 @@ import {
 import React, { useState, useEffect } from "react";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
-import { useGetUserIdMutation } from "../../components/services/userService";
+import {
+  useGetUserIdMutation,
+  useGetPriceDetailsMutation,
+} from "../../components/services/userService";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { PayWithFlutterwaveV2 } from "flutterwave-react-native";
 import { FlutterwaveInitV2Options, Currency } from "../../../flutterwave-types";
@@ -37,7 +40,10 @@ interface FlutterwaveError {
 const payment = () => {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
+  const [price, setPrice] = useState<number | null>(null);
   const [getUserId, { isLoading: isUserIdLoading }] = useGetUserIdMutation();
+  const [priceDetails, { isLoading: isPriceDetailsLoading }] =
+    useGetPriceDetailsMutation();
   const router = useRouter();
   const [phoneImei, setPhoneImei] = useState("");
   const [showPayment, setShowPayment] = useState(false);
@@ -73,7 +79,8 @@ const payment = () => {
           const result = await getUserId({
             phone_imei: storedPhoneImei,
           }).unwrap();
-          console.log(result, 600);
+          const priceResult = await priceDetails({}).unwrap();
+
           if (result.status === "Info" && result.message.id) {
             setUserId(result.message.id);
           } else {
@@ -82,6 +89,11 @@ const payment = () => {
               text1: "Error",
               text2: "Failed to fetch user ID. Please try again.",
             });
+          }
+          if (priceResult.amount) {
+            setPrice(priceResult.amount);
+          } else {
+            console.error("Price details not found in response");
           }
         } else {
           Toast.show({
@@ -130,7 +142,7 @@ const payment = () => {
     const flutterwaveOptions: Omit<FlutterwaveInitV2Options, "redirect_url"> = {
       PBFPubKey: "FLWPUBK-5a5a622b1098918c3db6fa5ecbc7fdba-X",
       txref: tx_ref,
-      amount: 3000,
+      amount: price || 3000,
       currency: "NGN" as Currency,
       customer_email: email,
       customer_firstname: "Premium",
@@ -210,7 +222,7 @@ const payment = () => {
             <View style={styles.pickerContainer}>
               <Text style={styles.thirdText}>Amount (NGN)</Text>
               <View style={styles.secondInnerContainer}>
-                <Text style={styles.amountText}>₦3,000</Text>
+                <Text style={styles.amountText}>{price || `3,000`}</Text>
               </View>
             </View>
 

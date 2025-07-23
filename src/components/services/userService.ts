@@ -148,6 +148,11 @@ interface GetUserID {
   };
 }
 
+interface PriceDetails {
+  id: number;
+  amount: number;
+}
+
 type GetTodayNotificationsResponse =
   | TodayNotificationItem[]
   | TodayNotificationResponse;
@@ -248,6 +253,12 @@ export const userApi = createApi({
         method: "POST",
       }),
     }),
+    getPriceDetails: builder.mutation<PriceDetails, {}>({
+      query: ({}) => ({
+        url: `user/pin-price`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
@@ -265,4 +276,5 @@ export const {
   useGetTopicsByLevelMutation,
   useGetTodayNotificationsMutation,
   useGetUserIdMutation,
+  useGetPriceDetailsMutation,
 } = userApi;

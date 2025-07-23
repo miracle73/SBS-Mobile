@@ -56,12 +56,11 @@ const payment = () => {
     { label: "500Level", value: "500" },
   ]);
 
-  const [paymentMethod, setPaymentMethod] = useState("card");
-  const [paymentMethodOpen, setPaymentMethodOpen] = useState(false);
-  const [paymentMethodItems, setPaymentMethodItems] = useState([
-    { label: "Card Payment", value: "card" },
-    { label: "Bank Transfer", value: "account" },
-    { label: "USSD", value: "ussd" },
+  const [semester, setSemester] = useState("first");
+  const [semesterOpen, setSemesterOpen] = useState(false);
+  const [semesterItems, setSemesterItems] = useState([
+    { label: "First Semester", value: "first" },
+    { label: "Second Semester", value: "second" },
   ]);
 
   useEffect(() => {
@@ -105,7 +104,7 @@ const payment = () => {
   }, [getUserId]);
 
   const handleProceed = () => {
-    if (!email || !userId || !level || !paymentMethod) {
+    if (!email || !userId || !level || !semester) {
       Toast.show({
         type: "error",
         text1: "Error",
@@ -140,8 +139,18 @@ const payment = () => {
       custom_title: "Premium Access Payment",
       custom_description: "Payment for premium features",
       custom_logo: "",
-      payment_method: paymentMethod,
-      payment_options: paymentMethod,
+      payment_method: "card,account,banktransfer,mpesa,mobilemoney,ussd",
+      payment_options: "card",
+      meta: [
+        {
+          metaname: "level",
+          metavalue: level,
+        },
+        {
+          metaname: "semester",
+          metavalue: semester,
+        },
+      ],
     };
 
     console.log("Payment options configured:", flutterwaveOptions);
@@ -250,14 +259,14 @@ const payment = () => {
             </View>
 
             <View style={styles.pickerContainer}>
-              <Text style={styles.thirdText}>Payment Method</Text>
+              <Text style={styles.thirdText}>Semester</Text>
               <DropDownPicker
-                open={paymentMethodOpen}
-                value={paymentMethod}
-                items={paymentMethodItems}
-                setOpen={setPaymentMethodOpen}
-                setValue={setPaymentMethod}
-                setItems={setPaymentMethodItems}
+                open={semesterOpen}
+                value={semester}
+                items={semesterItems}
+                setOpen={setSemesterOpen}
+                setValue={setSemester}
+                setItems={setSemesterItems}
                 placeholder="Select payment method"
                 style={[styles.secondInnerContainer, { height: 50 }]}
                 dropDownContainerStyle={{

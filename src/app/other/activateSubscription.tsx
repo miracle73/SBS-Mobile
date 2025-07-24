@@ -16,7 +16,7 @@ import SuccessModal from "../../components/modals/SuccessModal";
 import ErrorModal from "../../components/modals/ErrorModal";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const activateSubscription = () => {
+const ActivateSubscription = () => {
   const [pin, setPin] = useState("");
   const [modal, setModal] = useState(false);
   const [secondModal, setSecondModal] = useState(false);
@@ -220,4 +220,4 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-export default activateSubscription;
+export default ActivateSubscription;

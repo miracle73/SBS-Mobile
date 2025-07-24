@@ -13,7 +13,7 @@ import Markdown from "react-native-markdown-display";
 import { WebView } from "react-native-webview";
 import MarkdownLatexViewer from "../../components/MDLatexComponent";
 
-const pastQuestion = () => {
+const PastQuestion = () => {
   const router = useRouter();
   const { content } = useLocalSearchParams();
   const searchResults = typeof content === "string" ? JSON.parse(content) : [];
@@ -189,4 +189,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default pastQuestion;
+export default PastQuestion;

@@ -4,7 +4,7 @@ import TopicComponent from "../../components/TopicComponent";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
-const topics = () => {
+const Topics = () => {
   const { topics, level } = useLocalSearchParams();
   const searchResults = typeof topics === "string" ? JSON.parse(topics) : [];
   let levelString = typeof level === "string" ? JSON.parse(level) : "";
@@ -84,4 +84,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default topics;
+export default Topics;

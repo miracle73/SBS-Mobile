@@ -23,7 +23,7 @@ import {
   useGetSchoolLevelsCoursesQuery,
 } from "../../components/services/userService";
 
-const school = () => {
+const School = () => {
   const [school, setSchool] = useState("");
   let uuid = "";
   useEffect(() => {
@@ -249,4 +249,4 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-export default school;
+export default School;

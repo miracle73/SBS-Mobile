@@ -4,7 +4,7 @@ import PastQuestionTopicComponent from "../../components/PastQuestionTopicCompon
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 
-const pastQuestionTopic = () => {
+const PastQuestionTopic = () => {
   const { topics, year, level } = useLocalSearchParams() || {};
   const searchResults = typeof topics === "string" ? JSON.parse(topics) : [];
   const yearString = year ? year.toString() : "";
@@ -86,4 +86,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default pastQuestionTopic;
+export default PastQuestionTopic;

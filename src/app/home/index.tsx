@@ -26,8 +26,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useGetUserContentsQuery } from "../../components/services/userService";
 import { setUserContents } from "../../components/redux/slices/userContentSlice";
 import { useAppDispatch } from "../../components/redux/store";
-import * as Device from "expo-device";
-import Pdf from "react-native-pdf";
 import PdfComponent from "../../components/PdfComponent";
 import { usePreventScreenCapture } from "expo-screen-capture";
 

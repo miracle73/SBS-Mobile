@@ -19,7 +19,7 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 
-const edu = () => {
+const Edu = () => {
   const [loading, setLoading] = useState(false);
   const [school, setSchool] = useState("");
   const [course, setCourse] = useState("");
@@ -409,4 +409,4 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-export default edu;
+export default Edu;

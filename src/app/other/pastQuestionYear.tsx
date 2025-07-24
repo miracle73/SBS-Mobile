@@ -5,7 +5,7 @@ import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import PastQuestionYearComponent from "../../components/PastQuestionYearComponent";
 
-const pastQuestionYear = () => {
+const PastQuestionYear = () => {
   const { content } = useLocalSearchParams();
   const searchResults = typeof content === "string" ? JSON.parse(content) : [];
 
@@ -83,4 +83,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default pastQuestionYear;
+export default PastQuestionYear;

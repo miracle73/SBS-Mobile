@@ -37,7 +37,7 @@ interface FlutterwaveError {
   [key: string]: any;
 }
 
-const payment = () => {
+const Payment = () => {
   const [email, setEmail] = useState("");
   const [userId, setUserId] = useState<number | null>(null);
   const [price, setPrice] = useState<number | null>(null);
@@ -222,7 +222,7 @@ const payment = () => {
             <View style={styles.pickerContainer}>
               <Text style={styles.thirdText}>Amount (NGN)</Text>
               <View style={styles.secondInnerContainer}>
-                <Text style={styles.amountText}>{price || `3,000`}</Text>
+                <Text style={styles.amountText}>{price || ``}</Text>
               </View>
             </View>
 
@@ -420,4 +420,4 @@ const pickerSelectStyles = StyleSheet.create({
   },
 });
 
-export default payment;
+export default Payment;

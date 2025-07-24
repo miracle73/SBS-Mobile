@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 
-const videoscreen = () => {
+const Videoscreen = () => {
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -185,4 +185,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default videoscreen;
+export default Videoscreen;

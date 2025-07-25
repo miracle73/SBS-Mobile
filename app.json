@@ -21,6 +21,7 @@
         "foregroundImage": "./assets/sbsicon.png",
         "backgroundColor": "#FFFFFF"
       },
+      "versionCode": 2,
       "package": "com.mirack.SBSMobile"
     },
     "web": {

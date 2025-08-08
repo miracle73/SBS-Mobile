@@ -13,6 +13,8 @@ import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
 import PdfComponent from "./PdfComponent";
+import { useIsFocused } from "@react-navigation/native";
+import * as ScreenCapture from "expo-screen-capture";
 
 interface TopicComponentProps {
   title: string;
@@ -56,6 +58,19 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     useGetTopicContentMutation();
   const [selectedTopic, setSelectedTopic] = React.useState<any>(null);
   const [userActivatedStatus] = useUserActivatedStatusMutation();
+  const isFocused = useIsFocused();
+
+  const activate = async () => {
+    await ScreenCapture.preventScreenCaptureAsync();
+  };
+
+  const deactivate = async () => {
+    await ScreenCapture.allowScreenCaptureAsync();
+  };
+
+  if (isFocused) {
+    activate();
+  }
   interface ActivationMessage {
     semester: string;
     level: number;

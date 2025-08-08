@@ -12,10 +12,21 @@ import * as SplashScreen from "expo-splash-screen";
 import NotificationBadge from "../components/NotificationBadge";
 import { useRouter } from "expo-router";
 import { useNotifications } from "../hooks/useNotifications";
+import ScreenProtection from "../components/ScreenProtection";
+import { useScreenRecordingPrevention } from "../hooks/useScreenRecordingPrevention";
 
 SystemUI.setBackgroundColorAsync("transparent");
 
 const RootLayout = () => {
+  useScreenRecordingPrevention({
+    showAlert: true,
+    redirectOnViolation: false,
+    customMessage:
+      "Screen recording is not allowed in this app for security purposes.",
+    onScreenRecordingDetected: () => {
+      console.log("Screen recording detected at app level!");
+    },
+  });
   const NotificationHandler = () => {
     const router = useRouter();
     // Now this hook is inside the Provider, so it will work

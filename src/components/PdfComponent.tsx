@@ -8,10 +8,13 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Pdf from "react-native-pdf";
 import YoutubePlayer from "react-native-youtube-iframe";
-// import Toast from "react-native-toast-message";
+import { useScreenRecordingPrevention } from "../hooks/useScreenRecordingPrevention";
+import ScreenProtection from "./ScreenProtection";
+import { useIsFocused } from "@react-navigation/native";
+import * as ScreenCapture from "expo-screen-capture";
 
 interface PDF {
   uri: string;
@@ -33,14 +36,101 @@ const PdfComponent = ({
   const [secondModal, setSecondModal] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isProtected, setIsProtected] = useState(false);
+  const isFocused = useIsFocused();
+
+  const activate = async () => {
+    await ScreenCapture.preventScreenCaptureAsync();
+  };
+
+  const deactivate = async () => {
+    await ScreenCapture.allowScreenCaptureAsync();
+  };
+
+  if (isFocused) {
+    activate();
+  }
+  // Enhanced screen recording prevention for PDF/Video content
+  const { manuallyCheckRecording, enablePrevention, isProtectionEnabled } =
+    useScreenRecordingPrevention({
+      showAlert: false, // We'll handle this manually
+      redirectOnViolation: false, // We'll close the modal instead
+      customMessage:
+        "Access to lecture notes is restricted while screen recording is active.",
+      onScreenRecordingDetected: () => {
+        console.log(
+          "Unauthorized screen recording attempt detected in PDF/Video section"
+        );
+        handleSecurityViolation();
+      },
+    });
+
+  // Handle security violation by closing the modal
+  const handleSecurityViolation = () => {
+    Alert.alert(
+      "Security Alert",
+      "Screen recording detected. Access to this content is restricted for security reasons.",
+      [
+        {
+          text: "OK",
+          onPress: () => {
+            setModal(false); // Close the modal
+          },
+        },
+      ],
+      { cancelable: false }
+    );
+  };
+
+  // Check for screen recording when modal opens
+  useEffect(() => {
+    if (modal) {
+      const checkAndEnableProtection = async () => {
+        try {
+          // Enable protection when modal opens
+          await enablePrevention();
+
+          // Check if recording is active
+          const isRecording = await manuallyCheckRecording();
+          if (isRecording) {
+            handleSecurityViolation();
+            return;
+          }
+
+          setIsProtected(true);
+        } catch (error) {
+          console.error("Failed to enable protection for PDF/Video:", error);
+          // If we can't enable protection, assume recording and close modal
+          handleSecurityViolation();
+        }
+      };
+
+      checkAndEnableProtection();
+
+      // Continuous monitoring while modal is open
+      const intervalId = setInterval(async () => {
+        try {
+          const isRecording = await manuallyCheckRecording();
+          if (isRecording) {
+            clearInterval(intervalId);
+            handleSecurityViolation();
+          }
+        } catch (error) {
+          console.error("Error during continuous monitoring:", error);
+        }
+      }, 3000); // Check every 3 seconds
+
+      return () => {
+        clearInterval(intervalId);
+        setIsProtected(false);
+      };
+    }
+  }, [modal]);
 
   // Extract video ID from YouTube URL
-  const videoIdd = "dQw4w9WgXcQ"; // Rick Astley - Never Gonna Give You Up
-
   const extractVideoId = (url: string) => {
     if (!url) return null;
 
-    // Handle different YouTube URL formats
     const patterns = [
       /[?&]v=([^&]+)/, // Standard: ?v=VIDEO_ID or &v=VIDEO_ID
       /\/embed\/([^?&]+)/, // Embed: /embed/VIDEO_ID
@@ -59,18 +149,11 @@ const PdfComponent = ({
   };
 
   const videoId = extractVideoId(video) ?? undefined;
-
   const [showVideo, setShowVideo] = useState(!!videoId);
 
   const onStateChange = useCallback((state: string) => {
     if (state === "ended") {
       setPlaying(false);
-      // Toast.show({
-      //   type: "success",
-      //   text1: "Success",
-      //   text2: "Video Ended, The video has finished playing!",
-      // });
-      // Alert.alert("Video Ended", "The video has finished playing!");
     }
   }, []);
 
@@ -80,12 +163,7 @@ const PdfComponent = ({
 
   const onError = useCallback((error: string) => {
     setLoading(false);
-    // Toast.show({
-    //   type: "error",
-    //   text1: "Error",
-    //   text2: `Failed to load video: ${error}`,
-    // });
-    // Alert.alert("Error", `Failed to load video: ${error}`);
+    console.error("Video error:", error);
   }, []);
 
   const handleCloseVideo = () => {
@@ -93,101 +171,224 @@ const PdfComponent = ({
     setPlaying(false);
   };
 
+  const handleCloseModal = () => {
+    setPlaying(false);
+    setModal(false);
+  };
+
+  // Don't render content until protection is enabled
+  if (modal && !isProtected) {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modal}
+        onRequestClose={handleCloseModal}
+      >
+        <SafeAreaView style={styles.loadingModalContainer}>
+          <View style={styles.loadingContent}>
+            <ActivityIndicator size="large" color="#007AFF" />
+            <Text style={styles.loadingModalText}>Securing content...</Text>
+          </View>
+        </SafeAreaView>
+      </Modal>
+    );
+  }
+
   return (
     <Modal
       animationType="slide"
       transparent={true}
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
       visible={modal}
-      onRequestClose={() => {
-        setModal(!modal);
-      }}
+      onRequestClose={handleCloseModal}
     >
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-        {/* Video Section */}
-        {showVideo && (
-          <View style={styles.videoSection}>
-            <View style={styles.videoHeader}>
-              <View style={styles.videoHeaderLeft}>
-                {/* <Text style={styles.videoTitle}>YouTube Video Player</Text> */}
-                <Text style={styles.videoSubtitle}>Watch before reading</Text>
+      <ScreenProtection
+        strictMode={true}
+        showWarningOverlay={true}
+        customWarningComponent={
+          <View style={styles.customWarning}>
+            <Text style={styles.warningTitle}>Protected Content</Text>
+            <Text style={styles.warningMessage}>
+              This content is protected and cannot be accessed while screen
+              recording is active.
+            </Text>
+            <TouchableOpacity
+              style={styles.warningButton}
+              onPress={handleCloseModal}
+            >
+              <Text style={styles.warningButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        }
+      >
+        <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+          {/* Close button at the top */}
+          <View style={styles.modalHeader}>
+            <TouchableOpacity
+              onPress={handleCloseModal}
+              style={styles.modalCloseButton}
+            >
+              <Text style={styles.modalCloseText}>✕ Close</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Video Section */}
+          {showVideo && (
+            <View style={styles.videoSection}>
+              <View style={styles.videoHeader}>
+                <View style={styles.videoHeaderLeft}>
+                  <Text style={styles.videoSubtitle}>Watch before reading</Text>
+                </View>
+                <TouchableOpacity
+                  onPress={handleCloseVideo}
+                  style={styles.closeButton}
+                >
+                  <Text style={styles.closeButtonText}>✕</Text>
+                </TouchableOpacity>
               </View>
+
+              <View style={styles.videoContainer}>
+                {loading && (
+                  <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#FF0000" />
+                    <Text style={styles.loadingText}>Loading video...</Text>
+                  </View>
+                )}
+
+                <YoutubePlayer
+                  height={200}
+                  play={playing}
+                  videoId={videoId}
+                  onChangeState={onStateChange}
+                  onReady={onReady}
+                  onError={onError}
+                  webViewStyle={styles.webView}
+                  webViewProps={{
+                    injectedJavaScript: `
+                      var element = document.getElementsByClassName('container')[0];
+                      if (element) {
+                        element.style.position = 'unset';
+                        element.style.paddingBottom = 'unset';
+                      }
+                      true;
+                    `,
+                  }}
+                />
+              </View>
+            </View>
+          )}
+
+          {/* PDF Section */}
+          <View style={[styles.pdfContainer, { flex: showVideo ? 1 : 1 }]}>
+            <Pdf
+              trustAllCerts={false}
+              source={pdfUrl}
+              onLoadComplete={(numberOfPages, filePath) => {
+                console.log(`PDF loaded: ${numberOfPages} pages`);
+              }}
+              onPageChanged={(page, numberOfPages) => {
+                console.log(`Current page: ${page} of ${numberOfPages}`);
+              }}
+              onError={(error) => {
+                console.log("PDF error:", error);
+                setSecondModal(true);
+              }}
+              onPressLink={(uri) => {
+                console.log(`Link pressed: ${uri}`);
+              }}
+              style={{ flex: 1, alignSelf: "stretch" }}
+            />
+          </View>
+
+          {/* Error overlay for PDF */}
+          {secondModal && (
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>
+                File not in PDF format or corrupted
+              </Text>
               <TouchableOpacity
-                onPress={handleCloseVideo}
-                style={styles.closeButton}
+                style={styles.errorButton}
+                onPress={() => setSecondModal(false)}
               >
-                <Text style={styles.closeButtonText}>✕</Text>
+                <Text style={styles.errorButtonText}>Close</Text>
               </TouchableOpacity>
             </View>
-
-            <View style={styles.videoContainer}>
-              {loading && (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#FF0000" />
-                  <Text style={styles.loadingText}>Loading video...</Text>
-                </View>
-              )}
-
-              <YoutubePlayer
-                height={200}
-                play={playing}
-                videoId={videoId}
-                onChangeState={onStateChange}
-                onReady={onReady}
-                onError={onError}
-                webViewStyle={styles.webView}
-                webViewProps={{
-                  injectedJavaScript: `
-                    var element = document.getElementsByClassName('container')[0];
-                    element.style.position = 'unset';
-                    element.style.paddingBottom = 'unset';
-                    true;
-                  `,
-                }}
-              />
-            </View>
-          </View>
-        )}
-
-        {/* PDF Section */}
-        <View style={[styles.pdfContainer, { flex: showVideo ? 1 : 1 }]}>
-          <Pdf
-            trustAllCerts={false}
-            source={pdfUrl}
-            onLoadComplete={(numberOfPages, filePath) => {
-              console.log(`number of pages: ${numberOfPages}`);
-            }}
-            onPageChanged={(page, numberOfPages) => {
-              console.log(`current page: ${numberOfPages}`);
-            }}
-            onError={(error) => {
-              console.log(error);
-              setSecondModal(true);
-            }}
-            onPressLink={(uri) => {
-              console.log(`Link pressed: ${uri}`);
-            }}
-            style={{ flex: 1, alignSelf: "stretch" }}
-          />
-        </View>
-
-        {secondModal && (
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>File not in PDF format or corrupted</Text>
-          </View>
-        )}
-      </SafeAreaView>
+          )}
+        </SafeAreaView>
+      </ScreenProtection>
     </Modal>
   );
 };
 
 const styles = StyleSheet.create({
+  loadingModalContainer: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  loadingContent: {
+    backgroundColor: "#FFFFFF",
+    padding: 30,
+    borderRadius: 15,
+    alignItems: "center",
+  },
+  loadingModalText: {
+    marginTop: 15,
+    fontSize: 16,
+    color: "#333",
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    padding: 15,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  modalCloseButton: {
+    backgroundColor: "#FF6B6B",
+    paddingHorizontal: 15,
+    paddingVertical: 8,
+    borderRadius: 20,
+  },
+  modalCloseText: {
+    color: "#FFFFFF",
+    fontWeight: "600",
+    fontSize: 14,
+  },
+  customWarning: {
+    backgroundColor: "#FFFFFF",
+    padding: 30,
+    borderRadius: 20,
+    alignItems: "center",
+    maxWidth: 350,
+  },
+  warningTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#FF6B6B",
+    marginBottom: 15,
+    textAlign: "center",
+  },
+  warningMessage: {
+    fontSize: 16,
+    color: "#333",
+    textAlign: "center",
+    lineHeight: 24,
+    marginBottom: 25,
+  },
+  warningButton: {
+    backgroundColor: "#FF6B6B",
+    paddingVertical: 12,
+    paddingHorizontal: 30,
+    borderRadius: 10,
+  },
+  warningButtonText: {
+    color: "#FFFFFF",
+    fontSize: 16,
+    fontWeight: "600",
+  },
   videoSection: {
-    // backgroundColor: "#fff",
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
   },
@@ -200,11 +401,6 @@ const styles = StyleSheet.create({
   },
   videoHeaderLeft: {
     flex: 1,
-  },
-  videoTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
   },
   videoSubtitle: {
     fontSize: 17,
@@ -259,42 +455,6 @@ const styles = StyleSheet.create({
   webView: {
     borderRadius: 12,
   },
-  infoContainer: {
-    padding: 15,
-    paddingTop: 10,
-  },
-  videoTitleText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 6,
-  },
-  videoDescription: {
-    fontSize: 12,
-    color: "#666",
-    lineHeight: 16,
-    marginBottom: 12,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    padding: 12,
-  },
-  statItem: {
-    alignItems: "center",
-  },
-  statNumber: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#FF0000",
-  },
-  statLabel: {
-    fontSize: 10,
-    color: "#666",
-    marginTop: 2,
-  },
   pdfContainer: {
     flex: 1,
   },
@@ -302,12 +462,25 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(255, 255, 255, 0.8)",
+    backgroundColor: "rgba(255, 255, 255, 0.9)",
   },
   text: {
     color: "#000",
     fontSize: 16,
     fontWeight: "bold",
+    marginBottom: 20,
+    textAlign: "center",
+  },
+  errorButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 8,
+  },
+  errorButtonText: {
+    color: "#FFFFFF",
+    fontSize: 14,
+    fontWeight: "600",
   },
 });
 

@@ -15,6 +15,7 @@ import { useScreenRecordingPrevention } from "../hooks/useScreenRecordingPrevent
 import ScreenProtection from "./ScreenProtection";
 import { useIsFocused } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
+import ScreenshotPrevent from "react-native-screenshot-prevent";
 
 interface PDF {
   uri: string;
@@ -50,7 +51,10 @@ const PdfComponent = ({
   if (isFocused) {
     activate();
   }
-  // Enhanced screen recording prevention for PDF/Video content
+  useEffect(() => {
+    ScreenshotPrevent.enableSecureView();
+  }, []);
+
   const { manuallyCheckRecording, enablePrevention, isProtectionEnabled } =
     useScreenRecordingPrevention({
       showAlert: false, // We'll handle this manually

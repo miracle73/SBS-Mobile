@@ -1,8 +1,9 @@
 import { View, Text, SafeAreaView, StyleSheet, ScrollView } from "react-native";
-import React from "react";
+import React, { useEffect } from "react";
 import TopicComponent from "../../components/TopicComponent";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
+import ScreenshotPrevent from "react-native-screenshot-prevent";
 
 const Topics = () => {
   const { topics, level } = useLocalSearchParams();
@@ -12,6 +13,10 @@ const Topics = () => {
   // if ([1, 2, 3, 4, 5].includes(levelNumber)) {
   //     levelString = (levelNumber * 100).toString();
   // }
+
+  useEffect(() => {
+    ScreenshotPrevent.enableSecureView();
+  }, []);
 
   const topicResults = searchResults.map((topic: any) => ({
     id: topic.id,

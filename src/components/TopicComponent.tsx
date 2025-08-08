@@ -15,6 +15,7 @@ import NetInfo from "@react-native-community/netinfo";
 import PdfComponent from "./PdfComponent";
 import { useIsFocused } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
+import ScreenshotPrevent from "react-native-screenshot-prevent";
 
 interface TopicComponentProps {
   title: string;
@@ -71,6 +72,9 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   if (isFocused) {
     activate();
   }
+  useEffect(() => {
+    ScreenshotPrevent.enableSecureView();
+  }, []);
   interface ActivationMessage {
     semester: string;
     level: number;

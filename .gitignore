@@ -4,6 +4,7 @@
 node_modules/
 pdfcomponent.tsx
 new_eas.json
+useScreenRecordingPrevention.ts
 
 # Expo
 .expo/

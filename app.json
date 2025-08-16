@@ -24,7 +24,8 @@
       "versionCode": 2,
       "package": "com.mirack.SBSMobile",
       "targetSdkVersion": 35,
-      "compileSdkVersion": 35
+      "compileSdkVersion": 35,
+      "permissions": ["READ_MEDIA_IMAGES"]
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -58,7 +59,12 @@
           "color": "#ffffff"
         }
       ],
-      "react-native-capture-protection"
+      [
+        "react-native-capture-protection",
+        {
+          "captureType": "restrictedCapture"
+        }
+      ]
     ],
     "extra": {
       "router": {

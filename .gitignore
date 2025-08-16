@@ -3,6 +3,7 @@
 # dependencies
 node_modules/
 pdfcomponent.tsx
+pdfcomponent2.tsx
 new_eas.json
 useScreenRecordingPrevention.ts
 

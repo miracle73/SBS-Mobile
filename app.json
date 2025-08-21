@@ -24,8 +24,7 @@
       "versionCode": 3,
       "package": "com.mirack.SBSMobile",
       "targetSdkVersion": 35,
-      "compileSdkVersion": 35,
-      "permissions": ["READ_MEDIA_IMAGES"]
+      "compileSdkVersion": 35
     },
     "web": {
       "favicon": "./assets/favicon.png"

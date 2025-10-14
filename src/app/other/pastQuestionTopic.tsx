@@ -30,7 +30,8 @@ const PastQuestionTopic = () => {
           <Text style={styles.firstText}>
             {" "}
             View the {topicResults.length > 1 && topicResults.length}{" "}
-            pastQuestion {topicResults.length == 1 ? "topic" : "topics"} here
+            pastQuestion {topicResults.length == 1 ? "material" : "materials"}{" "}
+            here
           </Text>
         )}
 

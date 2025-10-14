@@ -34,7 +34,11 @@ const Topics = () => {
         ) : (
           <Text style={styles.firstText}>
             {" "}
-            View all the {topicResults.length == 1 ? "topic" : "topics"} here
+            View all the{" "}
+            {topicResults.length == 1
+              ? "study material"
+              : "study materials"}{" "}
+            here
           </Text>
         )}
 

@@ -205,9 +205,9 @@ const Payment = () => {
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Text style={styles.fourthText}>Make payment</Text>
+        <Text style={styles.fourthText}>Purchase Study Materials</Text>
         <Text style={styles.secondText}>
-          Secure your access to premium features. Complete your payment below.
+          Order your study materials and resources below.
         </Text>
 
         {showPayment && paymentOptions ? (
@@ -305,7 +305,7 @@ const Payment = () => {
               disabled={isUserIdLoading}
             >
               <Text style={styles.buttonText}>
-                {isUserIdLoading ? "Loading..." : "Pay with Flutterwave"}
+                {isUserIdLoading ? "Loading..." : "Complete Purchase"}
               </Text>
             </TouchableOpacity>
           </>

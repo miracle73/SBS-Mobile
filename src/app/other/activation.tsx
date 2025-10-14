@@ -44,13 +44,13 @@ const Activation = () => {
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Text style={styles.fourthText}>Activation method</Text>
+        <Text style={styles.fourthText}>Purchase Method</Text>
         <Text style={styles.secondText}>
-          Select the method you want to use to activate your student account
+          Select how you want to purchase your study materials
         </Text>
 
         <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Activation method</Text>
+          <Text style={styles.thirdText}>Purchase Method</Text>
           <DropDownPicker
             open={open}
             value={method}

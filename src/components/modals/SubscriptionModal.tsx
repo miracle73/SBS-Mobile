@@ -39,8 +39,7 @@ const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
             <Image source={ModalIcon} />
             <Text style={styles.firstText}>Oops!</Text>
             <Text style={styles.secondText}>
-              Purchase your study materials to access physical exam resources
-              and printed notes!
+              Purchase your study materials and resources
             </Text>
 
             <TouchableOpacity

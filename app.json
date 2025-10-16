@@ -1,6 +1,9 @@
 {
   "expo": {
     "name": "SBSMobile",
+    "cli": {
+      "appVersionSource": "local"
+    },
     "slug": "SBSMobile",
     "scheme": "sbsmobile",
     "version": "3.0.3",

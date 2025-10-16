@@ -6,20 +6,14 @@
   "build": {
     "development": {
       "distribution": "internal",
-      "android": {
-        "buildType": "app-bundle"
-      }
+      "developmentClient": true
     },
     "preview": {
       "distribution": "internal"
     },
-    "production": {
-      "distribution": "store",
-      "android": {
-        "buildType": "app-bundle"
-      }
-    }
+    "production": {}
   },
+
   "submit": {
     "production": {}
   }

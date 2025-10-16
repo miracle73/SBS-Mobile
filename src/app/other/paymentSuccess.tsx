@@ -24,9 +24,9 @@ const PaymentSuccess = () => {
         </View>
 
         {/* Success Message */}
-        <Text style={styles.successTitle}>Payment Successful!</Text>
+        <Text style={styles.successTitle}>Order Confirmed</Text>
         <Text style={styles.successSubtitle}>
-          Your premium access has been activated
+          You can now access premium study materials.
         </Text>
 
         {/* Home Button */}

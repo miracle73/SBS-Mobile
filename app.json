@@ -3,7 +3,7 @@
     "name": "SBSMobile",
     "slug": "SBSMobile",
     "scheme": "sbsmobile",
-    "version": "3.0.1",
+    "version": "3.0.2",
     "orientation": "portrait",
     "icon": "./assets/sbsicon.png",
     "userInterfaceStyle": "light",
@@ -21,10 +21,11 @@
         "foregroundImage": "./assets/sbsicon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "versionCode": 4,
+      "versionCode": 5,
       "package": "com.mirack.SBSMobile",
       "targetSdkVersion": 35,
-      "compileSdkVersion": 35
+      "compileSdkVersion": 35,
+      "minSdkVersion": 24
     },
     "web": {
       "favicon": "./assets/favicon.png"

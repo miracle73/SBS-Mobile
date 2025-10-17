@@ -32,6 +32,7 @@
     "expo-status-bar": "~2.0.1",
     "expo-system-ui": "~4.0.9",
     "expo-updates": "~0.27.4",
+    "expo-web-browser": "~14.0.2",
     "fbjs": "^3.0.5",
     "fix": "^0.0.6",
     "flutterwave-react-native": "^1.0.4",

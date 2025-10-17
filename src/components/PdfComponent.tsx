@@ -8,10 +8,13 @@ import {
   ActivityIndicator,
   Alert,
 } from "react-native";
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import Pdf from "react-native-pdf";
 import YoutubePlayer from "react-native-youtube-iframe";
+import * as ScreenCapture from "expo-screen-capture";
+import ScreenshotPrevent from "react-native-screenshot-prevent";
 // import Toast from "react-native-toast-message";
+import { useFocusEffect } from "@react-navigation/native";
 
 interface PDF {
   uri: string;
@@ -36,16 +39,18 @@ const PdfComponent = ({
 
   // Extract video ID from YouTube URL
   const videoIdd = "dQw4w9WgXcQ"; // Rick Astley - Never Gonna Give You Up
-
+  useEffect(() => {
+    ScreenshotPrevent.enableSecureView();
+  }, []);
   const extractVideoId = (url: string) => {
     if (!url) return null;
 
     // Handle different YouTube URL formats
     const patterns = [
-      /[?&]v=([^&]+)/, // Standard: ?v=VIDEO_ID or &v=VIDEO_ID
-      /\/embed\/([^?&]+)/, // Embed: /embed/VIDEO_ID
-      /\/watch\?v=([^&]+)/, // Watch: /watch?v=VIDEO_ID
-      /youtu\.be\/([^?&]+)/, // Short: youtu.be/VIDEO_ID
+      /[?&]v=([^&]+)/,
+      /\/embed\/([^?&]+)/,
+      /\/watch\?v=([^&]+)/,
+      /youtu\.be\/([^?&]+)/,
     ];
 
     for (const pattern of patterns) {
@@ -92,6 +97,15 @@ const PdfComponent = ({
     setShowVideo(false);
     setPlaying(false);
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      ScreenCapture.preventScreenCaptureAsync();
+      return () => {
+        ScreenCapture.allowScreenCaptureAsync();
+      };
+    }, [])
+  );
 
   return (
     <Modal

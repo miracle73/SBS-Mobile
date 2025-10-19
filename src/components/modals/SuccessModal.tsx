@@ -50,7 +50,7 @@ const SuccessModal = ({ setModal, modal }: SuccessModalProps) => {
             </View>
             <Text style={styles.firstText}>Yaay! You are in</Text>
             <Text style={styles.secondText}>
-              You can now access premium study materials
+              Your Account is activated Successfully
             </Text>
 
             <TouchableOpacity

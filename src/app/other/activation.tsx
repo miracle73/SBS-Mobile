@@ -19,15 +19,16 @@ const Activation = () => {
 
   const theMethods = [
     { label: "Pin", value: "Pin" },
-    { label: "Payment", value: "Payment" },
+    // { label: "Payment", value: "Payment" },
   ];
 
   const handleProceed = () => {
     if (method) {
-      if (method == "Payment") {
-        router.push("/other/payment");
-        setMethod("");
-      } else if (method == "Pin") {
+      // if (method == "Payment") {
+      //   router.push("/other/payment");
+      //   setMethod("");
+      // } else
+      if (method == "Pin") {
         router.push("/other/activateSubscription");
         setMethod("");
       }
@@ -44,13 +45,11 @@ const Activation = () => {
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>
-        <Text style={styles.fourthText}>Purchase Method</Text>
-        <Text style={styles.secondText}>
-          Select how you want to purchase your study materials
-        </Text>
+        <Text style={styles.fourthText}>Activation Method</Text>
+        <Text style={styles.secondText}>Activate your account</Text>
 
         <View style={styles.pickerContainer}>
-          <Text style={styles.thirdText}>Purchase Method</Text>
+          <Text style={styles.thirdText}>Activation Method</Text>
           <DropDownPicker
             open={open}
             value={method}

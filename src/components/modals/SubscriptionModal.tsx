@@ -39,7 +39,7 @@ const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
             <Image source={ModalIcon} />
             <Text style={styles.firstText}>Oops!</Text>
             <Text style={styles.secondText}>
-              Purchase your study materials and resources
+              Looks like you have not activated your account yet
             </Text>
 
             <TouchableOpacity
@@ -49,7 +49,7 @@ const SubscriptionModal = ({ setModal, modal }: SubscriptionModalProps) => {
                 setModal(false);
               }}
             >
-              <Text style={styles.buttonText}>Purchase Materials</Text>
+              <Text style={styles.buttonText}>Activate now</Text>
             </TouchableOpacity>
           </View>
         </View>

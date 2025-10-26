@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import Pdf from "react-native-pdf";
+import { Image } from 'expo-image';
 import YoutubePlayer from "react-native-youtube-iframe";
 import * as ScreenCapture from "expo-screen-capture";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
@@ -169,7 +170,12 @@ const PdfComponent = ({
 
         {/* PDF Section */}
         <View style={[styles.pdfContainer, { flex: showVideo ? 1 : 1 }]}>
-          <Pdf
+          <Image
+            source={require('../../assets/images/birthdayImage.png')}
+            style={{ flex: 1 }}
+            contentFit="contain"
+          />
+          {/* <Pdf
             trustAllCerts={false}
             source={pdfUrl}
             onLoadComplete={(numberOfPages, filePath) => {
@@ -186,7 +192,7 @@ const PdfComponent = ({
               console.log(`Link pressed: ${uri}`);
             }}
             style={{ flex: 1, alignSelf: "stretch" }}
-          />
+          /> */}
         </View>
 
         {secondModal && (

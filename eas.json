@@ -1,21 +1,18 @@
 {
   "cli": {
     "version": ">= 9.0.7",
-    "requireCommit": true
+    "appVersionSource": "remote"
   },
   "build": {
     "development": {
       "distribution": "internal",
-      "android": {
-        "buildType": "app-bundle"
-      }
+      "developmentClient": true
     },
     "preview": {
       "distribution": "internal"
     },
     "production": {}
   },
-
   "submit": {
     "production": {}
   }

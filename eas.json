@@ -1,9 +1,9 @@
 {
   "cli": {
     "version": ">= 9.0.7",
-    "appVersionSource": "remote"
+    "requireCommit": true
   },
-  "build": {
+   "build": {
     "development": {
       "distribution": "internal",
       "developmentClient": true
@@ -13,6 +13,8 @@
     },
     "production": {}
   },
+
+
   "submit": {
     "production": {}
   }

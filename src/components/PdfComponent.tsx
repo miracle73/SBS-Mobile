@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Alert,
+  Image
 } from "react-native";
 import React, { useState, useCallback, useEffect } from "react";
 import Pdf from "react-native-pdf";
@@ -14,6 +15,7 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import * as ScreenCapture from "expo-screen-capture";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
 // import Toast from "react-native-toast-message";
+import BirthdayImage from "../../assets/images/birthdayImage.png";
 import { useFocusEffect } from "@react-navigation/native";
 
 interface PDF {
@@ -21,15 +23,15 @@ interface PDF {
   cache: boolean;
 }
 interface PdfComponentModalProps {
-  setModal: (value: boolean) => void;
-  modal: boolean;
+  // setModal: (value: boolean) => void;
+  // modal: boolean;
   pdfUrl: PDF;
   video: string;
 }
 
 const PdfComponent = ({
-  setModal,
-  modal,
+  // setModal,
+  // modal,
   pdfUrl,
   video,
 }: PdfComponentModalProps) => {
@@ -108,94 +110,104 @@ const PdfComponent = ({
   );
 
   return (
-    <Modal
-      animationType="slide"
-      transparent={true}
-      style={{
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-      visible={modal}
-      onRequestClose={() => {
-        setModal(!modal);
-      }}
-    >
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
-        {/* Video Section */}
-        {showVideo && (
-          <View style={styles.videoSection}>
-            <View style={styles.videoHeader}>
-              <View style={styles.videoHeaderLeft}>
-                {/* <Text style={styles.videoTitle}>YouTube Video Player</Text> */}
-                <Text style={styles.videoSubtitle}>Watch before reading</Text>
-              </View>
-              <TouchableOpacity
-                onPress={handleCloseVideo}
-                style={styles.closeButton}
-              >
-                <Text style={styles.closeButtonText}>✕</Text>
-              </TouchableOpacity>
+    // <Modal
+    //   animationType="slide"
+    //   transparent={true}
+    //   style={{
+    //     flexDirection: "row",
+    //     justifyContent: "center",
+    //     alignItems: "center",
+    //   }}
+    //   visible={modal}
+    //   onRequestClose={() => {
+    //     setModal(!modal);
+    //   }}
+    // >
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#FFFFFF" }}>
+      {/* Video Section */}
+      {showVideo && (
+        <View style={styles.videoSection}>
+          <View style={styles.videoHeader}>
+            <View style={styles.videoHeaderLeft}>
+              {/* <Text style={styles.videoTitle}>YouTube Video Player</Text> */}
+              <Text style={styles.videoSubtitle}>Watch before reading</Text>
             </View>
+            <TouchableOpacity
+              onPress={handleCloseVideo}
+              style={styles.closeButton}
+            >
+              <Text style={styles.closeButtonText}>✕</Text>
+            </TouchableOpacity>
+          </View>
 
-            <View style={styles.videoContainer}>
-              {loading && (
-                <View style={styles.loadingContainer}>
-                  <ActivityIndicator size="large" color="#FF0000" />
-                  <Text style={styles.loadingText}>Loading video...</Text>
-                </View>
-              )}
+          <View style={styles.videoContainer}>
+            {loading && (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#FF0000" />
+                <Text style={styles.loadingText}>Loading video...</Text>
+              </View>
+            )}
 
-              <YoutubePlayer
-                height={200}
-                play={playing}
-                videoId={videoId}
-                onChangeState={onStateChange}
-                onReady={onReady}
-                onError={onError}
-                webViewStyle={styles.webView}
-                webViewProps={{
-                  injectedJavaScript: `
+            <YoutubePlayer
+              height={200}
+              play={playing}
+              videoId={videoId}
+              onChangeState={onStateChange}
+              onReady={onReady}
+              onError={onError}
+              webViewStyle={styles.webView}
+              webViewProps={{
+                injectedJavaScript: `
                     var element = document.getElementsByClassName('container')[0];
                     element.style.position = 'unset';
                     element.style.paddingBottom = 'unset';
                     true;
                   `,
-                }}
-              />
-            </View>
+              }}
+            />
           </View>
-        )}
-
-        {/* PDF Section */}
-        <View style={[styles.pdfContainer, { flex: showVideo ? 1 : 1 }]}>
-          <Pdf
-            trustAllCerts={false}
-            source={pdfUrl}
-            onLoadComplete={(numberOfPages, filePath) => {
-              console.log(`number of pages: ${numberOfPages}`);
-            }}
-            onPageChanged={(page, numberOfPages) => {
-              console.log(`current page: ${numberOfPages}`);
-            }}
-            onError={(error) => {
-              console.log(error);
-              setSecondModal(true);
-            }}
-            onPressLink={(uri) => {
-              console.log(`Link pressed: ${uri}`);
-            }}
-            style={{ flex: 1, alignSelf: "stretch" }}
-          />
         </View>
+      )}
 
-        {secondModal && (
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>File not in PDF format or corrupted</Text>
-          </View>
-        )}
-      </SafeAreaView>
-    </Modal>
+      {/* PDF Section */}
+      <View style={[styles.pdfContainer, { flex: showVideo ? 1 : 1 }]}>
+        <Image source={BirthdayImage} />
+        {/* <FlatList
+            data={BirthdayImage ? [BirthdayImage] : []}
+            horizontal
+            pagingEnabled
+            renderItem={({ item }) => (
+              <Image source={{ uri: item }} style={{ width: screenWidth, height: '100%' }} />
+            )}
+            keyExtractor={(item, index) => index.toString()}
+          /> */}
+        {/* <Pdf
+          trustAllCerts={false}
+          source={pdfUrl}
+          onLoadComplete={(numberOfPages, filePath) => {
+            console.log(`number of pages: ${numberOfPages}`);
+          }}
+          onPageChanged={(page, numberOfPages) => {
+            console.log(`current page: ${numberOfPages}`);
+          }}
+          onError={(error) => {
+            console.log(error);
+            setSecondModal(true);
+          }}
+          onPressLink={(uri) => {
+            console.log(`Link pressed: ${uri}`);
+          }}
+          style={{ flex: 1, alignSelf: "stretch" }}
+        /> */}
+      </View>
+
+      {secondModal && (
+        <View style={styles.textContainer}>
+          <Text style={styles.text}>File not in PDF format or corrupted</Text>
+        </View>
+      )}
+    </SafeAreaView>
+    // </Modal>
   );
 };
 

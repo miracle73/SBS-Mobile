@@ -4,15 +4,13 @@ import TopicComponent from "../../components/TopicComponent";
 import { useRouter } from "expo-router";
 import { useLocalSearchParams } from "expo-router";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
+import PdfComponent from "../../components/PdfComponent";
 
 const Topics = () => {
   const { topics, level } = useLocalSearchParams();
   const searchResults = typeof topics === "string" ? JSON.parse(topics) : [];
   let levelString = typeof level === "string" ? JSON.parse(level) : "";
-  // const levelNumber = parseInt(levelString);
-  // if ([1, 2, 3, 4, 5].includes(levelNumber)) {
-  //     levelString = (levelNumber * 100).toString();
-  // }
+  const [pdfData, setPdfData] = React.useState<any>(null);
 
   useEffect(() => {
     ScreenshotPrevent.enableSecureView();
@@ -26,6 +24,7 @@ const Topics = () => {
   }));
 
   console.log(topicResults, "really");
+
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <ScrollView style={{ paddingHorizontal: 20 }}>
@@ -41,7 +40,6 @@ const Topics = () => {
             here
           </Text>
         )}
-
         {topicResults.map((result: any, index: any) => (
           <TopicComponent
             key={index}
@@ -50,9 +48,16 @@ const Topics = () => {
             free={result.free}
             courseName={result.courseName}
             level={levelString}
+            onPdfOpen={setPdfData}
           />
         ))}
       </ScrollView>
+      {pdfData && (
+        <PdfComponent
+          video={pdfData.video}
+          pdfUrl={pdfData.pdfUrl}
+        />
+      )}
     </SafeAreaView>
   );
 };

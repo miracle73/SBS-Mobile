@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React, { useState, useEffect } from "react";
 import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
@@ -12,10 +12,10 @@ import {
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
-import PdfComponent from "./PdfComponent";
 import { useIsFocused } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
+import BirthdayImage from "../../assets/images/birthdayImage.png";
 
 interface TopicComponentProps {
   title: string;
@@ -23,6 +23,7 @@ interface TopicComponentProps {
   free: boolean;
   courseName: string;
   level: string;
+  onPdfOpen?: (pdfData: any) => void;
 }
 
 const TopicComponent: React.FC<TopicComponentProps> = ({
@@ -31,8 +32,11 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   free,
   courseName,
   level,
+  onPdfOpen,
 }) => {
   const [uuid, setUuid] = useState("");
+  const [showImage, setShowImage] = useState(false);
+
   useEffect(() => {
     const fetchStoredUuid = async () => {
       try {
@@ -51,13 +55,10 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   }, []);
   const phoneImei = uuid;
   const router = useRouter();
-  const [secondModal, setSecondModal] = React.useState(false);
-  const [thirdModal, setThirdModal] = React.useState(false);
   const [modal, setModal] = React.useState(false);
 
   const [getTopicContent, { data, error, isLoading }] =
     useGetTopicContentMutation();
-  const [selectedTopic, setSelectedTopic] = React.useState<any>(null);
   const [userActivatedStatus] = useUserActivatedStatusMutation();
   const isFocused = useIsFocused();
 
@@ -87,6 +88,8 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     React.useState<ActivationMessage | null>(null);
 
   const handlePress = async () => {
+    setShowImage(!showImage);
+
     if (!free) {
       try {
         const netInfo = await NetInfo.fetch();
@@ -162,22 +165,24 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           topic_id: id,
         }).unwrap();
 
-        // If successful, navigate to the note page with topic content
         const topicContent = result.topic_content;
 
         if (topicContent?.pdf_content) {
-          setSecondModal(true);
+          onPdfOpen?.({
+            video: result.topic_content?.video,
+            pdfUrl: {
+              uri: `https://sbsapp.com.ng/static/${result.topic_content?.pdf_content}`,
+              cache: true,
+            },
+          });
           return;
         } else {
-          // If successful, navigate to the note page with topic content
-
           router.push({
             pathname: "/other/note",
             params: { content: JSON.stringify(result.topic_content) },
           });
         }
       } else {
-        // Offline mode: fetch data from the AsyncStorage
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           const parsedContents = JSON.parse(storedContents);
@@ -193,8 +198,13 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 
             if (selectedTopic) {
               if (selectedTopic.topic_content) {
-                setSelectedTopic(selectedTopic);
-                setThirdModal(true);
+                onPdfOpen?.({
+                  video: selectedTopic.topic_video,
+                  pdfUrl: {
+                    uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
+                    cache: true,
+                  },
+                });
                 return;
               }
               router.push({
@@ -238,54 +248,41 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   };
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      style={[
-        styles.Container,
-        {
-          backgroundColor: "#F8F8F8",
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          paddingVertical: 20,
-          marginBottom: 10,
-        },
-      ]}
-    >
-      <View>
-        <Text style={styles.firstText}>{title}</Text>
-        {/* <Text style={styles.secondText}>Topic {topics}</Text> */}
-      </View>
-      {!free ? (
-        filteredMessage ? (
-          <EvilIcons name="unlock" size={15} />
-        ) : (
-          <SecondPadlockIcon />
-        )
-      ) : null}
+    <View>
+      <TouchableOpacity
+        onPress={handlePress}
+        style={[
+          {
+            backgroundColor: "#F8F8F8",
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 20,
+            marginBottom: 10,
+          },
+        ]}
+      >
+        <View style={styles.Container}>
+          <View>
+            <Text style={styles.firstText}>{title}</Text>
+          </View>
+          {!free ? (
+            filteredMessage ? (
+              <EvilIcons name="unlock" size={15} />
+            ) : (
+              <SecondPadlockIcon />
+            )
+          ) : null}
+        </View>
+      </TouchableOpacity>
+      {showImage && (
+  <View>
+    <Image source={BirthdayImage} style={styles.image} />
+    <Image source={BirthdayImage} style={styles.image} />
+    <Image source={BirthdayImage} style={styles.image} />
+  </View>
+)}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
-      {secondModal && data?.topic_content && (
-        <PdfComponent
-          setModal={setSecondModal}
-          modal={secondModal}
-          video={data.topic_content?.video}
-          pdfUrl={{
-            uri: `https://sbsapp.com.ng/static/${data.topic_content?.pdf_content}`,
-            cache: true,
-          }}
-        />
-      )}
-      {thirdModal && selectedTopic && (
-        <PdfComponent
-          setModal={setThirdModal}
-          modal={thirdModal}
-          video={selectedTopic.topic_video}
-          pdfUrl={{
-            uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
-            cache: true,
-          }}
-        />
-      )}
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -312,6 +309,11 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontStyle: "normal",
     color: "#000000",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    marginBottom: 10,
   },
 });
 

@@ -88,11 +88,11 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           console.log("Filtered message:", filteredMessage, parseInt(level));
 
           if (!filteredMessage || !filteredMessage.is_activated) {
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: "You do not have access to this content.",
-            });
+            // Toast.show({
+            //   type: "error",
+            //   text1: "Error",
+            //   text2: "You do not have access to this content.",
+            // });
             setModal(true);
             return;
           }
@@ -105,11 +105,11 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
             );
             if (!filteredMessage || !filteredMessage.is_activated) {
               setFilteredMessage(null);
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: "You do not have access to this content.",
-              });
+              // Toast.show({
+              //   type: "error",
+              //   text1: "Error",
+              //   text2: "You do not have access to this content.",
+              // });
               setModal(true);
               return;
             } else {
@@ -155,7 +155,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
             });
             return;
           }
-          // If successful, navigate to the note page with topic content
+        
           router.push({
             pathname: "/other/pastQuestion",
             params: { content: JSON.stringify(data) },

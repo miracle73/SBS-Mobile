@@ -4,43 +4,62 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
+  Linking
 } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import Toast from "react-native-toast-message";
 import DropDownPicker from "react-native-dropdown-picker";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Activation = () => {
   const [method, setMethod] = useState("");
   const router = useRouter();
   const [open, setOpen] = useState(false);
-
+  const [uuid, setUuid] = useState("");
   const theMethods = [
     { label: "Pin", value: "Pin" },
-    // { label: "Payment", value: "Payment" },
+    { label: "Payment", value: "Payment" },
   ];
 
-  const handleProceed = () => {
-    if (method) {
-      // if (method == "Payment") {
-      //   router.push("/other/payment");
-      //   setMethod("");
-      // } else
-      if (method == "Pin") {
-        router.push("/other/activateSubscription");
-        setMethod("");
+  useEffect(() => {
+    const fetchStoredUuid = async () => {
+      try {
+        let storedUuid = await AsyncStorage.getItem("device_uuid");
+        if (storedUuid) {
+
+          setUuid(storedUuid);
+        }
+      } catch (error) {
+        console.error("Error fetching UUID:", error);
       }
-    } else {
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Please select a method",
-      });
-      return;
+    };
+
+    fetchStoredUuid();
+  }, []);
+
+
+
+const handleProceed = async () => {
+  if (method) {
+    if (method === "Payment") {
+      const url = `https://soridbusinesssolutions.com/payment?phone_imei=${uuid}`;
+      await Linking.openURL(url);
+      setMethod("");
+    } else if (method === "Pin") {
+      router.push("/other/activateSubscription");
+      setMethod("");
     }
-  };
+  } else {
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: "Please select a method",
+    });
+  }
+};
 
   return (
     <SafeAreaView style={styles.bodyContainer}>
@@ -65,22 +84,7 @@ const Activation = () => {
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
           />
-          {/* <RNPickerSelect
-                        onValueChange={(value) => setMethod(value)}
-                        items={theMethods}
-                        placeholder={{ label: 'Select method', value: null }}
-                        useNativeAndroidPickerStyle={false}
-                        style={pickerSelectStyles}
-                        value={method}
-                        Icon={() => (
-                            <MaterialIcons
-                                name="keyboard-arrow-down"
-                                size={24}
-                                color="#B0BEC5"
-                                style={{ alignSelf: 'center' }}
-                            />
-                        )}
-                    /> */}
+
         </View>
 
         <TouchableOpacity style={styles.button} onPress={handleProceed}>

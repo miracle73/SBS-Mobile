@@ -236,7 +236,7 @@ const Notes = () => {
       </SafeAreaView>
     );
   }
-
+console.log("RERENDERING NOTES PAGE", course);
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <View style={{ paddingHorizontal: 20 }}>

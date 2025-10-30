@@ -52,7 +52,7 @@ const Edu = () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
         if (storedUuid) {
-          console.log("Stored UUID:", storedUuid);
+          
           setUuid(storedUuid);
         }
       } catch (error) {
@@ -83,7 +83,7 @@ const Edu = () => {
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
-          console.log(isConnected);
+        
           const parsedContents = JSON.parse(storedContents);
 
           const uniqueLevels = Array.from(
@@ -134,12 +134,7 @@ const Edu = () => {
         }));
         setCourseItems(formattedCourses);
       }
-      console.log(
-        topicsByLevelData,
-        selectedLevel ? parseInt(selectedLevel) : 0,
-        uuid,
-        4000
-      );
+
     };
 
     fetchTopicsByLevel();
@@ -151,7 +146,7 @@ const Edu = () => {
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
-        console.log(level);
+      
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
@@ -181,7 +176,7 @@ const Edu = () => {
       } else {
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
-          console.log(1);
+         
           const parsedContents = JSON.parse(storedContents);
 
           const selectedCourse = parsedContents.find(
@@ -191,7 +186,7 @@ const Edu = () => {
               content.topics.length > 0
           );
 
-          console.log(2, selectedCourse);
+ 
           if (selectedCourse) {
             const offlineTopics = selectedCourse.topics.map(
               (topic: any, index: any) => ({
@@ -274,7 +269,7 @@ const Edu = () => {
                   phone_imei: uuid,
                   level: 1,
                 });
-                console.log(topicsByLevelData, value, uuid, 4000);
+             
               };
               fetchTopicsByLevel();
             }}

@@ -24,7 +24,7 @@ const PastQuestion = () => {
     return (
       <SafeAreaView style={styles.bodyContainer}>
         <ScrollView style={{ paddingHorizontal: 20 }}>
-          <Text style={styles.firstText}> No PastQuestion </Text>
+          <Text style={styles.firstText}> No PastQuestion</Text>
         </ScrollView>
       </SafeAreaView>
     );

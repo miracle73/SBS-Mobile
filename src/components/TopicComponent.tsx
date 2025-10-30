@@ -36,7 +36,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 }) => {
   const [uuid, setUuid] = useState("");
   const [showImage, setShowImage] = useState(false);
-
+  const [imageData, setImageData] = useState<string[]>([]);
   useEffect(() => {
     const fetchStoredUuid = async () => {
       try {
@@ -115,11 +115,11 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 
           if (!filteredMessage || !filteredMessage.is_activated) {
             setFilteredMessage(null);
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: "You do not have access to this content.",
-            });
+            // Toast.show({
+            //   type: "error",
+            //   text1: "Error",
+            //   text2: "You do not have access to this content.",
+            // });
             setModal(true);
             return;
           } else {
@@ -133,11 +133,11 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
               (msg: any) => msg.level === parseInt(level)
             );
             if (!filteredMessage || !filteredMessage.is_activated) {
-              Toast.show({
-                type: "error",
-                text1: "Error",
-                text2: "You do not have access to this content.",
-              });
+              // Toast.show({
+              //   type: "error",
+              //   text1: "Error",
+              //   text2: "You do not have access to this content.",
+              // });
               setModal(true);
               return;
             }
@@ -165,22 +165,13 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           topic_id: id,
         }).unwrap();
 
-        const topicContent = result.topic_content;
 
-        if (topicContent?.pdf_content) {
-          onPdfOpen?.({
-            video: result.topic_content?.video,
-            pdfUrl: {
-              uri: `https://sbsapp.com.ng/static/${result.topic_content?.pdf_content}`,
-              cache: true,
-            },
-          });
-          return;
+        console.log("Fetched topic content:", result.topic_images);
+
+        if (result?.topic_images) {
+          setImageData(result.topic_images);
         } else {
-          router.push({
-            pathname: "/other/note",
-            params: { content: JSON.stringify(result.topic_content) },
-          });
+          setImageData([]);
         }
       } else {
         const storedContents = await AsyncStorage.getItem("userContents");
@@ -275,12 +266,22 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
         </View>
       </TouchableOpacity>
       {showImage && (
-  <View>
-    <Image source={BirthdayImage} style={styles.image} />
-    <Image source={BirthdayImage} style={styles.image} />
-    <Image source={BirthdayImage} style={styles.image} />
-  </View>
-)}
+        <View>
+          {imageData.length > 0 ? (
+            imageData.map((imageUrl: string, index: number) => (
+              <Image
+                key={index}
+                source={{ uri: `https://sbsapp.com.ng/${imageUrl}` }}
+                style={styles.image}
+              />
+            ))
+          ) : (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 14, color: '#666' }}>No content available</Text>
+            </View>
+          )}
+        </View>
+      )}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
     </View>
   );

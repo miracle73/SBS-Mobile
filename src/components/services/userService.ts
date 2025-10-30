@@ -74,7 +74,10 @@ interface SearchTopicsInCoursesResponse {
 
 // Flexible interface to handle unknown keys in topic content response
 interface TopicContentResponse {
-  [key: string]: string;
+  status: string;
+  topic_images: string[];
+  topic_video: string;
+  user: boolean;
 }
 
 interface TopicPastQuestionResponse {

@@ -79,29 +79,33 @@ interface TopicContentResponse {
   topic_video: string;
   user: boolean;
 }
+interface Question {
+  id: number;
+  year: number;
+  topic_id: number;
+  images: string[];
+  latex: boolean;
+}
 
 interface TopicPastQuestionResponse {
-  content: string;
-  year: number;
-  image_3: string | null;
-  image_5: string | null;
-  topic_id: number;
-  id: number;
-  pdf_content: string;
-  image_1: string | null;
-  image_2: string | null;
-  image_4: string | null;
+  status: string;
+  questions: Question[];
 }
 
 export interface ContentTopic {
   topic_title: string;
-  topic_content: string;
   topic_free: boolean;
-  past_questions: {
-    year: number;
-    content: string;
-    images: (string | null)[];
-  }[];
+  topic_video: string | null;
+  topic_latex: boolean;
+  topic_images: string[];
+  past_questions: PastQuestion[];
+}
+
+interface PastQuestion {
+  id: number;
+  year: number;
+  latex: boolean;
+  images: string[];
 }
 
 export interface ContentResponse {
@@ -213,7 +217,7 @@ export const userApi = createApi({
       }),
     }),
     getTopicPastQuestion: builder.query<
-      TopicPastQuestionResponse[],
+      TopicPastQuestionResponse,
       { topic_id: number; year?: number }
     >({
       query: ({ topic_id, year }) => {

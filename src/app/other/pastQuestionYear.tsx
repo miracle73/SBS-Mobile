@@ -9,14 +9,6 @@ const PastQuestionYear = () => {
   const { content } = useLocalSearchParams();
   const searchResults = typeof content === "string" ? JSON.parse(content) : [];
 
-  const topicResults = searchResults.map((topic: any) => ({
-    year: topic.year,
-    topic_id: topic.topic_id,
-    latex: topic.latex,
-    pdf_content: topic.pdf_content,
-    id: topic.id,
-  }));
-
   return (
     <SafeAreaView style={styles.bodyContainer}>
       <ScrollView style={{ paddingHorizontal: 20 }}>
@@ -31,15 +23,12 @@ const PastQuestionYear = () => {
             for this past question
           </Text>
         )}
-
-        {searchResults.map((result: any, index: any) => (
+        {searchResults.map((question: any, index: any) => (
           <PastQuestionYearComponent
             key={index}
-            year={result.year}
-            topic_id={result.topic_id}
-            latex={result.latex}
-            pdf_content={result.pdf_content}
-            id={result.id}
+            question={question}
+            free={true}
+            level=""
           />
         ))}
       </ScrollView>

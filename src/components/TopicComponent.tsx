@@ -187,35 +187,42 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
               (topic: any) => topic.topic_title === title
             );
 
+
+
             if (selectedTopic) {
-              if (selectedTopic.topic_content) {
-                onPdfOpen?.({
-                  video: selectedTopic.topic_video,
-                  pdfUrl: {
-                    uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
-                    cache: true,
-                  },
-                });
-                return;
+              if (selectedTopic.topic_images && selectedTopic.topic_images.length > 0) {
+                setImageData(selectedTopic.topic_images);
+              } else {
+                setImageData([]);
               }
-              router.push({
-                pathname: "/other/note",
-                params: {
-                  content: JSON.stringify({
-                    title: selectedTopic.topic_title,
-                    free: selectedTopic.topic_free,
-                    content: selectedTopic.topic_content,
-                    image_1: null,
-                    image_2: null,
-                    image_3: null,
-                    image_4: null,
-                    image_5: null,
-                    id: null,
-                    course_id: null,
-                    latex: selectedTopic.topic_latex,
-                  }),
-                },
-              });
+              // if (selectedTopic.topic_content) {
+              //   onPdfOpen?.({
+              //     video: selectedTopic.topic_video,
+              //     pdfUrl: {
+              //       uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
+              //       cache: true,
+              //     },
+              //   });
+              //   return;
+              // }
+              // router.push({
+              //   pathname: "/other/note",
+              //   params: {
+              //     content: JSON.stringify({
+              //       title: selectedTopic.topic_title,
+              //       free: selectedTopic.topic_free,
+              //       content: selectedTopic.topic_content,
+              //       image_1: null,
+              //       image_2: null,
+              //       image_3: null,
+              //       image_4: null,
+              //       image_5: null,
+              //       id: null,
+              //       course_id: null,
+              //       latex: selectedTopic.topic_latex,
+              //     }),
+              //   },
+              // });
             } else {
               throw new Error("Offline topic content not found.");
             }

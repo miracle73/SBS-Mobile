@@ -32,6 +32,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
 }) => {
   const router = useRouter();
   const [modal, setModal] = React.useState(false);
+  const [showText, setShowText] = useState(false);
   const [uuid, setUuid] = useState("");
   useEffect(() => {
     const fetchStoredUuid = async () => {
@@ -148,18 +149,16 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
         }
 
         if (data) {
-          if (data[0]?.pdf_content) {
+      
+
+          if (data.questions && data.questions.length > 0) {
             router.push({
               pathname: "/other/pastQuestionYear",
-              params: { content: JSON.stringify(data) },
+              params: { content: JSON.stringify(data.questions) },
             });
-            return;
+          } else {
+            setShowText(true);
           }
-        
-          router.push({
-            pathname: "/other/pastQuestion",
-            params: { content: JSON.stringify(data) },
-          });
         }
       } else {
         // Offline mode: fetch data from the AsyncStorage
@@ -190,7 +189,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
                   latex: pq.latex,
                 })
               );
-              if (offlinePastQuestions[0]?.pdf_content) {
+              if (offlinePastQuestions[0]?.images.length > 0) {
                 router.push({
                   pathname: "/other/pastQuestionYear",
                   params: { content: JSON.stringify(offlinePastQuestions) },
@@ -212,7 +211,7 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
         }
       }
     } catch (error) {
-      console.error("Error fetching topic content:", error);
+     
       const errorMessage =
         (error as any)?.message || "Failed to fetch topic content.";
       Toast.show({
@@ -223,7 +222,8 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
     }
   };
 
-  return (
+return (
+  <View>
     <TouchableOpacity
       onPress={handlePress}
       style={[
@@ -247,9 +247,15 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           <SecondPadlockIcon />
         )
       ) : null}
-      {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
     </TouchableOpacity>
-  );
+    {showText && (
+      <View style={{ padding: 20, alignItems: 'center' }}>
+        <Text style={{ fontSize: 14, color: '#666' }}>No pastquestion available</Text>
+      </View>
+    )}
+    {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
+  </View>
+);
 };
 
 const styles = StyleSheet.create({

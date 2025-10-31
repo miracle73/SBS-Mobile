@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
 import {
@@ -10,75 +10,67 @@ import NetInfo from "@react-native-community/netinfo";
 import PdfComponent from "./PdfComponent";
 
 interface PastQuestionYearComponentProps {
-  year: number;
-  topic_id: number;
-  latex: boolean;
-  pdf_content: string;
-  id: number;
+  question: {
+    id: number;
+    year: number;
+    topic_id: number;
+    images: string[];
+    latex: boolean;
+  };
+  free: boolean;
+  level: string;
 }
 
 const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
-  year,
-  topic_id,
-  latex,
-  pdf_content,
-  id,
+  question,
+  free,
+  level,
 }) => {
   const router = useRouter();
-  const [secondModal, setSecondModal] = React.useState(false);
+  const [showImages, setShowImages] = useState(false);
 
   const handlePress = async () => {
-    try {
-      const netInfo = await NetInfo.fetch();
-
-      if (netInfo.isConnected) {
-        if (pdf_content) {
-          setSecondModal(true);
-          return;
-        }
-      }
-    } catch (error) {
-      console.error("Error fetching pastquestion content:", error);
-      const errorMessage =
-        (error as any)?.message || "Failed to fetch topic content.";
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: errorMessage,
-      });
-    }
+    setShowImages(!showImages);
   };
 
   return (
-    <TouchableOpacity
-      onPress={handlePress}
-      style={[
-        styles.Container,
-        {
-          backgroundColor: "#F8F8F8",
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          paddingVertical: 20,
-          marginBottom: 10,
-        },
-      ]}
-    >
-      <View>
-        <Text style={styles.firstText}>{year}</Text>
-      </View>
-
-      {secondModal && pdf_content && (
-        <PdfComponent
-          setModal={setSecondModal}
-          modal={secondModal}
-          video=""
-          pdfUrl={{
-            uri: `https://sbsapp.com.ng/static/${pdf_content}`,
-            cache: true,
-          }}
-        />
+    <View>
+      <TouchableOpacity
+        onPress={handlePress}
+        style={[
+          {
+            backgroundColor: "#F8F8F8",
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 20,
+            marginBottom: 10,
+          },
+        ]}
+      >
+        <View style={styles.Container}>
+          <View>
+            <Text style={styles.firstText}>{question.year}</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
+      {showImages && (
+        <View>
+          {question.images.length > 0 ? (
+            question.images.map((imageUrl: string, index: number) => (
+              <Image
+                key={index}
+                source={{ uri: `https://sbsapp.com.ng/${imageUrl}` }}
+                style={styles.image}
+              />
+            ))
+          ) : (
+            <View style={{ padding: 20, alignItems: 'center' }}>
+              <Text style={{ fontSize: 14, color: '#666' }}>No pastquestion available</Text>
+            </View>
+          )}
+        </View>
       )}
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -105,6 +97,11 @@ const styles = StyleSheet.create({
     fontWeight: "400",
     fontStyle: "normal",
     color: "#000000",
+  },
+  image: {
+    width: "100%",
+    height: 200,
+    marginBottom: 10,
   },
 });
 

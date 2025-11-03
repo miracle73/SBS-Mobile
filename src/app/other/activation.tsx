@@ -44,8 +44,9 @@ const Activation = () => {
 
 const handleProceed = async () => {
   if (method) {
+    console.log(uuid)
     if (method === "Payment") {
-      const url = `https://soridbusinesssolutions.com/payment?phone_imei=${uuid}`;
+      const url = `https://sbsapp.com.ng/payment?phone_imei=${uuid}`;
       await Linking.openURL(url);
       setMethod("");
     } else if (method === "Pin") {

@@ -3,17 +3,17 @@
     "version": ">= 15.0.12",
     "requireCommit": true
   },
- "build": {
+  "build": {
     "development": {
       "distribution": "internal",
-      "developmentClient": true
+      "android": {
+        "buildType": "app-bundle"
+      }
     },
     "preview": {
       "distribution": "internal"
     },
-    "production": {
-      
-    }
+    "production": {}
   },
   "submit": {
     "production": {}

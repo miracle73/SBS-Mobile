@@ -28,9 +28,24 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
 }) => {
   const router = useRouter();
   const [showImages, setShowImages] = useState(false);
+  const [showImageText, setShowImageText] = useState(false);
 
   const handlePress = async () => {
     setShowImages(!showImages);
+
+    if (question.images.length === 0) {
+      setShowImageText(true);
+    }
+
+    if (question.images.length > 0) {
+      router.push({
+        pathname: "/other/imageViewer",
+        params: {
+          images: JSON.stringify(question.images),
+          title: `Past Questions ${question.year}`,
+        },
+      });
+    }
   };
 
   return (
@@ -55,15 +70,7 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
       </TouchableOpacity>
       {showImages && (
         <View>
-          {question.images.length > 0 ? (
-            question.images.map((imageUrl: string, index: number) => (
-              <Image
-                key={index}
-                source={{ uri: `https://sbsapp.com.ng/${imageUrl}` }}
-                style={styles.image}
-              />
-            ))
-          ) : (
+          {showImageText && (
             <View style={{ padding: 20, alignItems: 'center' }}>
               <Text style={{ fontSize: 14, color: '#666' }}>No pastquestion available</Text>
             </View>

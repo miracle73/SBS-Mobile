@@ -36,6 +36,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 }) => {
   const [uuid, setUuid] = useState("");
   const [showImage, setShowImage] = useState(false);
+  const [showImageText, setShowImageText] = useState(false);
   const [imageData, setImageData] = useState<string[]>([]);
   useEffect(() => {
     const fetchStoredUuid = async () => {
@@ -169,7 +170,19 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
         console.log("Fetched topic content:", result.topic_images);
 
         if (result?.topic_images) {
-          setImageData(result.topic_images);
+          if (result.topic_images.length === 0) {
+            setShowImageText(true);
+          }
+          if (result.topic_images.length > 0) {
+            setImageData(result.topic_images);
+            router.push({
+              pathname: "/other/imageViewer",
+              params: {
+                images: JSON.stringify(result.topic_images),
+                title: title,
+              },
+            });
+          }
         } else {
           setImageData([]);
         }
@@ -190,8 +203,25 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 
 
             if (selectedTopic) {
-              if (selectedTopic.topic_images && selectedTopic.topic_images.length > 0) {
-                setImageData(selectedTopic.topic_images);
+              // if (selectedTopic.topic_images && selectedTopic.topic_images.length > 0) {
+              //   setImageData(selectedTopic.topic_images);
+              // } else {
+              //   setImageData([]);
+              // }
+              if (selectedTopic.topic_images) {
+                if (selectedTopic.topic_images.length === 0) {
+                  setShowImageText(true);
+                }
+                if (selectedTopic.topic_images.length > 0) {
+                  setImageData(selectedTopic.topic_images);
+                  router.push({
+                    pathname: "/other/imageViewer",
+                    params: {
+                      images: JSON.stringify(selectedTopic.topic_images),
+                      title: title,
+                    },
+                  });
+                }
               } else {
                 setImageData([]);
               }
@@ -274,7 +304,7 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
       </TouchableOpacity>
       {showImage && (
         <View>
-          {imageData.length > 0 ? (
+          {/* {imageData.length > 0 ? (
             imageData.map((imageUrl: string, index: number) => (
               <Image
                 key={index}
@@ -282,11 +312,13 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
                 style={styles.image}
               />
             ))
-          ) : (
+              
+          ) : ( */}
+          {showImageText && (
             <View style={{ padding: 20, alignItems: 'center' }}>
               <Text style={{ fontSize: 14, color: '#666' }}>No content available</Text>
-            </View>
-          )}
+            </View>)}
+          {/* )} */}
         </View>
       )}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}

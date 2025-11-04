@@ -68,7 +68,12 @@ const OtherLayout = () => {
             headerShown: false,
           }}
         />
-
+       <Stack.Screen
+          name="imageViewer"
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="calculator"
           options={{

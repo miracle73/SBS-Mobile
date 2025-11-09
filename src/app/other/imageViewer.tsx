@@ -4,6 +4,7 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { useEffect } from "react";
 import * as ScreenCapture from "expo-screen-capture";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
+import ImageZoomViewer from 'react-native-image-zoom-viewer';
 
 const { width, height } = Dimensions.get('window');
 
@@ -21,30 +22,25 @@ export default function ImageViewer() {
     };
   }, []);
 
-  return (
-    <View style={styles.container}>
-      <TouchableOpacity
-        style={styles.closeButton}
-        onPress={() => router.back()}
-      >
-        <MaterialIcons name="close" size={30} color="white" />
-      </TouchableOpacity>
-      
-      <ScrollView
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        {imageData.map((imageUrl: string, index: number) => (
-          <Image
-            key={index}
-            source={{ uri: `https://sbsapp.com.ng/${imageUrl}` }}
-            style={styles.image}
-            resizeMode="contain"
-          />
-        ))}
-      </ScrollView>
-    </View>
-  );
+return (
+  <View style={styles.container}>
+    <TouchableOpacity
+      style={styles.closeButton}
+      onPress={() => router.back()}
+    >
+      <MaterialIcons name="close" size={30} color="white" />
+    </TouchableOpacity>
+    
+    <ImageZoomViewer
+      imageUrls={imageData.map((imageUrl: string) => ({
+        url: `https://sbsapp.com.ng/${imageUrl}`
+      }))}
+      enableSwipeDown
+      onSwipeDown={() => router.back()}
+      backgroundColor="#000"
+    />
+  </View>
+);
 }
 
 const styles = StyleSheet.create({

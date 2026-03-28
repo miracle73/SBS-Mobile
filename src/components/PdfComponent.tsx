@@ -144,7 +144,7 @@ const PdfComponent = ({
             {loading && (
               <View style={styles.loadingContainer}>
                 <ActivityIndicator size="large" color="#FF0000" />
-                <Text style={styles.loadingText}>Loading video...</Text>
+                <Text style={styles.loadingText}>Loading video..</Text>
               </View>
             )}
 

@@ -151,19 +151,19 @@ class NotificationService implements NotificationServiceInterface {
 
       const notificationData = result.data;
 
-      // Since the API returns { detail: string }, we need to adapt it
-      // Assuming the detail contains the notification content
-      const notifications: ProcessedNotification[] = [
-        {
-          id: `notification_${Date.now()}_${Math.random()}`,
-          title: "Today's Notification",
-          message: notificationData.detail,
-          createdAt: new Date(),
+      // Check if response is an array of notifications or a detail object
+      if (Array.isArray(notificationData)) {
+        return notificationData.map((item: any) => ({
+          id: `notification_${item.created_at}_${item.title}`,
+          title: item.title,
+          message: item.message,
+          createdAt: new Date(item.created_at),
           isRead: false,
-        },
-      ];
+        }));
+      }
 
-      return notifications;
+      // No notifications available
+      return [];
     } catch (error) {
       console.error("Error fetching notifications:", error);
       throw error;
@@ -182,7 +182,10 @@ class NotificationService implements NotificationServiceInterface {
         body: message,
         data,
       },
-      trigger: null, // Send immediately
+      trigger: {
+        type: Notifications.SchedulableTriggerInputTypes.TIME_INTERVAL,
+        seconds: 1,
+      },
     });
   }
 

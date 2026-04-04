@@ -14,7 +14,6 @@ import {
   useSearchTopicsInCoursesMutation,
   useGetTopicsByLevelMutation,
 } from "../../components/services/userService";
-import * as Device from "expo-device";
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
@@ -40,9 +39,12 @@ const Edu = () => {
     { label: string; value: string }[]
   >([]);
   const [isConnected, setIsConnected] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
 
-  const { data, isSuccess, isLoading } = useGetSchoolLevelsCoursesQuery({
+  const { data, isSuccess, isLoading, isError } = useGetSchoolLevelsCoursesQuery({
     phone_imei: uuid,
+  }, {
+    skip: !uuid,
   });
   const [searchTopicsInCourses] = useSearchTopicsInCoursesMutation();
   const [getTopicsByLevel] = useGetTopicsByLevelMutation();
@@ -52,50 +54,91 @@ const Edu = () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
         if (storedUuid) {
-          
           setUuid(storedUuid);
         }
+        setInitialLoading(false);
       } catch (error) {
         console.error("Error fetching UUID:", error);
+        setInitialLoading(false);
       }
     };
 
     fetchStoredUuid();
   }, []);
 
+  // Load levels - online or offline
   useEffect(() => {
     const fetchStoredContents = async () => {
       const netInfo = await NetInfo.fetch();
-      setIsConnected(netInfo.isConnected ?? false);
-      if (netInfo.isConnected && isSuccess && data) {
+      const connected = netInfo.isConnected ?? false;
+      setIsConnected(connected);
+
+      if (connected && isSuccess && data) {
         const formattedSchools = {
           label: data.name,
           value: data.id.toString(),
         };
         setSchoolItems([formattedSchools]);
 
-        const formattedLevels = data.levels.map((level) => ({
+        const formattedLevels = data.levels.map((level: any) => ({
           label: level.name,
           value: level.id.toString(),
         }));
         setLevelItems(formattedLevels);
-      } else {
+      } else if (!connected || isError) {
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
           setIsConnected(false);
-        
           const parsedContents = JSON.parse(storedContents);
 
           const uniqueLevels = Array.from(
             new Set(parsedContents.map((content: any) => content.course_level))
           );
-          const offlineLevels = uniqueLevels.map(
-            (level: any, index: number) => ({
-              label: level,
-              value: `${level}-${index}`,
-            })
-          );
+          // For offline: value = label (no index suffix!)
+          const offlineLevels = uniqueLevels.map((lvl: any) => ({
+            label: lvl,
+            value: lvl,
+          }));
           setLevelItems(offlineLevels);
+        }
+      }
+    };
+    fetchStoredContents();
+  }, [data, isSuccess, isError]);
+
+  // When level changes, load courses
+  useEffect(() => {
+    if (!level) return;
+
+    const fetchCourses = async () => {
+      const netInfo = await NetInfo.fetch();
+
+      if (netInfo.isConnected && isConnected) {
+        // ONLINE: fetch from API
+        try {
+          const selectedLevel = levelItems.find(
+            (item) => item.value === level
+          )?.label;
+          const { data: topicsByLevelData } = await getTopicsByLevel({
+            phone_imei: uuid,
+            level: selectedLevel ? parseInt(selectedLevel) : 0,
+          });
+
+          if (topicsByLevelData) {
+            const formattedCourses = topicsByLevelData.map((course, index) => ({
+              label: course.name,
+              value: course.id.toString() || `${course.name}-${index}`,
+            }));
+            setCourseItems(formattedCourses);
+          }
+        } catch (error) {
+          console.error("Error fetching topics by level:", error);
+        }
+      } else {
+        // OFFLINE: filter from stored data
+        const storedContents = await AsyncStorage.getItem("userContents");
+        if (storedContents) {
+          const parsedContents = JSON.parse(storedContents);
 
           const uniqueCourses = Array.from(
             new Set(
@@ -104,49 +147,25 @@ const Edu = () => {
                 .map((content: any) => content.course_name)
             )
           );
-          const offlineCourses = uniqueCourses.map(
-            (course: any, index: number) => ({
-              label: course,
-              value: `${course}-${index}`,
-            })
-          );
+          // For offline: value = label (no index suffix!)
+          const offlineCourses = uniqueCourses.map((c: any) => ({
+            label: c,
+            value: c,
+          }));
           setCourseItems(offlineCourses);
         }
       }
     };
-    fetchStoredContents();
-  }, [data, isSuccess, level]);
 
-  useEffect(() => {
-    const fetchTopicsByLevel = async () => {
-      const selectedLevel = levelItems.find(
-        (item) => item.value === level
-      )?.label;
-      const { data: topicsByLevelData } = await getTopicsByLevel({
-        phone_imei: uuid,
-        level: selectedLevel ? parseInt(selectedLevel) : 0,
-      });
-
-      if (topicsByLevelData) {
-        const formattedCourses = topicsByLevelData.map((course, index) => ({
-          label: course.name,
-          value: course.id.toString() || `${course.name}-${index}`,
-        }));
-        setCourseItems(formattedCourses);
-      }
-
-    };
-
-    fetchTopicsByLevel();
-  }, [level, getTopicsByLevel, uuid]);
+    fetchCourses();
+  }, [level, uuid, isConnected]);
 
   const handleSubmit = async () => {
     try {
       setLoading(true);
       const netInfo = await NetInfo.fetch();
 
-      if (netInfo.isConnected) {
-      
+      if (netInfo.isConnected && isConnected) {
         const result = await searchTopicsInCourses({
           course_id: parseInt(course),
           level_id: parseInt(level),
@@ -174,9 +193,9 @@ const Edu = () => {
           return;
         }
       } else {
+        // OFFLINE: level value = course_level, course value = course_name
         const storedContents = await AsyncStorage.getItem("userContents");
         if (storedContents) {
-         
           const parsedContents = JSON.parse(storedContents);
 
           const selectedCourse = parsedContents.find(
@@ -186,7 +205,6 @@ const Edu = () => {
               content.topics.length > 0
           );
 
- 
           if (selectedCourse) {
             const offlineTopics = selectedCourse.topics.map(
               (topic: any, index: any) => ({
@@ -196,25 +214,27 @@ const Edu = () => {
                 courseName: course,
               })
             );
-            const selectedLevel = levelItems.find(
-              (item) => item.value === level
-            )?.label;
             router.push({
               pathname: "/other/pastQuestionTopic",
               params: {
                 topics: JSON.stringify(offlineTopics),
                 year: JSON.stringify(year),
-                level: JSON.stringify(selectedLevel),
+                level: JSON.stringify(level),
               },
             });
           } else {
             Toast.show({
               type: "error",
               text1: "Error",
-              text2:
-                "No offline data available for selected course. Please try again.",
+              text2: "No offline data available for selected course.",
             });
           }
+        } else {
+          Toast.show({
+            type: "error",
+            text1: "No Data",
+            text2: "No offline data found. Please connect to the internet first.",
+          });
         }
       }
     } catch (error) {
@@ -232,7 +252,7 @@ const Edu = () => {
     }
   };
 
-  if (!uuid || uuid === "") {
+  if (initialLoading) {
     return (
       <SafeAreaView style={styles.bodyContainer}>
         <ActivityIndicator size="large" color="#FF8C00" />
@@ -248,6 +268,12 @@ const Edu = () => {
           Select a course and topic you wish to study
         </Text>
 
+        {!isConnected && (
+          <View style={{ backgroundColor: '#FFF3CD', padding: 8, borderRadius: 6, marginTop: 10 }}>
+            <Text style={{ fontSize: 12, color: '#856404' }}>You are offline. Showing cached data.</Text>
+          </View>
+        )}
+
         {/* Level Picker */}
         <View style={[styles.pickerContainer, open && { zIndex: -20 }]}>
           <Text style={styles.thirdText}>Level</Text>
@@ -262,17 +288,7 @@ const Edu = () => {
               height: 40,
             }}
             setOpen={setOpen2}
-            setValue={(value) => {
-              setLevel(value);
-              const fetchTopicsByLevel = async () => {
-                const topicsByLevelData = await getTopicsByLevel({
-                  phone_imei: uuid,
-                  level: 1,
-                });
-             
-              };
-              fetchTopicsByLevel();
-            }}
+            setValue={setLevel}
             placeholder="Select Level"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
@@ -303,7 +319,7 @@ const Edu = () => {
             placeholder="Select Subject"
             style={pickerSelectStyles.inputIOS}
             dropDownContainerStyle={pickerSelectStyles.dropDownContainer}
-            zIndex={open3 ? 2000 : 1} // Ensure course dropdown is above all when open
+            zIndex={open3 ? 2000 : 1}
           />
         </View>
 

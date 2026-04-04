@@ -1,6 +1,7 @@
 // hooks/useNotifications.tsx
 import { useState, useEffect, useCallback } from "react";
 import { AppState, AppStateStatus } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import NotificationService from "../services/NotificationService";
 import {
   ProcessedNotification,
@@ -98,9 +99,7 @@ export const useNotifications = (): UseNotificationsReturn => {
       if (Array.isArray(apiResult)) {
         // Has notifications - convert to ProcessedNotification format
         apiNotifications = apiResult.map((notification) => ({
-          id: `notification_${Date.now()}_${Math.random()}_${
-            notification.title
-          }`,
+          id: `notification_${notification.created_at}_${notification.title}`,
           title: notification.title,
           message: notification.message,
           createdAt: new Date(notification.created_at),
@@ -140,18 +139,12 @@ export const useNotifications = (): UseNotificationsReturn => {
     fresh: ProcessedNotification[]
   ): ProcessedNotification[] => {
     const storedMap = new Map(
-      stored.map((n) => [
-        `${n.title}-${n.message}-${n.createdAt.toISOString()}`,
-        n,
-      ])
+      stored.map((n) => [n.id, n])
     );
 
     fresh.forEach((freshNotif) => {
-      const key = `${freshNotif.title}-${
-        freshNotif.message
-      }-${freshNotif.createdAt.toISOString()}`;
-      if (!storedMap.has(key)) {
-        storedMap.set(key, freshNotif);
+      if (!storedMap.has(freshNotif.id)) {
+        storedMap.set(freshNotif.id, freshNotif);
       }
     });
 
@@ -219,30 +212,39 @@ export const useNotifications = (): UseNotificationsReturn => {
 
       const notificationData = result.data;
 
-      // await NotificationService.sendLocalNotification(
-      //   "Test Notification",
-      //   "This is a test notification from your SBS Mobile app!"
-      // );
-      // Check if the response is an array (has notifications) or object (no notifications)
-      if (Array.isArray(notificationData)) {
-        // Has notifications - loop through each and send local notification
-        console.log(`Sending ${notificationData.length} notifications...`);
+      if (Array.isArray(notificationData) && notificationData.length > 0) {
+        // Get already-sent notification IDs from storage
+        const sentRaw = await AsyncStorage.getItem("sentNotificationIds");
+        const sentIds: string[] = sentRaw ? JSON.parse(sentRaw) : [];
 
-        for (const notification of notificationData) {
+        const newNotifications = notificationData.filter((notification) => {
+          const id = `notification_${notification.created_at}_${notification.title}`;
+          return !sentIds.includes(id);
+        });
+
+        if (newNotifications.length === 0) {
+          console.log("No new notifications to send");
+          return;
+        }
+
+        console.log(`Sending ${newNotifications.length} new notifications...`);
+
+        const newSentIds: string[] = [];
+        for (const notification of newNotifications) {
           await NotificationService.sendLocalNotification(
             notification.title,
             notification.message
           );
+          newSentIds.push(`notification_${notification.created_at}_${notification.title}`);
         }
 
-        console.log(
-          `Successfully sent ${notificationData.length} notifications`
-        );
+        // Save updated sent IDs (keep last 100 to avoid unbounded growth)
+        const allSentIds = [...sentIds, ...newSentIds].slice(-100);
+        await AsyncStorage.setItem("sentNotificationIds", JSON.stringify(allSentIds));
+
+        console.log(`Successfully sent ${newNotifications.length} notifications`);
       } else if (notificationData?.detail) {
-        // No notifications - don't send any
-        console.log("No notifications to send5678:", notificationData.detail);
-      } else {
-        console.log("Unexpected notification data format:", notificationData);
+        console.log("No notifications to send:", notificationData.detail);
       }
     } catch (err) {
       console.error("Error sending test notification:", err);

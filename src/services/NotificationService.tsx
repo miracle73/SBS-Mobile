@@ -1,7 +1,6 @@
 // services/NotificationService.tsx
 import * as Notifications from "expo-notifications";
 import * as Device from "expo-device";
-import Constants from "expo-constants";
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {
@@ -24,10 +23,8 @@ class NotificationService implements NotificationServiceInterface {
   private notificationListener: Notifications.Subscription | null = null;
   private responseListener: Notifications.Subscription | null = null;
 
-  // Register for push notifications
+  // Register for push notifications via Firebase (FCM)
   async registerForPushNotificationsAsync(): Promise<string | undefined> {
-    let token: Notifications.ExpoPushToken | undefined = undefined;
-
     if (Platform.OS === "android") {
       await Notifications.setNotificationChannelAsync("default", {
         name: "default",
@@ -53,31 +50,24 @@ class NotificationService implements NotificationServiceInterface {
       }
 
       try {
-        // 🔥 FIX: Use your actual project ID directly
-        const projectId =
-          // Constants.expoConfig?.extra?.eas?.projectId ||
-          "c2b5ba9b-0466-473e-b4b7-d250e6cfddda";
+        // Use native FCM token instead of Expo push token
+        const deviceToken = await Notifications.getDevicePushTokenAsync();
+        this.token = deviceToken.data as string;
 
-        // Get the token that uniquely identifies this device
-        token = await Notifications.getExpoPushTokenAsync({
-          projectId: projectId,
-        });
+        // Store FCM token locally
+        await AsyncStorage.setItem("fcmToken", this.token);
 
-        this.token = token.data;
+        console.log("FCM token:", this.token);
 
-        // Store token locally
-        await AsyncStorage.setItem("expoPushToken", token.data);
+        // TODO: Send this token to your backend so it can send
+        // push notifications via Firebase Admin SDK
+        // await sendTokenToBackend(this.token);
 
-        console.log("Push token:", token.data);
-
-        return token.data;
+        return this.token;
       } catch (error) {
-        // console.error("Error getting Expo push token:", error);
-
-        // FIX: If Expo push tokens fail, just continue without push notifications
-        // This prevents the Firebase error
         console.log(
-          "Continuing without push notifications - local notifications will still work"
+          "Error getting FCM token, continuing without push notifications:",
+          error
         );
         return undefined;
       }

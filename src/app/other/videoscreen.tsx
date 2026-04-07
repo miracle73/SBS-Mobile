@@ -4,90 +4,146 @@ import {
   Text,
   StyleSheet,
   SafeAreaView,
-  StatusBar,
-  Alert,
+  TouchableOpacity,
   ActivityIndicator,
 } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MaterialIcons } from "@expo/vector-icons";
+
+// Extract YouTube video ID from various URL formats
+const extractVideoId = (url: string): string | null => {
+  if (!url) return null;
+  const patterns = [
+    /(?:youtu\.be\/)([^?&#]+)/,
+    /(?:youtube\.com\/watch\?v=)([^&#]+)/,
+    /(?:youtube\.com\/embed\/)([^?&#]+)/,
+    /(?:youtube\.com\/v\/)([^?&#]+)/,
+  ];
+  for (const pattern of patterns) {
+    const match = url.match(pattern);
+    if (match) return match[1];
+  }
+  return url; // fallback: assume it's already a video ID
+};
 
 const Videoscreen = () => {
-  const [playing, setPlaying] = useState(false);
+  const { videoUrl, topicTitle, images, title } = useLocalSearchParams();
+  const router = useRouter();
+  const [playing, setPlaying] = useState(true);
   const [loading, setLoading] = useState(true);
+  const [videoEnded, setVideoEnded] = useState(false);
 
-  // Extract video ID from YouTube URL
-  const videoId = "dQw4w9WgXcQ"; // Rick Astley - Never Gonna Give You Up
+  const videoId = extractVideoId(videoUrl as string);
 
-  const onStateChange = useCallback((state: string) => {
-    if (state === "ended") {
-      setPlaying(false);
-      Alert.alert("Video Ended", "The video has finished playing!");
-    }
-  }, []);
+  const onStateChange = useCallback(
+    (state: string) => {
+      if (state === "ended") {
+        setPlaying(false);
+        setVideoEnded(true);
+        // Save that user has watched this video
+        const saveWatchedStatus = async () => {
+          try {
+            const stored = await AsyncStorage.getItem("watchedVideos");
+            const watchedVideos: string[] = stored ? JSON.parse(stored) : [];
+            if (!watchedVideos.includes(topicTitle as string)) {
+              watchedVideos.push(topicTitle as string);
+              await AsyncStorage.setItem(
+                "watchedVideos",
+                JSON.stringify(watchedVideos)
+              );
+            }
+          } catch (error) {
+            console.error("Error saving watched status:", error);
+          }
+        };
+        saveWatchedStatus();
+      }
+    },
+    [topicTitle]
+  );
 
   const onReady = useCallback(() => {
     setLoading(false);
   }, []);
 
-  const onError = useCallback((error: string) => {
-    setLoading(false);
-    Alert.alert("Error", `Failed to load video: ${error}`);
-  }, []);
+  const handleContinueToNotes = () => {
+    // Navigate to imageViewer with the images
+    router.replace({
+      pathname: "/other/imageViewer",
+      params: {
+        images: images as string,
+        title: title as string,
+      },
+    });
+  };
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-
       <View style={styles.header}>
-        <Text style={styles.title}>YouTube Video Player</Text>
-        <Text style={styles.subtitle}>Enjoy your video content</Text>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
+          <MaterialIcons name="arrow-back-ios" size={24} color="#000" />
+        </TouchableOpacity>
+        <View style={{ flex: 1 }}>
+          <Text style={styles.title} numberOfLines={2}>
+            {topicTitle}
+          </Text>
+        </View>
       </View>
 
       <View style={styles.videoContainer}>
         {loading && (
           <View style={styles.loadingContainer}>
-            <ActivityIndicator size="large" color="#FF0000" />
+            <ActivityIndicator size="large" color="#FF8C00" />
             <Text style={styles.loadingText}>Loading video...</Text>
           </View>
         )}
 
-        <YoutubePlayer
-          height={220}
-          play={playing}
-          videoId={videoId}
-          onChangeState={onStateChange}
-          onReady={onReady}
-          onError={onError}
-          webViewStyle={styles.webView}
-          webViewProps={{
-            injectedJavaScript: `
-              var element = document.getElementsByClassName('container')[0];
-              element.style.position = 'unset';
-              element.style.paddingBottom = 'unset';
-              true;
-            `,
-          }}
-        />
+        {videoId && (
+          <YoutubePlayer
+            height={220}
+            play={playing}
+            videoId={videoId}
+            onChangeState={onStateChange}
+            onReady={onReady}
+            webViewStyle={styles.webView}
+          />
+        )}
       </View>
 
       <View style={styles.infoContainer}>
-        <Text style={styles.videoTitle}>
-          Rick Astley - Never Gonna Give You Up
-        </Text>
-        <Text style={styles.videoDescription}>
-          The official video for "Never Gonna Give You Up" by Rick Astley. A
-          classic that never gets old!
-        </Text>
-
-        <View style={styles.statsContainer}>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>1.4B</Text>
-            <Text style={styles.statLabel}>Views</Text>
+        {!videoEnded ? (
+          <View style={styles.messageContainer}>
+            <MaterialIcons name="play-circle-outline" size={40} color="#FF8C00" />
+            <Text style={styles.messageText}>
+              Please watch the video to completion before accessing the notes.
+            </Text>
+            <TouchableOpacity
+              style={[styles.continueButton, styles.continueButtonDisabled]}
+              disabled={true}
+            >
+              <MaterialIcons name="lock" size={18} color="#999" />
+              <Text style={styles.continueButtonTextDisabled}>
+                Continue to Notes
+              </Text>
+            </TouchableOpacity>
           </View>
-          <View style={styles.statItem}>
-            <Text style={styles.statNumber}>15M</Text>
-            <Text style={styles.statLabel}>Likes</Text>
+        ) : (
+          <View style={styles.messageContainer}>
+            <MaterialIcons name="check-circle" size={40} color="#4CAF50" />
+            <Text style={styles.messageTextSuccess}>
+              Video completed! You can now access the notes.
+            </Text>
+            <TouchableOpacity
+              style={styles.continueButton}
+              onPress={handleContinueToNotes}
+            >
+              <MaterialIcons name="arrow-forward" size={18} color="#fff" />
+              <Text style={styles.continueButtonText}>Continue to Notes</Text>
+            </TouchableOpacity>
           </View>
-        </View>
+        )}
       </View>
     </SafeAreaView>
   );
@@ -100,32 +156,28 @@ const styles = StyleSheet.create({
     paddingTop: 40,
   },
   header: {
-    padding: 20,
+    flexDirection: "row",
     alignItems: "center",
-    borderBottomWidth: 1,
-    borderBottomColor: "#e0e0e0",
+    paddingHorizontal: 16,
+    paddingBottom: 10,
+  },
+  backButton: {
+    marginRight: 8,
+    padding: 4,
   },
   title: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: "bold",
     color: "#333",
-    marginBottom: 4,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
   },
   videoContainer: {
-    margin: 20,
+    marginHorizontal: 16,
     borderRadius: 12,
     overflow: "hidden",
     backgroundColor: "#000",
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
@@ -143,45 +195,59 @@ const styles = StyleSheet.create({
   loadingText: {
     color: "#fff",
     marginTop: 10,
-    fontSize: 16,
+    fontSize: 14,
   },
   webView: {
     borderRadius: 12,
   },
   infoContainer: {
     padding: 20,
+    flex: 1,
+    justifyContent: "center",
   },
-  videoTitle: {
-    fontSize: 20,
-    fontWeight: "bold",
-    color: "#333",
-    marginBottom: 8,
-  },
-  videoDescription: {
-    fontSize: 14,
-    color: "#666",
-    lineHeight: 20,
-    marginBottom: 20,
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-    padding: 16,
-  },
-  statItem: {
+  messageContainer: {
     alignItems: "center",
+    gap: 16,
   },
-  statNumber: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#FF0000",
-  },
-  statLabel: {
-    fontSize: 12,
+  messageText: {
+    fontSize: 15,
     color: "#666",
-    marginTop: 2,
+    textAlign: "center",
+    lineHeight: 22,
+    paddingHorizontal: 20,
+  },
+  messageTextSuccess: {
+    fontSize: 15,
+    color: "#4CAF50",
+    textAlign: "center",
+    lineHeight: 22,
+    fontWeight: "600",
+    paddingHorizontal: 20,
+  },
+  continueButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "#FF8C00",
+    paddingVertical: 14,
+    paddingHorizontal: 28,
+    borderRadius: 8,
+    gap: 8,
+    marginTop: 10,
+    width: "80%",
+  },
+  continueButtonDisabled: {
+    backgroundColor: "#E0E0E0",
+  },
+  continueButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "600",
+  },
+  continueButtonTextDisabled: {
+    color: "#999",
+    fontSize: 16,
+    fontWeight: "600",
   },
 });
 

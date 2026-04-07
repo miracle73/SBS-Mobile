@@ -1,10 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator } from "react-native";
 import React, { useState, useEffect } from "react";
-import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
+import { EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
 import SubscriptionModal from "./modals/SubscriptionModal";
-import * as Device from "expo-device";
 import {
   useGetTopicContentMutation,
   useUserActivatedStatusMutation,
@@ -15,7 +14,7 @@ import NetInfo from "@react-native-community/netinfo";
 import { useIsFocused } from "@react-navigation/native";
 import * as ScreenCapture from "expo-screen-capture";
 import ScreenshotPrevent from "react-native-screenshot-prevent";
-import BirthdayImage from "../../assets/images/birthdayImage.png";
+import ImageCacheService from "../services/ImageCacheService";
 
 interface TopicComponentProps {
   title: string;
@@ -38,45 +37,35 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   const [showImage, setShowImage] = useState(false);
   const [showImageText, setShowImageText] = useState(false);
   const [imageData, setImageData] = useState<string[]>([]);
+  const [caching, setCaching] = useState(false);
+
   useEffect(() => {
     const fetchStoredUuid = async () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
-
-        if (storedUuid) {
-          console.log("Stored UUID:", storedUuid);
-          setUuid(storedUuid);
-        }
+        if (storedUuid) setUuid(storedUuid);
       } catch (error) {
         console.error("Error fetching UUID:", error);
       }
     };
-
     fetchStoredUuid();
   }, []);
+
   const phoneImei = uuid;
   const router = useRouter();
   const [modal, setModal] = React.useState(false);
-
-  const [getTopicContent, { data, error, isLoading }] =
-    useGetTopicContentMutation();
+  const [getTopicContent] = useGetTopicContentMutation();
   const [userActivatedStatus] = useUserActivatedStatusMutation();
   const isFocused = useIsFocused();
 
-  const activate = async () => {
-    await ScreenCapture.preventScreenCaptureAsync();
-  };
-
-  const deactivate = async () => {
-    await ScreenCapture.allowScreenCaptureAsync();
-  };
-
   if (isFocused) {
-    activate();
+    ScreenCapture.preventScreenCaptureAsync();
   }
+
   useEffect(() => {
     ScreenshotPrevent.enableSecureView();
   }, []);
+
   interface ActivationMessage {
     semester: string;
     level: number;
@@ -88,9 +77,49 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   const [filteredMessage, setFilteredMessage] =
     React.useState<ActivationMessage | null>(null);
 
+  // Check if user has watched the video for this topic
+  const hasWatchedVideo = async (): Promise<boolean> => {
+    try {
+      const stored = await AsyncStorage.getItem("watchedVideos");
+      const watchedVideos: string[] = stored ? JSON.parse(stored) : [];
+      return watchedVideos.includes(title);
+    } catch {
+      return false;
+    }
+  };
+
+  // Navigate to content — either video gate or image viewer
+  const navigateToContent = async (images: string[], videoUrl?: string | null) => {
+    const hasVideo = videoUrl && videoUrl.trim() !== "";
+    const watched = await hasWatchedVideo();
+
+    if (hasVideo && !watched) {
+      // First time + has video → force video gate
+      router.push({
+        pathname: "/other/videoscreen",
+        params: {
+          videoUrl: videoUrl!,
+          topicTitle: title,
+          images: JSON.stringify(images),
+          title: title,
+        },
+      });
+    } else {
+      // No video or already watched → go straight to images
+      router.push({
+        pathname: "/other/imageViewer",
+        params: {
+          images: JSON.stringify(images),
+          title: title,
+        },
+      });
+    }
+  };
+
   const handlePress = async () => {
     setShowImage(!showImage);
 
+    // Check activation for non-free topics
     if (!free) {
       try {
         const netInfo = await NetInfo.fetch();
@@ -99,46 +128,31 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           const activationStatus = await userActivatedStatus({
             phone_imei: phoneImei,
           }).unwrap();
-          console.log(
-            "Activation status:",
-            activationStatus.message.map((msg) => msg.level)
-          );
 
           await AsyncStorage.setItem(
             "activationMessage",
             JSON.stringify(activationStatus.message)
           );
 
-          const filteredMessage = activationStatus.message.find(
-            (msg) => msg.level == parseInt(level)
+          const msg = activationStatus.message.find(
+            (m) => m.level == parseInt(level)
           );
-          console.log("Filtered message:", filteredMessage, parseInt(level));
 
-          if (!filteredMessage || !filteredMessage.is_activated) {
+          if (!msg || !msg.is_activated) {
             setFilteredMessage(null);
-            // Toast.show({
-            //   type: "error",
-            //   text1: "Error",
-            //   text2: "You do not have access to this content.",
-            // });
             setModal(true);
             return;
           } else {
-            setFilteredMessage(filteredMessage);
+            setFilteredMessage(msg);
           }
         } else {
           const storedMessage = await AsyncStorage.getItem("activationMessage");
           if (storedMessage) {
             const parsedMessage = JSON.parse(storedMessage);
-            const filteredMessage = parsedMessage.find(
-              (msg: any) => msg.level === parseInt(level)
+            const msg = parsedMessage.find(
+              (m: any) => m.level === parseInt(level)
             );
-            if (!filteredMessage || !filteredMessage.is_activated) {
-              // Toast.show({
-              //   type: "error",
-              //   text1: "Error",
-              //   text2: "You do not have access to this content.",
-              // });
+            if (!msg || !msg.is_activated) {
               setModal(true);
               return;
             }
@@ -157,110 +171,83 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
       }
     }
 
+    // Fetch topic content
     try {
       const netInfo = await NetInfo.fetch();
 
       if (netInfo.isConnected) {
+        // ONLINE
         const result = await getTopicContent({
           phone_imei: uuid,
           topic_id: id,
         }).unwrap();
 
-
-        console.log("Fetched topic content:", result.topic_images);
-
         if (result?.topic_images) {
           if (result.topic_images.length === 0) {
             setShowImageText(true);
+            return;
           }
-          if (result.topic_images.length > 0) {
-            setImageData(result.topic_images);
-            router.push({
-              pathname: "/other/imageViewer",
-              params: {
-                images: JSON.stringify(result.topic_images),
-                title: title,
-              },
-            });
-          }
+
+          setImageData(result.topic_images);
+
+          // Cache images in background for offline use
+          setCaching(true);
+          ImageCacheService.cacheImages(result.topic_images)
+            .then(() => {
+              console.log(`Cached ${result.topic_images.length} images for: ${title}`);
+            })
+            .catch((err) => console.error("Cache error:", err))
+            .finally(() => setCaching(false));
+
+          // Navigate — pass topic_video from API response
+          await navigateToContent(result.topic_images, result.topic_video);
         } else {
           setImageData([]);
+          setShowImageText(true);
         }
       } else {
+        // OFFLINE
         const storedContents = await AsyncStorage.getItem("userContents");
-        if (storedContents) {
-          const parsedContents = JSON.parse(storedContents);
-
-          const selectedCourse = parsedContents.find(
-            (content: any) => content.course_name === courseName
-          );
-
-          if (selectedCourse) {
-            const selectedTopic = selectedCourse.topics.find(
-              (topic: any) => topic.topic_title === title
-            );
-
-
-
-            if (selectedTopic) {
-              // if (selectedTopic.topic_images && selectedTopic.topic_images.length > 0) {
-              //   setImageData(selectedTopic.topic_images);
-              // } else {
-              //   setImageData([]);
-              // }
-              if (selectedTopic.topic_images) {
-                if (selectedTopic.topic_images.length === 0) {
-                  setShowImageText(true);
-                }
-                if (selectedTopic.topic_images.length > 0) {
-                  setImageData(selectedTopic.topic_images);
-                  router.push({
-                    pathname: "/other/imageViewer",
-                    params: {
-                      images: JSON.stringify(selectedTopic.topic_images),
-                      title: title,
-                    },
-                  });
-                }
-              } else {
-                setImageData([]);
-              }
-              // if (selectedTopic.topic_content) {
-              //   onPdfOpen?.({
-              //     video: selectedTopic.topic_video,
-              //     pdfUrl: {
-              //       uri: `https://sbsapp.com.ng/static/${selectedTopic.topic_content}`,
-              //       cache: true,
-              //     },
-              //   });
-              //   return;
-              // }
-              // router.push({
-              //   pathname: "/other/note",
-              //   params: {
-              //     content: JSON.stringify({
-              //       title: selectedTopic.topic_title,
-              //       free: selectedTopic.topic_free,
-              //       content: selectedTopic.topic_content,
-              //       image_1: null,
-              //       image_2: null,
-              //       image_3: null,
-              //       image_4: null,
-              //       image_5: null,
-              //       id: null,
-              //       course_id: null,
-              //       latex: selectedTopic.topic_latex,
-              //     }),
-              //   },
-              // });
-            } else {
-              throw new Error("Offline topic content not found.");
-            }
-          } else {
-            throw new Error("Offline data not available for selected course.");
-          }
-        } else {
+        if (!storedContents) {
           throw new Error("No offline data available.");
+        }
+
+        const parsedContents = JSON.parse(storedContents);
+        const selectedCourse = parsedContents.find(
+          (content: any) => content.course_name === courseName
+        );
+
+        if (!selectedCourse) {
+          throw new Error("Offline data not available for selected course.");
+        }
+
+        const selectedTopic = selectedCourse.topics.find(
+          (topic: any) => topic.topic_title === title
+        );
+
+        if (!selectedTopic) {
+          throw new Error("Offline topic content not found.");
+        }
+
+        if (!selectedTopic.topic_images || selectedTopic.topic_images.length === 0) {
+          setShowImageText(true);
+          return;
+        }
+
+        // Check if images are cached locally
+        const cachedImages = await ImageCacheService.getCachedImages(
+          selectedTopic.topic_images
+        );
+
+        if (cachedImages) {
+          // Images are cached — use local paths, pass video URL from stored data
+          await navigateToContent(cachedImages, selectedTopic.topic_video);
+        } else {
+          Toast.show({
+            type: "info",
+            text1: "Not Available Offline",
+            text2: "Open this topic while online first to cache it for offline use.",
+          });
         }
       }
     } catch (error) {
@@ -279,19 +266,25 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     <View>
       <TouchableOpacity
         onPress={handlePress}
-        style={[
-          {
-            backgroundColor: "#F8F8F8",
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 20,
-            marginBottom: 10,
-          },
-        ]}
+        style={{
+          backgroundColor: "#F8F8F8",
+          borderRadius: 10,
+          paddingHorizontal: 10,
+          paddingVertical: 20,
+          marginBottom: 10,
+        }}
       >
         <View style={styles.Container}>
-          <View>
+          <View style={{ flex: 1 }}>
             <Text style={styles.firstText}>{title}</Text>
+            {caching && (
+              <View style={{ flexDirection: "row", alignItems: "center", gap: 4 }}>
+                <ActivityIndicator size="small" color="#FF8C00" />
+                <Text style={{ fontSize: 10, color: "#999" }}>
+                  Caching for offline...
+                </Text>
+              </View>
+            )}
           </View>
           {!free ? (
             filteredMessage ? (
@@ -302,23 +295,11 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           ) : null}
         </View>
       </TouchableOpacity>
-      {showImage && (
-        <View>
-          {/* {imageData.length > 0 ? (
-            imageData.map((imageUrl: string, index: number) => (
-              <Image
-                key={index}
-                source={{ uri: `https://sbsapp.com.ng/${imageUrl}` }}
-                style={styles.image}
-              />
-            ))
-              
-          ) : ( */}
-          {showImageText && (
-            <View style={{ padding: 20, alignItems: 'center' }}>
-              <Text style={{ fontSize: 14, color: '#666' }}>No content available</Text>
-            </View>)}
-          {/* )} */}
+      {showImage && showImageText && (
+        <View style={{ padding: 20, alignItems: "center" }}>
+          <Text style={{ fontSize: 14, color: "#666" }}>
+            No content available
+          </Text>
         </View>
       )}
       {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
@@ -332,28 +313,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  RoundedContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
   firstText: {
     fontSize: 16,
     fontWeight: "700",
     fontStyle: "normal",
     color: "#000000",
     marginBottom: 5,
-  },
-  secondText: {
-    fontSize: 10,
-    fontWeight: "400",
-    fontStyle: "normal",
-    color: "#000000",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 10,
   },
 });
 

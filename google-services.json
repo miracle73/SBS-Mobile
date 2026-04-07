@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "910248188519",
+    "project_id": "sbsapp-76e39",
+    "storage_bucket": "sbsapp-76e39.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:910248188519:android:420dacc9321c4a566a52c2",
+        "android_client_info": {
+          "package_name": "com.mirack.SBSMobile"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDKoc-hFfUWfw5dfNYZp1WvDTv637tWqhM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

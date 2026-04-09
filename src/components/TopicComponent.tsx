@@ -190,6 +190,15 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
 
           setImageData(result.topic_images);
 
+          // Cache topic content for offline use
+          await AsyncStorage.setItem(
+            `cachedTopicContent_${title}`,
+            JSON.stringify({
+              topic_images: result.topic_images,
+              topic_video: result.topic_video,
+            })
+          );
+
           // Cache images in background for offline use
           setCaching(true);
           ImageCacheService.cacheImages(result.topic_images)
@@ -206,42 +215,32 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
           setShowImageText(true);
         }
       } else {
-        // OFFLINE
-        const storedContents = await AsyncStorage.getItem("userContents");
-        if (!storedContents) {
-          throw new Error("No offline data available.");
+        // OFFLINE — use cached topic content
+        const cachedContent = await AsyncStorage.getItem(`cachedTopicContent_${title}`);
+
+        if (!cachedContent) {
+          Toast.show({
+            type: "info",
+            text1: "Not Available Offline",
+            text2: "Open this topic while online first to cache it for offline use.",
+          });
+          return;
         }
 
-        const parsedContents = JSON.parse(storedContents);
-        const selectedCourse = parsedContents.find(
-          (content: any) => content.course_name === courseName
-        );
+        const parsedContent = JSON.parse(cachedContent);
 
-        if (!selectedCourse) {
-          throw new Error("Offline data not available for selected course.");
-        }
-
-        const selectedTopic = selectedCourse.topics.find(
-          (topic: any) => topic.topic_title === title
-        );
-
-        if (!selectedTopic) {
-          throw new Error("Offline topic content not found.");
-        }
-
-        if (!selectedTopic.topic_images || selectedTopic.topic_images.length === 0) {
+        if (!parsedContent.topic_images || parsedContent.topic_images.length === 0) {
           setShowImageText(true);
           return;
         }
 
         // Check if images are cached locally
         const cachedImages = await ImageCacheService.getCachedImages(
-          selectedTopic.topic_images
+          parsedContent.topic_images
         );
 
         if (cachedImages) {
-          // Images are cached — use local paths, pass video URL from stored data
-          await navigateToContent(cachedImages, selectedTopic.topic_video);
+          await navigateToContent(cachedImages, parsedContent.topic_video);
         } else {
           Toast.show({
             type: "info",

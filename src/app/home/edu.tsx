@@ -62,7 +62,6 @@ const Edu = () => {
         setInitialLoading(false);
       }
     };
-
     fetchStoredUuid();
   }, []);
 
@@ -85,22 +84,18 @@ const Edu = () => {
           value: level.id.toString(),
         }));
         setLevelItems(formattedLevels);
-      } else if (!connected || isError) {
-        const storedContents = await AsyncStorage.getItem("userContents");
-        if (storedContents) {
-          setIsConnected(false);
-          const parsedContents = JSON.parse(storedContents);
 
-          const uniqueLevels = Array.from(
-            new Set(parsedContents.map((content: any) => content.course_level))
-          );
-          // For offline: value = label (no index suffix!)
-          const offlineLevels = uniqueLevels.map((lvl: any) => ({
-            label: lvl,
-            value: lvl,
-          }));
-          setLevelItems(offlineLevels);
-        }
+        // Cache for offline use
+        await AsyncStorage.setItem("cachedSchoolItems", JSON.stringify([formattedSchools]));
+        await AsyncStorage.setItem("cachedLevelItems_edu", JSON.stringify(formattedLevels));
+      } else if (!connected || isError) {
+        // OFFLINE: load cached API results
+        setIsConnected(false);
+        const cachedSchools = await AsyncStorage.getItem("cachedSchoolItems");
+        const cachedLevels = await AsyncStorage.getItem("cachedLevelItems_edu");
+
+        if (cachedSchools) setSchoolItems(JSON.parse(cachedSchools));
+        if (cachedLevels) setLevelItems(JSON.parse(cachedLevels));
       }
     };
     fetchStoredContents();
@@ -130,29 +125,28 @@ const Edu = () => {
               value: course.id.toString() || `${course.name}-${index}`,
             }));
             setCourseItems(formattedCourses);
+
+            // Cache courses per level for offline use
+            await AsyncStorage.setItem(
+              `cachedCourses_edu_${level}`,
+              JSON.stringify(formattedCourses)
+            );
           }
         } catch (error) {
           console.error("Error fetching topics by level:", error);
         }
       } else {
-        // OFFLINE: filter from stored data
-        const storedContents = await AsyncStorage.getItem("userContents");
-        if (storedContents) {
-          const parsedContents = JSON.parse(storedContents);
-
-          const uniqueCourses = Array.from(
-            new Set(
-              parsedContents
-                .filter((content: any) => content.course_level === level)
-                .map((content: any) => content.course_name)
-            )
-          );
-          // For offline: value = label (no index suffix!)
-          const offlineCourses = uniqueCourses.map((c: any) => ({
-            label: c,
-            value: c,
-          }));
-          setCourseItems(offlineCourses);
+        // OFFLINE: load cached courses for this level
+        const cachedCourses = await AsyncStorage.getItem(`cachedCourses_edu_${level}`);
+        if (cachedCourses) {
+          setCourseItems(JSON.parse(cachedCourses));
+        } else {
+          setCourseItems([]);
+          Toast.show({
+            type: "info",
+            text1: "No Cached Data",
+            text2: "Select this level while online first to cache courses.",
+          });
         }
       }
     };
@@ -176,6 +170,13 @@ const Edu = () => {
           const selectedLevel = levelItems.find(
             (item) => item.value === level
           )?.label;
+
+          // Cache topics for offline use
+          await AsyncStorage.setItem(
+            `cachedTopics_edu_${level}_${course}`,
+            JSON.stringify(result.topics)
+          );
+
           router.push({
             pathname: "/other/pastQuestionTopic",
             params: {
@@ -193,47 +194,30 @@ const Edu = () => {
           return;
         }
       } else {
-        // OFFLINE: level value = course_level, course value = course_name
-        const storedContents = await AsyncStorage.getItem("userContents");
-        if (storedContents) {
-          const parsedContents = JSON.parse(storedContents);
+        // OFFLINE: load cached topics
+        const cachedTopics = await AsyncStorage.getItem(
+          `cachedTopics_edu_${level}_${course}`
+        );
 
-          const selectedCourse = parsedContents.find(
-            (content: any) =>
-              content.course_level === level &&
-              content.course_name === course &&
-              content.topics.length > 0
-          );
+        if (cachedTopics) {
+          const topics = JSON.parse(cachedTopics);
+          const selectedLevel = levelItems.find(
+            (item) => item.value === level
+          )?.label;
 
-          if (selectedCourse) {
-            const offlineTopics = selectedCourse.topics.map(
-              (topic: any, index: any) => ({
-                id: index + 1,
-                title: topic.topic_title,
-                free: topic.topic_free,
-                courseName: course,
-              })
-            );
-            router.push({
-              pathname: "/other/pastQuestionTopic",
-              params: {
-                topics: JSON.stringify(offlineTopics),
-                year: JSON.stringify(year),
-                level: JSON.stringify(level),
-              },
-            });
-          } else {
-            Toast.show({
-              type: "error",
-              text1: "Error",
-              text2: "No offline data available for selected course.",
-            });
-          }
+          router.push({
+            pathname: "/other/pastQuestionTopic",
+            params: {
+              topics: JSON.stringify(topics),
+              year: JSON.stringify(year),
+              level: JSON.stringify(selectedLevel),
+            },
+          });
         } else {
           Toast.show({
             type: "error",
-            text1: "No Data",
-            text2: "No offline data found. Please connect to the internet first.",
+            text1: "Not Available Offline",
+            text2: "Search this course while online first to cache it.",
           });
         }
       }
@@ -346,12 +330,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFFFF",
   },
   fourthText: {
-    fontSize: 24,
-    color: "#000000",
-    fontWeight: "700",
-    marginBottom: 5,
-  },
-  firstText: {
     fontSize: 24,
     color: "#000000",
     fontWeight: "700",

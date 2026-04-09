@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,6 +11,8 @@ import YoutubePlayer from "react-native-youtube-iframe";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialIcons } from "@expo/vector-icons";
+
+
 
 // Extract YouTube video ID from various URL formats
 const extractVideoId = (url: string): string | null => {
@@ -108,6 +110,14 @@ const Videoscreen = () => {
             onChangeState={onStateChange}
             onReady={onReady}
             webViewStyle={styles.webView}
+            webViewProps={{
+              allowsInlineMediaPlayback: true,
+            }}
+            initialPlayerParams={{
+              modestbranding: true,
+              controls: true,
+              rel: false,
+            }}
           />
         )}
       </View>

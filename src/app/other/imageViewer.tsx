@@ -46,6 +46,7 @@ export default function ImageViewer() {
         enableSwipeDown
         onSwipeDown={() => router.back()}
         backgroundColor="#000"
+        onLongPress={() => {}}
       />
     </View>
   );

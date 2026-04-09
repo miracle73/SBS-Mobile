@@ -51,12 +51,6 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
     fetchStoredUuid();
   }, []);
 
-
-
-  useEffect(() => {
-    AsyncStorage.removeItem("watchedVideos");
-  }, []);
-
   const phoneImei = uuid;
   const router = useRouter();
   const [modal, setModal] = React.useState(false);

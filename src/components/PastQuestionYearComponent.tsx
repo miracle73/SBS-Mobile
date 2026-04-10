@@ -1,13 +1,8 @@
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
 import { useRouter } from "expo-router";
-import {
-  useGetTopicContentMutation,
-  useUserActivatedStatusMutation,
-} from "../components/services/userService";
-import Toast from "react-native-toast-message";
+import ImageCacheService from "../services/ImageCacheService";
 import NetInfo from "@react-native-community/netinfo";
-import PdfComponent from "./PdfComponent";
 
 interface PastQuestionYearComponentProps {
   question: {
@@ -35,32 +30,40 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
 
     if (question.images.length === 0) {
       setShowImageText(true);
+      return;
     }
 
-    if (question.images.length > 0) {
-      router.push({
-        pathname: "/other/imageViewer",
-        params: {
-          images: JSON.stringify(question.images),
-          title: `Past Questions ${question.year}`,
-        },
-      });
+    // Images already have local paths if coming from cached PQ data offline
+    // Or remote paths if online — imageViewer handles both
+    const netInfo = await NetInfo.fetch();
+
+    if (netInfo.isConnected) {
+      // Cache images in background for offline
+      ImageCacheService.cacheImages(question.images).catch((err) =>
+        console.error("PQYear cache error:", err)
+      );
     }
+
+    router.push({
+      pathname: "/other/imageViewer",
+      params: {
+        images: JSON.stringify(question.images),
+        title: `Past Questions ${question.year}`,
+      },
+    });
   };
 
   return (
     <View>
       <TouchableOpacity
         onPress={handlePress}
-        style={[
-          {
-            backgroundColor: "#F8F8F8",
-            borderRadius: 10,
-            paddingHorizontal: 10,
-            paddingVertical: 20,
-            marginBottom: 10,
-          },
-        ]}
+        style={{
+          backgroundColor: "#F8F8F8",
+          borderRadius: 10,
+          paddingHorizontal: 10,
+          paddingVertical: 20,
+          marginBottom: 10,
+        }}
       >
         <View style={styles.Container}>
           <View>
@@ -68,13 +71,11 @@ const PastQuestionYearComponent: React.FC<PastQuestionYearComponentProps> = ({
           </View>
         </View>
       </TouchableOpacity>
-      {showImages && (
-        <View>
-          {showImageText && (
-            <View style={{ padding: 20, alignItems: 'center' }}>
-              <Text style={{ fontSize: 14, color: '#666' }}>No pastquestion available</Text>
-            </View>
-          )}
+      {showImages && showImageText && (
+        <View style={{ padding: 20, alignItems: "center" }}>
+          <Text style={{ fontSize: 14, color: "#666" }}>
+            No past question available
+          </Text>
         </View>
       )}
     </View>
@@ -87,28 +88,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  RoundedContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
   firstText: {
     fontSize: 16,
     fontWeight: "700",
     fontStyle: "normal",
     color: "#000000",
     marginBottom: 5,
-  },
-  secondText: {
-    fontSize: 10,
-    fontWeight: "400",
-    fontStyle: "normal",
-    color: "#000000",
-  },
-  image: {
-    width: "100%",
-    height: 200,
-    marginBottom: 10,
   },
 });
 

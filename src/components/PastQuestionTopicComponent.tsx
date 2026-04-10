@@ -1,10 +1,9 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState, useEffect } from "react";
-import { MaterialIcons, EvilIcons } from "@expo/vector-icons";
+import { EvilIcons } from "@expo/vector-icons";
 import { SecondPadlockIcon } from "../../assets/svg";
 import { useRouter } from "expo-router";
 import SubscriptionModal from "./modals/SubscriptionModal";
-import * as Device from "expo-device";
 import {
   useGetTopicPastQuestionQuery,
   useUserActivatedStatusMutation,
@@ -12,6 +11,7 @@ import {
 import Toast from "react-native-toast-message";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import NetInfo from "@react-native-community/netinfo";
+import ImageCacheService from "../services/ImageCacheService";
 
 interface PastQuestionTopicComponentProps {
   title: string;
@@ -34,28 +34,26 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
   const [modal, setModal] = React.useState(false);
   const [showText, setShowText] = useState(false);
   const [uuid, setUuid] = useState("");
+
   useEffect(() => {
     const fetchStoredUuid = async () => {
       try {
         let storedUuid = await AsyncStorage.getItem("device_uuid");
-
-        if (storedUuid) {
-          console.log("Stored UUID:", storedUuid);
-          setUuid(storedUuid);
-        }
+        if (storedUuid) setUuid(storedUuid);
       } catch (error) {
         console.error("Error fetching UUID:", error);
       }
     };
-
     fetchStoredUuid();
   }, []);
+
   const [userActivatedStatus] = useUserActivatedStatusMutation();
   const phoneImei = uuid;
   const { data, error, isLoading } = useGetTopicPastQuestionQuery({
     topic_id: id,
     year: Number(year),
   });
+
   interface ActivationMessage {
     semester: string;
     level: number;
@@ -76,24 +74,17 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           const activationStatus = await userActivatedStatus({
             phone_imei: phoneImei,
           }).unwrap();
-          console.log("Activation status:", activationStatus);
 
           await AsyncStorage.setItem(
             "activationMessage",
             JSON.stringify(activationStatus.message)
           );
 
-          const filteredMessage = activationStatus.message.find(
-            (msg) => msg.level === parseInt(level)
+          const msg = activationStatus.message.find(
+            (m) => m.level === parseInt(level)
           );
-          console.log("Filtered message:", filteredMessage, parseInt(level));
 
-          if (!filteredMessage || !filteredMessage.is_activated) {
-            // Toast.show({
-            //   type: "error",
-            //   text1: "Error",
-            //   text2: "You do not have access to this content.",
-            // });
+          if (!msg || !msg.is_activated) {
             setModal(true);
             return;
           }
@@ -101,20 +92,15 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           const storedMessage = await AsyncStorage.getItem("activationMessage");
           if (storedMessage) {
             const parsedMessage = JSON.parse(storedMessage);
-            const filteredMessage = parsedMessage.find(
-              (msg: any) => msg.level === parseInt(level)
+            const msg = parsedMessage.find(
+              (m: any) => m.level === parseInt(level)
             );
-            if (!filteredMessage || !filteredMessage.is_activated) {
+            if (!msg || !msg.is_activated) {
               setFilteredMessage(null);
-              // Toast.show({
-              //   type: "error",
-              //   text1: "Error",
-              //   text2: "You do not have access to this content.",
-              // });
               setModal(true);
               return;
             } else {
-              setFilteredMessage(filteredMessage);
+              setFilteredMessage(msg);
             }
           } else {
             throw new Error("Activation status not found in storage.");
@@ -136,22 +122,30 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
 
       if (netInfo.isConnected) {
         if (error) {
-          console.error("Error fetching topic content:", error);
           const errorMessage =
             (error as any).data?.detail?.message ||
-            "Failed to fetch topic content.";
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2: errorMessage,
-          });
+            "Failed to fetch past questions.";
+          Toast.show({ type: "error", text1: "Error", text2: errorMessage });
           return;
         }
 
         if (data) {
-      
-
           if (data.questions && data.questions.length > 0) {
+            // Cache past questions for offline use
+            await AsyncStorage.setItem(
+              `cachedPastQuestions_${title}`,
+              JSON.stringify(data.questions)
+            );
+
+            // Cache images for each question in background
+            for (const question of data.questions) {
+              if (question.images && question.images.length > 0) {
+                ImageCacheService.cacheImages(question.images).catch((err) =>
+                  console.error("PQ cache error:", err)
+                );
+              }
+            }
+
             router.push({
               pathname: "/other/pastQuestionYear",
               params: { content: JSON.stringify(data.questions) },
@@ -161,101 +155,78 @@ const PastQuestionTopicComponent: React.FC<PastQuestionTopicComponentProps> = ({
           }
         }
       } else {
-        // Offline mode: fetch data from the AsyncStorage
-        const storedContents = await AsyncStorage.getItem("userContents");
-        if (storedContents) {
-          const parsedContents = JSON.parse(storedContents);
-          const selectedCourse = parsedContents.find(
-            (content: any) => content.course_name == courseName
+        // OFFLINE: use cached past questions
+        const cachedPQ = await AsyncStorage.getItem(`cachedPastQuestions_${title}`);
+
+        if (cachedPQ) {
+          const questions = JSON.parse(cachedPQ);
+
+          // Replace remote image paths with cached local paths where available
+          const updatedQuestions = await Promise.all(
+            questions.map(async (q: any) => {
+              if (q.images && q.images.length > 0) {
+                const cachedImages = await ImageCacheService.getCachedImages(q.images);
+                return { ...q, images: cachedImages || q.images };
+              }
+              return q;
+            })
           );
 
-          if (selectedCourse) {
-            const selectedTopic = selectedCourse.topics.find(
-              (topic: any) => topic.topic_title === title
-            );
-            if (selectedTopic && selectedTopic.past_questions) {
-              const offlinePastQuestions = selectedTopic.past_questions.map(
-                (pq: any) => ({
-                  year: pq.year,
-                  pdf_content: pq.content,
-                  image_1: pq.images[0],
-                  image_2: pq.images[1],
-                  image_3: pq.images[2],
-                  image_4: pq.images[3],
-                  image_5: pq.images[4],
-                  file: null,
-                  topic_id: null,
-                  id: null,
-                  latex: pq.latex,
-                })
-              );
-              if (offlinePastQuestions[0]?.images.length > 0) {
-                router.push({
-                  pathname: "/other/pastQuestionYear",
-                  params: { content: JSON.stringify(offlinePastQuestions) },
-                });
-                return;
-              }
-              router.push({
-                pathname: "/other/pastQuestion",
-                params: { content: JSON.stringify(offlinePastQuestions) },
-              });
-            } else {
-              throw new Error("Offline past questions not found.");
-            }
-          } else {
-            throw new Error("Offline data not available for selected course.");
-          }
+          router.push({
+            pathname: "/other/pastQuestionYear",
+            params: { content: JSON.stringify(updatedQuestions) },
+          });
         } else {
-          throw new Error("No offline data available.");
+          Toast.show({
+            type: "info",
+            text1: "Not Available Offline",
+            text2: "Open this past question while online first to cache it.",
+          });
         }
       }
     } catch (error) {
-     
       const errorMessage =
-        (error as any)?.message || "Failed to fetch topic content.";
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: errorMessage,
-      });
+        (error as any)?.message || "Failed to fetch past questions.";
+      Toast.show({ type: "error", text1: "Error", text2: errorMessage });
     }
   };
 
-return (
-  <View>
-    <TouchableOpacity
-      onPress={handlePress}
-      style={[
-        styles.Container,
-        {
-          backgroundColor: "#F8F8F8",
-          borderRadius: 10,
-          paddingHorizontal: 10,
-          paddingVertical: 20,
-          marginBottom: 10,
-        },
-      ]}
-    >
-      <View>
-        <Text style={styles.firstText}>{title}</Text>
-      </View>
-      {!free ? (
-        filteredMessage ? (
-          <EvilIcons name="unlock" size={15} />
-        ) : (
-          <SecondPadlockIcon />
-        )
-      ) : null}
-    </TouchableOpacity>
-    {showText && (
-      <View style={{ padding: 20, alignItems: 'center' }}>
-        <Text style={{ fontSize: 14, color: '#666' }}>No pastquestion available</Text>
-      </View>
-    )}
-    {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
-  </View>
-);
+  return (
+    <View>
+      <TouchableOpacity
+        onPress={handlePress}
+        style={[
+          styles.Container,
+          {
+            backgroundColor: "#F8F8F8",
+            borderRadius: 10,
+            paddingHorizontal: 10,
+            paddingVertical: 20,
+            marginBottom: 10,
+          },
+        ]}
+      >
+        <View>
+          <Text style={styles.firstText}>{title}</Text>
+        </View>
+        {!free ? (
+          filteredMessage ? (
+            <EvilIcons name="unlock" size={15} />
+          ) : (
+            <SecondPadlockIcon />
+          )
+        ) : null}
+      </TouchableOpacity>
+      {showText && (
+        <View style={{ padding: 20, alignItems: "center" }}>
+          <Text style={{ fontSize: 14, color: "#666" }}>
+            No past question available
+          </Text>
+        </View>
+      )}
+      {modal && <SubscriptionModal setModal={setModal} modal={modal} />}
+    </View>
+  );
 };
 
 const styles = StyleSheet.create({
@@ -264,23 +235,12 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  RoundedContainer: {
-    width: 50,
-    height: 50,
-    borderRadius: 25,
-  },
   firstText: {
     fontSize: 16,
     fontWeight: "700",
     fontStyle: "normal",
     color: "#000000",
     marginBottom: 5,
-  },
-  secondText: {
-    fontSize: 10,
-    fontWeight: "400",
-    fontStyle: "normal",
-    color: "#000000",
   },
 });
 

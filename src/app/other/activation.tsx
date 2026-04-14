@@ -4,7 +4,6 @@ import {
   SafeAreaView,
   StyleSheet,
   TouchableOpacity,
-  Linking
 } from "react-native";
 import React, { useState, useEffect } from "react";
 import RNPickerSelect from "react-native-picker-select";
@@ -44,10 +43,12 @@ const Activation = () => {
 
 const handleProceed = async () => {
   if (method) {
-    console.log(uuid)
     if (method === "Payment") {
       const url = `https://sbsapp.com.ng/payment?phone_imei=${uuid}`;
-      await Linking.openURL(url);
+      router.push({
+        pathname: "/other/payment",
+        params: { paymentUrl: url },
+      });
       setMethod("");
     } else if (method === "Pin") {
       router.push("/other/activateSubscription");

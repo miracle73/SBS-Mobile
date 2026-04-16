@@ -57,12 +57,6 @@ const OtherLayout = () => {
           }}
         />
         <Stack.Screen
-          name="paymentSuccess"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
           name="note"
           options={{
             headerShown: false,
@@ -88,12 +82,6 @@ const OtherLayout = () => {
         />
         <Stack.Screen
           name="activation"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="payment"
           options={{
             headerShown: false,
           }}

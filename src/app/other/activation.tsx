@@ -20,7 +20,6 @@ const Activation = () => {
   const [uuid, setUuid] = useState("");
   const theMethods = [
     { label: "Pin", value: "Pin" },
-    { label: "Payment", value: "Payment" },
   ];
 
   useEffect(() => {
@@ -41,27 +40,20 @@ const Activation = () => {
 
 
 
-const handleProceed = async () => {
-  if (method) {
-    if (method === "Payment") {
-      const url = `https://sbsapp.com.ng/payment?phone_imei=${uuid}`;
-      router.push({
-        pathname: "/other/payment",
-        params: { paymentUrl: url },
-      });
-      setMethod("");
-    } else if (method === "Pin") {
+  const handleProceed = async () => {
+
+    if (method === "Pin") {
       router.push("/other/activateSubscription");
       setMethod("");
+
+    } else {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Please select a method",
+      });
     }
-  } else {
-    Toast.show({
-      type: "error",
-      text1: "Error",
-      text2: "Please select a method",
-    });
-  }
-};
+  };
 
   return (
     <SafeAreaView style={styles.bodyContainer}>

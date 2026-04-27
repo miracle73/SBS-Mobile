@@ -77,43 +77,16 @@ const TopicComponent: React.FC<TopicComponentProps> = ({
   const [filteredMessage, setFilteredMessage] =
     React.useState<ActivationMessage | null>(null);
 
-  // Check if user has watched the video for this topic
-  const hasWatchedVideo = async (): Promise<boolean> => {
-    try {
-      const stored = await AsyncStorage.getItem("watchedVideos");
-      const watchedVideos: string[] = stored ? JSON.parse(stored) : [];
-      return watchedVideos.includes(title);
-    } catch {
-      return false;
-    }
-  };
-
-  // Navigate to content — either video gate or image viewer
+  // Navigate to content — always go to images, pass video URL if available
   const navigateToContent = async (images: string[], videoUrl?: string | null) => {
-    const hasVideo = videoUrl && videoUrl.trim() !== "";
-    const watched = await hasWatchedVideo();
-
-    if (hasVideo && !watched) {
-      // First time + has video → force video gate
-      router.push({
-        pathname: "/other/videoscreen",
-        params: {
-          videoUrl: videoUrl!,
-          topicTitle: title,
-          images: JSON.stringify(images),
-          title: title,
-        },
-      });
-    } else {
-      // No video or already watched → go straight to images
-      router.push({
-        pathname: "/other/imageViewer",
-        params: {
-          images: JSON.stringify(images),
-          title: title,
-        },
-      });
-    }
+    router.push({
+      pathname: "/other/imageViewer",
+      params: {
+        images: JSON.stringify(images),
+        title: title,
+        videoUrl: videoUrl && videoUrl.trim() !== "" ? videoUrl : "",
+      },
+    });
   };
 
   const handlePress = async () => {

@@ -9,9 +9,10 @@ import ImageZoomViewer from "react-native-image-zoom-viewer";
 const { width, height } = Dimensions.get("window");
 
 export default function ImageViewer() {
-  const { images, title } = useLocalSearchParams();
+  const { images, title, videoUrl } = useLocalSearchParams();
   const router = useRouter();
   const imageData: string[] = JSON.parse(images as string);
+  const hasVideo = videoUrl && (videoUrl as string).trim() !== "";
 
   useEffect(() => {
     ScreenshotPrevent.enableSecureView();
@@ -22,18 +23,34 @@ export default function ImageViewer() {
     };
   }, []);
 
-  // Build image URLs — support both local (file://) and remote paths
   const imageUrls = imageData.map((imageUrl: string) => {
     if (imageUrl.startsWith("file://") || imageUrl.startsWith("http")) {
-      // Already a full URL (cached local file or full remote URL)
       return { url: imageUrl };
     }
-    // Relative path from API — prepend base URL
     return { url: `https://sbsapp.com.ng/${imageUrl}` };
   });
 
   return (
     <View style={styles.container}>
+      {hasVideo && (
+        <TouchableOpacity
+          style={styles.videoButton}
+          onPress={() =>
+            router.push({
+              pathname: "/other/videoscreen",
+              params: {
+                videoUrl: videoUrl as string,
+                topicTitle: title as string,
+                images: images as string,
+                title: title as string,
+              },
+            })
+          }
+        >
+          <MaterialIcons name="play-circle-outline" size={28} color="#FF8C00" />
+        </TouchableOpacity>
+      )}
+
       <TouchableOpacity
         style={styles.closeButton}
         onPress={() => router.back()}
@@ -45,8 +62,8 @@ export default function ImageViewer() {
         imageUrls={imageUrls}
         enableSwipeDown
         onSwipeDown={() => router.back()}
-        backgroundColor="#000"
         onLongPress={() => {}}
+        backgroundColor="#000"
       />
     </View>
   );
@@ -65,5 +82,14 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.5)",
     borderRadius: 20,
     padding: 5,
+  },
+  videoButton: {
+    position: "absolute",
+    top: 50,
+    left: 20,
+    zIndex: 999,
+    backgroundColor: "rgba(0,0,0,0.5)",
+    borderRadius: 20,
+    padding: 8,
   },
 });

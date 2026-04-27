@@ -122,38 +122,10 @@ const Videoscreen = () => {
         )}
       </View>
 
-      <View style={styles.infoContainer}>
-        {!videoEnded ? (
-          <View style={styles.messageContainer}>
-            <MaterialIcons name="play-circle-outline" size={40} color="#FF8C00" />
-            <Text style={styles.messageText}>
-              Please watch the video to completion before accessing the notes.
-            </Text>
-            <TouchableOpacity
-              style={[styles.continueButton, styles.continueButtonDisabled]}
-              disabled={true}
-            >
-              <MaterialIcons name="lock" size={18} color="#999" />
-              <Text style={styles.continueButtonTextDisabled}>
-                Continue to Notes
-              </Text>
-            </TouchableOpacity>
-          </View>
-        ) : (
-          <View style={styles.messageContainer}>
-            <MaterialIcons name="check-circle" size={40} color="#4CAF50" />
-            <Text style={styles.messageTextSuccess}>
-              Video completed! You can now access the notes.
-            </Text>
-            <TouchableOpacity
-              style={styles.continueButton}
-              onPress={handleContinueToNotes}
-            >
-              <MaterialIcons name="arrow-forward" size={18} color="#fff" />
-              <Text style={styles.continueButtonText}>Continue to Notes</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+      <View style={{ paddingHorizontal: 20, marginTop: 16 }}>
+        <Text style={{ fontSize: 15, color: "#666", textAlign: "center" }}>
+          Watch the video lesson for this topic.
+        </Text>
       </View>
     </SafeAreaView>
   );
